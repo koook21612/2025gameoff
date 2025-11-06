@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections; 
 public enum CookingResult
 {
     Undercooked,
@@ -18,6 +19,7 @@ public class MicrowaveSystem : MonoBehaviour
     public bool isStop=false;
     public Vector2Int sliderRadian;
     public event Action<CookingResult> OnCookingComplete;
+    private CookingResult storedResult;
     //调试用
     //public TextMeshProUGUI debugValueText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -64,17 +66,26 @@ public class MicrowaveSystem : MonoBehaviour
         if (currentSliderValue < currentDish.perfectHeatRange.x)
         {
             Debug.Log("菜品不熟，报废");
-            OnCookingComplete?.Invoke(CookingResult.Undercooked);
+            storedResult=CookingResult.Undercooked;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
         }
         else if (currentSliderValue >= currentDish.perfectHeatRange.x && currentSliderValue <= currentDish.perfectHeatRange.y)
         {
             Debug.Log("烹饪成功");
-            OnCookingComplete?.Invoke(CookingResult.Perfect);
+            storedResult = CookingResult.Perfect;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
         }
         else
         {
             Debug.Log("菜品烤糊，报废");
-            OnCookingComplete?.Invoke(CookingResult.Overcooked);
+            storedResult = CookingResult.Overcooked;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
         }
+    }
+
+    private IEnumerator StartHeatingProcess( float timeToWait, CookingResult resultToBroadcast )
+    {
+        yield return new WaitForSeconds(timeToWait);
+        OnCookingComplete?.Invoke(resultToBroadcast);
     }
 }
