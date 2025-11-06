@@ -1,5 +1,8 @@
 # Unity 项目协作规范
 
+## Git 提交规范：约定式提交
+https://www.conventionalcommits.org/zh-hans/v1.0.0/
+
 ## Git 协作流程
 
 为了高效协作并避免冲突，请遵循以下流程：
