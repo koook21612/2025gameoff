@@ -19,7 +19,7 @@ public class MicrowaveSystem : MonoBehaviour
     public bool isStop=false;
     public Vector2Int sliderRadian;
     public event Action<CookingResult> OnCookingComplete;
-    private CookingResult storedResult;
+    private CookingResult _storedResult;
     //调试用
     //public TextMeshProUGUI debugValueText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -66,20 +66,20 @@ public class MicrowaveSystem : MonoBehaviour
         if (currentSliderValue < currentDish.perfectHeatRange.x)
         {
             Debug.Log("菜品不熟，报废");
-            storedResult=CookingResult.Undercooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
+            _storedResult = CookingResult.Undercooked;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
         }
         else if (currentSliderValue >= currentDish.perfectHeatRange.x && currentSliderValue <= currentDish.perfectHeatRange.y)
         {
             Debug.Log("烹饪成功");
-            storedResult = CookingResult.Perfect;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
+            _storedResult = CookingResult.Perfect;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
         }
         else
         {
             Debug.Log("菜品烤糊，报废");
-            storedResult = CookingResult.Overcooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, storedResult));
+            _storedResult = CookingResult.Overcooked;
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
         }
     }
 
