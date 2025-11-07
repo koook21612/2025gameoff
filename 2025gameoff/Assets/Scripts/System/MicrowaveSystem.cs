@@ -88,4 +88,11 @@ public class MicrowaveSystem : MonoBehaviour
         yield return new WaitForSeconds(timeToWait);
         OnCookingComplete?.Invoke(resultToBroadcast);
     }
+
+    public void StartCooking(DishScriptObjs playerCook)
+    {
+        currentDish = playerCook;
+        isStop = false;
+        currentSliderValue=0;
+    }
 }
