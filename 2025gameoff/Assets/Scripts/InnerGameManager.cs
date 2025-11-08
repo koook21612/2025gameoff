@@ -38,9 +38,9 @@ public class InnerGameManager : MonoBehaviour
     //游戏开始
     public void GameStart()
     {
-        currentGold = GameManager.instance.currentGold;
-        currentReputation = GameManager.instance.currentReputation;
-        maxReputation = GameManager.instance.maxReputation;
+        currentGold = GameManager.Instance.currentGold;
+        currentReputation = GameManager.Instance.currentReputation;
+        maxReputation = GameManager.Instance.maxReputation;
         completedCustomers = 0;
 
         EnterStore();
@@ -107,7 +107,7 @@ public class InnerGameManager : MonoBehaviour
             {
                 int tipReward = Mathf.RoundToInt(currentGold * 0.05f);
                 AddGold(tipReward);
-                GameManager.instance.AddTalentPoint(1);
+                GameManager.Instance.AddTalentPoint(1);
                 Debug.Log($"声望已满，获得小费: {tipReward}和1天赋点");
             }
         }
