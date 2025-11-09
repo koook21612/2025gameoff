@@ -20,8 +20,8 @@ public class MicrowaveTester : MonoBehaviour
         }
     }
 
-    private void OnMicrowaveFinished(CookingResult cookingResult)
+    private void OnMicrowaveFinished(CookingResult cookingResult, DishScriptObjs playerCook)
     {
-        Debug.Log("烹饪结果："+cookingResult.ToString());
+        Debug.Log("烹饪结果："+ playerCook+cookingResult.ToString());
     }
 }

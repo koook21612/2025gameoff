@@ -9,7 +9,7 @@ public class DishScriptObjs : ScriptableObject
     [Tooltip("配方")]
     public List<IngredientScriptObjs> recipe;
     [Tooltip("售价")]
-    public float DishPrice;
+    public int DishPrice;
     [Tooltip("完美加热区间 [x, y]")]
     public Vector2 perfectHeatRange;
     [Tooltip("判定线速度")]
