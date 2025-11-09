@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Customer : MonoBehaviour
@@ -7,6 +8,8 @@ public class Customer : MonoBehaviour
     public DishScriptObjs CurrentDish { get; private set; }
     private float _totalProbabilityValue;
     private float _currentValue;
+    public event Action<GameObject> OnPatienceZero;
+    private bool _isPatienceZero=false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -15,10 +18,10 @@ public class Customer : MonoBehaviour
         {
             _totalProbabilityValue += neededDish.probability;
         }
-        _currentValue = Random.Range(0, _totalProbabilityValue);
+        _currentValue = UnityEngine.Random.Range(0, _totalProbabilityValue);
         foreach(var neededDish in customerScriptObjs.demand)
         {
-            if(_currentValue<neededDish.probability)
+            if(_currentValue<=neededDish.probability)
             {
                 CurrentDish = neededDish.dishScriptObjs;
                 break;
@@ -33,6 +36,13 @@ public class Customer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (_isPatienceZero) return;
+        if(PatienceRemainingTime<=0&&!_isPatienceZero)
+        {
+            _isPatienceZero = true;
+            OnPatienceZero?.Invoke(gameObject);
+            return;
+        }
+        PatienceRemainingTime -= Time.deltaTime;
     }
 }
