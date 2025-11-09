@@ -18,7 +18,7 @@ public class MicrowaveSystem : MonoBehaviour
     public bool isPositive=true;
     public bool isStop=false;
     public Vector2Int sliderRadian;
-    public event Action<CookingResult> OnCookingComplete;
+    public event Action<CookingResult, DishScriptObjs> OnCookingComplete;
     private CookingResult _storedResult;
     //调试用
     //public TextMeshProUGUI debugValueText;
@@ -67,26 +67,26 @@ public class MicrowaveSystem : MonoBehaviour
         {
             Debug.Log("菜品不熟，报废");
             _storedResult = CookingResult.Undercooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult, currentDish));
         }
         else if (currentSliderValue >= currentDish.perfectHeatRange.x && currentSliderValue <= currentDish.perfectHeatRange.y)
         {
             Debug.Log("烹饪成功");
             _storedResult = CookingResult.Perfect;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult, currentDish));
         }
         else
         {
             Debug.Log("菜品烤糊，报废");
             _storedResult = CookingResult.Overcooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult));
+            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult, currentDish));
         }
     }
 
-    private IEnumerator StartHeatingProcess( float timeToWait, CookingResult resultToBroadcast )
+    private IEnumerator StartHeatingProcess( float timeToWait, CookingResult resultToBroadcast, DishScriptObjs playerCook)
     {
         yield return new WaitForSeconds(timeToWait);
-        OnCookingComplete?.Invoke(resultToBroadcast);
+        OnCookingComplete?.Invoke(resultToBroadcast, playerCook);
     }
 
     public void StartCooking(DishScriptObjs playerCook)
