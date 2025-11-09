@@ -60,7 +60,7 @@ public class CustomerManager : MonoBehaviour
     private void OnCustomerFailed(GameObject currentCustomer)
     {
         Destroy(currentCustomer);
-        InnerGameManager.instance.LoseReputation();
+        InnerGameManager.Instance.LoseReputation();
         _currentCustomerScript = null;
     }
     private void OnCookingFinished(CookingResult cookingResult,DishScriptObjs playerCook)
@@ -73,11 +73,12 @@ public class CustomerManager : MonoBehaviour
         }
         if(playerCook == _currentCustomerScript.CurrentDish)
         {
-            InnerGameManager.instance.AddGold(_currentCustomerScript.CurrentDish.DishPrice);
+            InnerGameManager.Instance.AddGold(_currentCustomerScript.CurrentDish.DishPrice);
+            InnerGameManager.Instance.CompleteCustomer();
         }
         else
         {
-            InnerGameManager.instance.LoseReputation();
+            InnerGameManager.Instance.LoseReputation();
         }
     }
 }

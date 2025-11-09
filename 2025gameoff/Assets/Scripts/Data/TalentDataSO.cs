@@ -14,18 +14,5 @@ public class TalentDataSO : ScriptableObject
     public TalentDataSO neededNodes;
 
     [Header("天赋效果")]
-    public TalentEffect[] effects;
-
-    [System.Serializable]
-    public class TalentEffect
-    {
-        public EffectType effectType;
-        public float value;
-    }
-
-    public enum EffectType
-    {
-        HeatingSpeed,           // 加热速度加成
-        PerfectZoneBonus,       // 完美区域加成
-    }
+    public Effect[] effects;
 }

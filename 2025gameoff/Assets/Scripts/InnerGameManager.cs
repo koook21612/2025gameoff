@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InnerGameManager : MonoBehaviour
@@ -9,19 +10,36 @@ public class InnerGameManager : MonoBehaviour
     private int maxReputation = 3; // 声望上限
     private int completedCustomers = 0; // 完成的顾客数量
 
+
+    private object goldLock = new object();//线程锁，防止并发冲突
+
     // 微波炉升级相关
     [Header("微波炉升级")]
     public int MicrowavesCount = 1; // 微波炉数量
+    public int LatterMicrowavesCount = 0; // 下一局加的微波炉数量
+    private float heatingTimeMultiplier = 1f;
+    private float perfectZoneBonus = 0f;
 
-    public static InnerGameManager instance;
+    [Header("商店设置")]
+    public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // 菜品池
+    public List<EquipmentDataSO> equipmentPool = new List<EquipmentDataSO>(); // 装备池
+    public int storeEquipmentCount = 3; // 商店装备数量
+    public int storeIngredientMinCount = 9; // 商店菜品最小数量
+    public int storeIngredientMaxCount = 15; // 商店菜品最大数量
+
+    // 刷新功能相关
+    private int refreshCount = 0; // 刷新次数
+    private int baseRefreshPrice = 10; // 基础刷新价格
+
+    public static InnerGameManager Instance;
     private void Awake() {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -43,6 +61,11 @@ public class InnerGameManager : MonoBehaviour
         maxReputation = GameManager.Instance.maxReputation;
         completedCustomers = 0;
 
+        heatingTimeMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
+        perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
+
+        refreshCount = 0;
+
         EnterStore();
     }
 
@@ -61,6 +84,11 @@ public class InnerGameManager : MonoBehaviour
     // 新的一天开始
     public void StartNewDay()
     {
+        if(LatterMicrowavesCount > 0)
+        {
+            MicrowavesCount += LatterMicrowavesCount;
+            LatterMicrowavesCount = 0;
+        }
         isPlaying = true;
     }
 
@@ -72,12 +100,15 @@ public class InnerGameManager : MonoBehaviour
 
     public bool SpendGold(int amount)
     {
-        if (currentGold >= amount)
+        lock (goldLock)
         {
-            currentGold -= amount;
-            return true;
+            if (currentGold >= amount)
+            {
+                currentGold -= amount;
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     // === 声望操作 ===
@@ -114,23 +145,132 @@ public class InnerGameManager : MonoBehaviour
     }
 
     // === 微波炉升级 ===
-    public void Buy3DPrinterModule()
+    public void ApplyEffects(EquipmentDataSO talentData)
     {
+        if (talentData.effects == null) return;
+
+        foreach (var effect in talentData.effects)
+        {
+            switch (effect.effectType)
+            {
+                case EffectType.HeatingSpeed:
+                    heatingTimeMultiplier *= (1 - effect.value / 100f);
+                    break;
+                case EffectType.PerfectZoneBonus:
+                    perfectZoneBonus += effect.value;
+                    break;
+                case EffectType.addMicrowavesCount:
+                    MicrowavesCount++;
+                    break;
+                case EffectType.addMicrowavesCountLater:
+                    LatterMicrowavesCount++;
+                    break;
+            }
+        }
     }
 
-    public void BuyHighPowerModule()
+    // === 商店功能 ===
+
+    // 初始化商店内容
+    public void InitializeStoreContent()
     {
+        if (StoreManager.Instance == null)
+        {
+            return;
+        }
+
+        // 随机选择装备
+        List<EquipmentDataSO> randomEquipments = GetRandomEquipments(storeEquipmentCount);
+
+        // 随机选择菜品
+        int ingredientCount = Random.Range(storeIngredientMinCount, storeIngredientMaxCount + 1);
+        List<IngredientScriptObjs> randomIngredients = GetRandomIngredients(ingredientCount);
+
+        // 设置商店内容
+        StoreManager.Instance.SetStoreContents(randomEquipments, randomIngredients);
 
     }
 
-    public void BuyCoolingModule()
+    // 随机获取装备
+    private List<EquipmentDataSO> GetRandomEquipments(int count)
     {
+        List<EquipmentDataSO> result = new List<EquipmentDataSO>();
 
+        if (equipmentPool.Count == 0)
+        {
+            Debug.LogWarning("装备池为空！");
+            return result;
+        }
+
+        // 创建临时列表用于随机抽取
+        List<EquipmentDataSO> tempPool = new List<EquipmentDataSO>(equipmentPool);
+
+        for (int i = 0; i < count && tempPool.Count > 0; i++)
+        {
+            EquipmentDataSO randomEquipment = tempPool.Draw();
+            if (randomEquipment != null)
+            {
+                result.Add(randomEquipment);
+            }
+        }
+
+        return result;
     }
 
-    public void BuyNewMicrowave()
+    // 随机获取菜品
+    private List<IngredientScriptObjs> GetRandomIngredients(int count)
     {
-        MicrowavesCount++;
+        List<IngredientScriptObjs> result = new List<IngredientScriptObjs>();
+
+        if (ingredientPool.Count == 0)
+        {
+            Debug.LogWarning("菜品池为空！");
+            return result;
+        }
+
+        List<IngredientScriptObjs> tempPool = new List<IngredientScriptObjs>(ingredientPool);
+
+        for (int i = 0; i < count && tempPool.Count > 0; i++)
+        {
+            IngredientScriptObjs randomIngredient = tempPool.Draw();
+            if (randomIngredient != null)
+            {
+                result.Add(randomIngredient);
+            }
+        }
+
+        return result;
     }
 
+    // 刷新装备
+    public bool RefreshEquipment()
+    {
+        int refreshPrice = GetRefreshPrice();
+
+        if (SpendGold(refreshPrice))
+        {
+
+            List<EquipmentDataSO> randomEquipments = GetRandomEquipments(storeEquipmentCount);
+            StoreManager.Instance.SetStoreEquipments(randomEquipments);
+
+            refreshCount++;
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // 获取当前刷新价格
+    public int GetRefreshPrice()
+    {
+        if (refreshCount == 0)
+        {
+            return baseRefreshPrice;
+        }
+
+        return baseRefreshPrice * (int)Mathf.Pow(2, refreshCount);
+    }
 }

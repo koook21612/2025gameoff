@@ -88,10 +88,10 @@ public class TalentTree : MonoBehaviour
         {
             switch (effect.effectType)
             {
-                case TalentDataSO.EffectType.HeatingSpeed:
+                case EffectType.HeatingSpeed:
                     GameManager.Instance.pendingData.heatingTimeMultiplier *= (1 - effect.value / 100f);
                     break;
-                case TalentDataSO.EffectType.PerfectZoneBonus:
+                case EffectType.PerfectZoneBonus:
                     GameManager.Instance.pendingData.perfectZoneBonus += effect.value;
                     break;
             }
