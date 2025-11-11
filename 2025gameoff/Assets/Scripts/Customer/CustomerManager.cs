@@ -3,21 +3,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class CustomerSpawnEntry
-{
-    public CustomerScriptObjs customerSO;
-    public GameObject customerPrefab;
-    public float probability;
-}
+
 public class CustomerManager : MonoBehaviour
 {
-    public List<CustomerSpawnEntry> customers;
-    public float spawnIntervalTime;
-    private float _totalProbabilityValue;
-    private float _currentValue;
-    public MicrowaveSystem microwaveSystem;
-    private Customer _currentCustomerScript;
+    public List<CustomerScriptObjs> customers;//所有的顾客配置
+    private int _currentCostomerIndex;//当前顾客索引
+    public MicrowaveSystem microwaveSystem;//微波炉系统
+    private Customer _currentCustomerScript;//当前顾客的脚本
+    private List<Customer> _counterCustomers;//前台顾客
+    private List<Customer> _queueCustomers;//队列顾客
+    private int[] _waveCustomerCounts = new int[3];//波次顾客
+    private float _countdownTime;//选取顾客进入空位倒计时
+    private Dictionary<int,float> OrderDishesCountProbability = new Dictionary<int, float>();//点int道菜的概率float
+    private float _TotalProbabilityValue;
+    private float _currentProbabilityValue;
+    private int _currentDishIndex;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,27 +33,35 @@ public class CustomerManager : MonoBehaviour
 
     public void SpawnNewCustomer()
     {
-        _totalProbabilityValue = 0;
-        _currentValue = 0;
-        foreach (var customer in customers)
+        _currentCostomerIndex = UnityEngine.Random.Range(0, customers.Count);
+        GameObject newCustomerObject = Instantiate(customers[_currentCostomerIndex].customerPrefab);
+        Customer customerScript = newCustomerObject.GetComponent<Customer>();
+        customerScript.customerScriptObjs= customers[_currentCostomerIndex];
+        _currentCustomerScript = customerScript;
+        customerScript.OnPatienceZero += OnCustomerFailed;
+
+        _TotalProbabilityValue = 0;
+        foreach (var probablity in OrderDishesCountProbability)
         {
-            _totalProbabilityValue += customer.probability;
+            _TotalProbabilityValue += probablity.Value;
         }
-        _currentValue= UnityEngine.Random.Range(0, _totalProbabilityValue);
-        foreach (var customer in customers)
+        _currentProbabilityValue = UnityEngine.Random.Range(0, _TotalProbabilityValue);
+        foreach (var probablity in OrderDishesCountProbability)
         {
-            if(_currentValue<= customer.probability)
+            List<DishScriptObjs> tempDishList = new List<DishScriptObjs>(_currentCustomerScript.customerScriptObjs.neededDishes);
+            if (_currentProbabilityValue< probablity.Value)
             {
-                GameObject newCustomerObject = Instantiate(customer.customerPrefab);
-                Customer customerScript = newCustomerObject.GetComponent<Customer>();
-                customerScript.customerScriptObjs= customer.customerSO;
-                _currentCustomerScript = customerScript;
-                customerScript.OnPatienceZero += OnCustomerFailed;
+                for(int i = 0; i < probablity.Key;i++)
+                {
+                    _currentDishIndex = UnityEngine.Random.Range(0, tempDishList.Count);
+                    _currentCustomerScript.CurrentDishes.Add(tempDishList[_currentDishIndex]);
+                    tempDishList.RemoveAt(_currentDishIndex);
+                }
                 break;
             }
             else
             {
-                _currentValue-=customer.probability;
+                _currentProbabilityValue-= probablity.Value;
             }
         }
     }
@@ -80,5 +88,12 @@ public class CustomerManager : MonoBehaviour
         {
             InnerGameManager.Instance.LoseReputation();
         }
+    }
+    public void InitializeDay(int[] currentWaveCustomerCounts,float p3, float p2, float p1)
+    {
+        _waveCustomerCounts = currentWaveCustomerCounts;
+        OrderDishesCountProbability.Add(3, p3);
+        OrderDishesCountProbability.Add(2, p2);
+        OrderDishesCountProbability.Add(1, p1);
     }
 }
