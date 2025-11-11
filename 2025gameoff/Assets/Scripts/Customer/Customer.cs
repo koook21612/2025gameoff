@@ -1,41 +1,25 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Customer : MonoBehaviour
 {
-    public CustomerScriptObjs customerScriptObjs;
-    public float PatienceRemainingTime { get; private set; }
-    public DishScriptObjs CurrentDish { get; private set; }
-    private float _totalProbabilityValue;
-    private float _currentValue;
-    public event Action<GameObject> OnPatienceZero;
-    private bool _isPatienceZero=false;
+    public CustomerScriptObjs customerScriptObjs;//当前顾客的配置
+    public float PatienceRemainingTime { get; private set; }//耐心剩余时间
+    public List<DishScriptObjs> CurrentDishes;//抽取到的菜肴的配置
+    public event Action<GameObject> OnPatienceZero;//耐心值耗尽事件
+    private bool _isPatienceZero=false;//是否耗尽耐心
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        //获取初始耐心耗尽所需时间
         PatienceRemainingTime = customerScriptObjs.patienceTime;
-        foreach(var neededDish in customerScriptObjs.demand)
-        {
-            _totalProbabilityValue += neededDish.probability;
-        }
-        _currentValue = UnityEngine.Random.Range(0, _totalProbabilityValue);
-        foreach(var neededDish in customerScriptObjs.demand)
-        {
-            if(_currentValue<=neededDish.probability)
-            {
-                CurrentDish = neededDish.dishScriptObjs;
-                break;
-            }
-            else
-            {
-                _currentValue-=neededDish.probability;
-            }
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        //消耗耐心
         if (_isPatienceZero) return;
         if(PatienceRemainingTime<=0&&!_isPatienceZero)
         {
