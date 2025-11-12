@@ -65,12 +65,14 @@ public class CustomerManager : MonoBehaviour
             }
         }
     }
+
     private void OnCustomerFailed(GameObject currentCustomer)
     {
         Destroy(currentCustomer);
         InnerGameManager.Instance.LoseReputation();
         _currentCustomerScript = null;
     }
+
     private void OnCookingFinished(CookingResult cookingResult,DishScriptObjs playerCook)
     {
         if (cookingResult != CookingResult.Perfect) return;
