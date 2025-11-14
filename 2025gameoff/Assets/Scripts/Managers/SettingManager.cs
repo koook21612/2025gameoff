@@ -22,6 +22,11 @@ public class SettingManager : MonoBehaviour
     public Slider effectVolumeSlider;
     public AudioMixer audioMixer;
 
+    public Button LanguageButton;
+    public TextMeshProUGUI languageButtonText;
+    private int currentLanguageIndex = 0;
+    private string currentLanguage;
+
     public static SettingManager Instance { get; private set; }
 
     private void Awake()
@@ -53,6 +58,7 @@ public class SettingManager : MonoBehaviour
         masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
         musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
         effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
+        LanguageButton.onClick.AddListener(UpdateLanguage);
     }
 
     void Initialization()
@@ -66,6 +72,20 @@ public class SettingManager : MonoBehaviour
     {
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
+    }
+
+    void UpdateLanguage()
+    {
+        currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
+        currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
+        UpdateButtonLanguage();
+    }
+    //先只更新本页面语言，防止玩家手贱不停切换语言
+    void UpdateButtonLanguage()
+    {
+        languageButtonText.text = LocalizationManager.Instance.GetText("language_name");
+        // TODO: 等系统界面确定后，在此处添加其他需要更新语言的UI元素
+
     }
     //初始化分辨率
     void InitializeResolutions()
@@ -158,6 +178,12 @@ public class SettingManager : MonoBehaviour
     public void CloseSetting()
     {
         SaveSetting();
+        //切换全局语言
+        if(currentLanguage != LocalizationManager.Instance.currentLanguage)
+        {
+            LocalizationManager.Instance.LoadLanguage(currentLanguage);
+        }
+        //返回主菜单或者游戏界面
         //SceneManager.LoadScene(sceneName);
     }
 

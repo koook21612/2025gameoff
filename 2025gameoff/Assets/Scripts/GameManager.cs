@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public int currentReputation = 3;// 初始声望
     public int maxReputation = 3;// 声望上限
 
+
     [System.Serializable]
     public class SaveData
     {
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
         // 动态计算的效果
         public float heatingTimeMultiplier = 1f;
         public float perfectZoneBonus = 0f;
+        public string currentLanguage;
     }
 
     public SaveData pendingData;
@@ -70,6 +72,14 @@ public class GameManager : MonoBehaviour
     }
 
   
+    public void LoadLanguage()
+    {
+        string filePath = Path.Combine();
+        if (File.Exists(filePath))
+        {
+            string dataJson = File.ReadAllText(filePath);
+        }
+    }
 
     // 天赋点操作
     public void AddTalentPoint(int points = 1)
