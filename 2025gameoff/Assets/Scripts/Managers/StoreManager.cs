@@ -85,7 +85,6 @@ public class StoreManager : MonoBehaviour
 
         int totalCost = ingredientPrices[ingredient] * quantity;
 
-        // ¼ì²é½ð±ÒÊÇ·ñ×ã¹»
         if (InnerGameManager.Instance.SpendGold(totalCost))
         {
             for (int i = 0; i < quantity; i++)

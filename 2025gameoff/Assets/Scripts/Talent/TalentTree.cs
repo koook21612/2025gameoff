@@ -75,7 +75,6 @@ public class TalentTree : MonoBehaviour
         if (!GameManager.Instance.pendingData.unlockedTalents.Contains(talent))
         {
             GameManager.Instance.pendingData.unlockedTalents.Add(talent);
-            Debug.Log($"Ìì¸³½âËø: {talent}");
         }
     }
 

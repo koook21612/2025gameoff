@@ -5,6 +5,7 @@ public class InnerGameManager : MonoBehaviour
 {
     public bool isPlaying = false;
 
+    public int days = 0;
     private int currentGold = 50; // 初始金币
     private int currentReputation = 3; // 初始声望
     private int maxReputation = 3; // 声望上限
@@ -12,6 +13,7 @@ public class InnerGameManager : MonoBehaviour
 
 
     private object goldLock = new object();//线程锁，防止并发冲突
+    public CustomerManager customerManager;//顾客系统
 
     // 微波炉升级相关
     [Header("微波炉升级")]
@@ -65,6 +67,7 @@ public class InnerGameManager : MonoBehaviour
         perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
 
         refreshCount = 0;
+        days = 1;
 
         EnterStore();
     }
@@ -72,7 +75,7 @@ public class InnerGameManager : MonoBehaviour
     // 游戏结束
     private void GameOver()
     {
-        Debug.Log("游戏结束！声望降为0，经营失败");
+
     }
 
     // 进入商店
@@ -84,11 +87,20 @@ public class InnerGameManager : MonoBehaviour
     // 新的一天开始
     public void StartNewDay()
     {
-        if(LatterMicrowavesCount > 0)
+        if (days == 7)
+        {
+            GameOver();
+        }
+        if (LatterMicrowavesCount > 0)
         {
             MicrowavesCount += LatterMicrowavesCount;
             LatterMicrowavesCount = 0;
         }
+        if(customerManager != null)
+        {
+
+        }
+        days++;
         isPlaying = true;
     }
 
@@ -198,7 +210,6 @@ public class InnerGameManager : MonoBehaviour
 
         if (equipmentPool.Count == 0)
         {
-            Debug.LogWarning("装备池为空！");
             return result;
         }
 

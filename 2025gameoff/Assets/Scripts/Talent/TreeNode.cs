@@ -40,14 +40,11 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private bool CanBeUnlocked()
     {
-        Debug.Log("1");
         if (isUnlocked) return false;
-        Debug.Log("2");
 
         // 检查天赋点
         if (GameManager.Instance.pendingData.talentPoints < talentCost)
             return false;
-        Debug.Log("3");
 
         // 检查前置节点
         if (neededNodes != null)
@@ -57,7 +54,6 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 return false;
             }
         }
-        Debug.Log("4");
         return true;
     }
 
@@ -71,7 +67,6 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("点击");
         if (CanBeUnlocked())
             Unlock();
     }
