@@ -8,25 +8,36 @@ using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
 {
-    public Toggle fullscreenToggle;
-    public TextMeshProUGUI toggleLabel;
-    public TMP_Dropdown resolutionDropdown;
+    public Toggle fullscreenToggle;// 全屏切换开关
+    public Text toggleLabel; // 全屏切换标签文本
 
-    private Resolution[] availableResolutions;//分辨率数组
-    private Resolution defaultResolution;
-    public Button defaultButton;
-    public Button closeButton;
+    public TMP_Dropdown resolutionDropdown; // 分辨率下拉选择框
+    private Resolution[] availableResolutions;// 可用的分辨率数组
+    private Resolution defaultResolution; // 默认分辨率
 
-    public Slider masterVolumeSlider;
-    public Slider musicVolumeSlider;
-    public Slider effectVolumeSlider;
-    public AudioMixer audioMixer;
+    public Button defaultButton; // 恢复默认设置按钮
+    public Button closeButton; // 关闭设置界面按钮
 
-    public Button LanguageButton;
-    public TextMeshProUGUI languageButtonText;
-    private int currentLanguageIndex = 0;
-    private string currentLanguage;
+    public Slider masterVolumeSlider; // 主音量滑块
+    public Slider musicVolumeSlider; // 背景音乐音量滑块
+    public Slider effectVolumeSlider; // 音效音量滑块
+    public AudioMixer audioMixer; // 音频混合器引用
 
+    public Button LanguageButton; // 语言切换按钮
+    public TextMeshProUGUI languageButtonText; // 语言按钮文本显示
+    private int currentLanguageIndex = 0; // 当前语言索引
+    private string currentLanguage; // 当前语言代码
+
+
+    public TextMeshProUGUI resolutionLabelText; // 分辨率设置标签
+    public TextMeshProUGUI fullscreenLabelText; // 全屏设置标签  
+    public TextMeshProUGUI masterVolumeLabelText; // 主音量标签
+    public TextMeshProUGUI musicVolumeLabelText; // 背景音乐音量标签
+    public TextMeshProUGUI effectVolumeLabelText; // 音效音量标签
+    public TextMeshProUGUI languageText;
+
+    private string fullscreen = "全屏";
+    private string windowed = "窗口";
     public static SettingManager Instance { get; private set; }
 
     private void Awake()
@@ -73,20 +84,6 @@ public class SettingManager : MonoBehaviour
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
     }
-
-    void UpdateLanguage()
-    {
-        currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
-        currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
-        UpdateButtonLanguage();
-    }
-    //先只更新本页面语言，防止玩家手贱不停切换语言
-    void UpdateButtonLanguage()
-    {
-        languageButtonText.text = LocalizationManager.Instance.GetText("language_name");
-        // TODO: 等系统界面确定后，在此处添加其他需要更新语言的UI元素
-
-    }
     //初始化分辨率
     void InitializeResolutions()
     {
@@ -95,22 +92,34 @@ public class SettingManager : MonoBehaviour
 
         var resolutionMap = new Dictionary<string, Resolution>();
         int currentResolutionIndex = 0;
-        foreach(var res in availableResolutions)
+
+        foreach (var res in availableResolutions)
         {
-            const float aspectRatio = 16f / 9f;
+            float ratio = (float)res.width / res.height;
+
+            // 允许的宽高比：16:9 (~1.777) 或 16:10 (~1.6)
+            const float ratio169 = 16f / 9f;
+            const float ratio1610 = 16f / 10f;
             const float epsilon = 0.01f;
 
-            if(Mathf.Abs((float)res.width / res.height - aspectRatio) > epsilon)
+            // 如果既不是 16:9 也不是 16:10，就跳过
+            if (Mathf.Abs(ratio - ratio169) > epsilon &&
+                Mathf.Abs(ratio - ratio1610) > epsilon)
             {
                 continue;
             }
+
             string option = res.width + "x" + res.height;
-            //映射，判断这个map中有没有存这个分辨率
+
+            // 不重复添加相同的分辨率
             if (!resolutionMap.ContainsKey(option))
             {
                 resolutionMap[option] = res;
                 resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(option));
-                if(res.width == Screen.currentResolution.width && res.height == Screen.currentResolution.height)
+
+                // 设置当前分辨率索引
+                if (res.width == Screen.currentResolution.width &&
+                    res.height == Screen.currentResolution.height)
                 {
                     currentResolutionIndex = resolutionDropdown.options.Count - 1;
                     defaultResolution = res;
@@ -121,6 +130,7 @@ public class SettingManager : MonoBehaviour
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
     }
+
 
     //初始化声音
     void InitializeVolume()
@@ -141,9 +151,21 @@ public class SettingManager : MonoBehaviour
         UpdateToggleLabel(isFullscreen);
     }
 
+    void UpdateLanguage()
+    {
+        currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
+        currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
+        if (currentLanguage != LocalizationManager.Instance.currentLanguage)
+        {
+            LocalizationManager.Instance.LoadLanguage(currentLanguage);
+        }
+        UpdateButtonLanguage();
+    }
+
+
     void UpdateToggleLabel(bool isFullscreen)
     {
-        toggleLabel.text = isFullscreen ? "Fullscreen" : "Windowed";
+        toggleLabel.text = isFullscreen ? fullscreen : windowed;
     }
 
     void SetResolution(int index)
@@ -171,18 +193,13 @@ public class SettingManager : MonoBehaviour
 
     void SetEffectVolume(float value)
     {
-        audioMixer.SetFloat("VoiceVolume", SliderValueToDecibel(value));
+        audioMixer.SetFloat("EffectVolume", SliderValueToDecibel(value));
 
     }
 
     public void CloseSetting()
     {
         SaveSetting();
-        //切换全局语言
-        if(currentLanguage != LocalizationManager.Instance.currentLanguage)
-        {
-            LocalizationManager.Instance.LoadLanguage(currentLanguage);
-        }
         //返回主菜单或者游戏界面
         //SceneManager.LoadScene(sceneName);
     }
@@ -209,5 +226,54 @@ public class SettingManager : MonoBehaviour
         SetMasterVolume(0.8f);
         SetMusicVolume(0.8f);
         SetEffectVolume(0.8f);
+    }
+
+    void UpdateButtonLanguage()
+    {
+        fullscreen = LocalizationManager.Instance.GetText("fullscreen");
+        windowed = LocalizationManager.Instance.GetText("windowed");
+        UpdateToggleLabel(fullscreenToggle.isOn);
+
+        languageText.text = LocalizationManager.Instance.GetText("language");
+
+        if (fullscreenLabelText != null)
+            fullscreenLabelText.text = LocalizationManager.Instance.GetText("display_mode");
+
+        // 分辨率标签
+        if (resolutionLabelText != null)
+            resolutionLabelText.text = LocalizationManager.Instance.GetText("resolution");
+
+        // 音量相关标签
+        if (masterVolumeLabelText != null)
+            masterVolumeLabelText.text = LocalizationManager.Instance.GetText("master_volume");
+
+        if (musicVolumeLabelText != null)
+            musicVolumeLabelText.text = LocalizationManager.Instance.GetText("music_volume");
+
+        if (effectVolumeLabelText != null)
+            effectVolumeLabelText.text = LocalizationManager.Instance.GetText("effect_volume");
+
+        // 语言标签
+        if (LanguageButton != null)
+        {
+            TextMeshProUGUI closeBtnText = LanguageButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (closeBtnText != null)
+                closeBtnText.text = LocalizationManager.Instance.GetText("language_name");
+        }
+
+        // 按钮文本
+        if (defaultButton != null)
+        {
+            TextMeshProUGUI defaultBtnText = defaultButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (defaultBtnText != null)
+                defaultBtnText.text = LocalizationManager.Instance.GetText("default");
+        }
+
+        if (closeButton != null)
+        {
+            TextMeshProUGUI closeBtnText = closeButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (closeBtnText != null)
+                closeBtnText.text = LocalizationManager.Instance.GetText("exit");
+        }
     }
 }

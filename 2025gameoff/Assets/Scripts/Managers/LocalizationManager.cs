@@ -54,6 +54,9 @@ public class LocalizationManager : MonoBehaviour
             return $"#{key}#";
     }
 
+    //调用方法
+
+    //void Start(){ LocalizationManager.Instance.LanguageChanged += UpdateText; }
     //private void UpdateText()
     //{
     //    if (textComponent != null)

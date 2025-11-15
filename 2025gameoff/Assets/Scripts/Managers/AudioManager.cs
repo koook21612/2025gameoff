@@ -6,9 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
+    public static string MUSIC_PATH = "audio/bgm/";
+    public static string EFFECT_PATH = "audio/effect/";
+
     public AudioMixer audioMixer;
     public AudioMixerGroup musicGroup;
-    public AudioMixerGroup voiceGroup;
+    public AudioMixerGroup effectGroup;
 
     private AudioSource musicSource;
     private AudioSource voiceSource;
@@ -27,7 +30,7 @@ public class AudioManager : MonoBehaviour
             musicSource.loop = true;
 
             voiceSource = gameObject.AddComponent<AudioSource>();
-            voiceSource.outputAudioMixerGroup = voiceGroup;
+            voiceSource.outputAudioMixerGroup = effectGroup;
             voiceSource.loop = false;
 
             LoadVolumeSettings();
@@ -41,7 +44,13 @@ public class AudioManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-
+        if (scene.name == Constants.MENU_SCENE)
+        {
+            PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
+        }
+        else if (scene.name == Constants.GAME_SCENE)
+        {
+        }
     }
 
     public void PlayBackground(string musicFileName)
@@ -50,28 +59,30 @@ public class AudioManager : MonoBehaviour
         {
             return;
         }
-        //AudioClip clip = Resources.Load<AudioClip>(MUSIC_PATH + musicFileName);
-        //if (clip == null)
-        //{
-        //    return;
-        //}
-        //if (musicSource.clip == clip)
-        //{
-        //    return;
-        //}
-        //musicSource.clip = clip;
-        //musicSource.Play();
+        AudioClip clip = Resources.Load<AudioClip>(MUSIC_PATH + musicFileName);
+        if (clip == null)
+        {
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + musicFileName);
+            return;
+        }
+        if (musicSource.clip == clip)
+        {
+            return;
+        }
+        musicSource.clip = clip;
+        musicSource.Play();
     }
 
     public void PlayEffect(string effectFileName)
     {
-        //AudioClip clip = Resources.Load<AudioClip>(EFFECT_PATH + effectFileName);
-        //if (clip == null)
-        //{
-        //    return;
-        //}
-        //voiceSource.clip = clip;
-        //voiceSource.Play();
+        AudioClip clip = Resources.Load<AudioClip>(EFFECT_PATH + effectFileName);
+        if (clip == null)
+        {
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + effectFileName);
+            return;
+        }
+        voiceSource.clip = clip;
+        voiceSource.Play();
     }
 
     private void LoadVolumeSettings()
