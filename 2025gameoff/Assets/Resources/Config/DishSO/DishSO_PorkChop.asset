@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dishName: "\u732A\u8089\u6392"
   recipe:
-  - {fileID: 0}
-  DishPrice: 0
-  perfectHeatRange: {x: 0, y: 0}
-  sliderSpeed: 0
-  heatTime: 0
+  - {fileID: 11400000, guid: 432d35e1c1119fc4285dc54b4965eb4f, type: 2}
+  DishPrice: 20
+  perfectHeatRange: {x: 0.6666667, y: 1}
+  sliderSpeed: 1
+  heatTime: 15

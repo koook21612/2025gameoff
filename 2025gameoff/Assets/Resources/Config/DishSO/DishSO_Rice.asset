@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
   m_Name: DishSO_Rice
   m_EditorClassIdentifier: 
-  dishName: 
-  recipe: []
-  DishPrice: 0
-  perfectHeatRange: {x: 0, y: 0}
-  sliderSpeed: 0
-  heatTime: 0
+  dishName: "\u7C73\u996D"
+  recipe:
+  - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
+  DishPrice: 6
+  perfectHeatRange: {x: 0.33333334, y: 0.6666667}
+  sliderSpeed: 10
+  heatTime: 1
