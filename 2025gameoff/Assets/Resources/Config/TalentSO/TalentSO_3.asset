@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27d66dcb99d7dc4ebf1632de936cd98, type: 3}
+  m_Name: TalentSO_3
+  m_EditorClassIdentifier: 
+  talentId: 3
+  displayName: "\u6781\u901F\u52A0\u70ED"
+  description: "\u5FAE\u6CE2\u7089\u7684\u52A0\u70ED\u901F\u5EA6\u589E\u52A04%"
+  icon: {fileID: 1449712076, guid: 774e0222b640e544ab3eb8887af4b094, type: 3}
+  cost: 1
+  isUnlocked: 0
+  neededNodes: {fileID: 11400000, guid: 3e7a7c1666aaf9c44bf2308f2772dc60, type: 2}
+  effects: []
