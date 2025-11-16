@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd43bbe128b702f4eb8ab9d471c74690, type: 3}
   m_Name: IngredientSO_Vegetables
   m_EditorClassIdentifier: 
-  ingredientName: 
-  ingredientPrice: 0
+  ingredientName: "\u9752\u83DC"
+  ingredientPrice: 5
