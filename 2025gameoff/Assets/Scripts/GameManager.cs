@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public string currentScene; // 当前场景名称
+
+
     [Header("游戏状态数据")]
     public int currentGold = 50;// 初始金币
     public int currentReputation = 3;// 初始声望
@@ -14,7 +17,7 @@ public class GameManager : MonoBehaviour
     public class SaveData
     {
         public List<string> unlockedTalents = new List<string>();
-        public int talentPoints = 0;
+        public int talentPoints = 3;
 
         // 动态计算的效果
         public float heatingTimeMultiplier = 1f;
@@ -66,7 +69,7 @@ public class GameManager : MonoBehaviour
         File.WriteAllText(filePath, jsonData);
     }
 
-    private string GenerateDataPath()
+    public string GenerateDataPath()
     {
         return Path.Combine(Application.persistentDataPath, "gameSave.json");
     }
