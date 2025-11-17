@@ -9,7 +9,6 @@ public class StoreManager : MonoBehaviour
     public List<EquipmentDataSO> availableEquipments; // 可购买的装备列表
 
 
-
     private Dictionary<IngredientScriptObjs, int> ingredientPrices = new Dictionary<IngredientScriptObjs, int>();
     private Dictionary<EquipmentDataSO, int> equipmentPrices = new Dictionary<EquipmentDataSO, int>();
 

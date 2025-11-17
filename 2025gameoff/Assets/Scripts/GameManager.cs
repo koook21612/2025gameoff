@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public int currentGold = 50;// 初始金币
     public int currentReputation = 3;// 初始声望
     public int maxReputation = 3;// 声望上限
-
+    public bool hasStart = false;
 
     [System.Serializable]
     public class SaveData
