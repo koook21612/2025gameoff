@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class IntroFader : MonoBehaviour
 {
@@ -154,13 +155,6 @@ public class IntroFader : MonoBehaviour
             }
         }
 
-        //同时销毁主对象和 externalImage 的 GameObject
-        GameObject extGO = externalImage != null ? externalImage.gameObject : null;
-        if (extGO != null && extGO != gameObject)
-        {
-            Destroy(extGO);
-        }
-
-        Destroy(gameObject);
+        SceneManager.LoadScene(Constants.MENU_SCENE);
     }
 }

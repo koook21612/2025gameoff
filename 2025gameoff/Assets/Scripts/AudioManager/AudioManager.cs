@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
-    public static string MUSIC_PATH = "audio/bgm/";
-    public static string EFFECT_PATH = "audio/effect/";
 
     public AudioMixer audioMixer;
     public AudioMixerGroup musicGroup;
@@ -59,7 +57,7 @@ public class AudioManager : MonoBehaviour
         {
             return;
         }
-        AudioClip clip = Resources.Load<AudioClip>(MUSIC_PATH + musicFileName);
+        AudioClip clip = Resources.Load<AudioClip>(Constants.MUSIC_PATH + musicFileName);
         if (clip == null)
         {
             Debug.LogError(Constants.AUDIO_LOAD_FAILED + musicFileName);
@@ -75,7 +73,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayEffect(string effectFileName)
     {
-        AudioClip clip = Resources.Load<AudioClip>(EFFECT_PATH + effectFileName);
+        AudioClip clip = Resources.Load<AudioClip>(Constants.EFFECT_PATH + effectFileName);
         if (clip == null)
         {
             Debug.LogError(Constants.AUDIO_LOAD_FAILED + effectFileName);
@@ -83,6 +81,19 @@ public class AudioManager : MonoBehaviour
         }
         voiceSource.clip = clip;
         voiceSource.Play();
+    }
+
+
+    public void PlayUIEffect(string effectFileName)
+    {
+        if (string.IsNullOrEmpty(effectFileName)) return;
+        AudioClip clip = Resources.Load<AudioClip>(Constants.UI_EFFECT_PATH + effectFileName);
+        if (clip == null)
+        {
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + Constants.UI_EFFECT_PATH + effectFileName);
+            return;
+        }
+        voiceSource.PlayOneShot(clip);
     }
 
     private void LoadVolumeSettings()

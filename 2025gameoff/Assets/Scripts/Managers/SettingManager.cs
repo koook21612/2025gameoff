@@ -201,7 +201,7 @@ public class SettingManager : MonoBehaviour
     {
         SaveSetting();
         //返回主菜单或者游戏界面
-        //SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(GameManager.Instance.currentScene);
     }
 
     void SaveSetting()
