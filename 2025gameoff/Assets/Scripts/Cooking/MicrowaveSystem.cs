@@ -67,7 +67,7 @@ public class MicrowaveSystem : MonoBehaviour
         {
             Debug.Log("菜品不熟，报废");
             _storedResult = CookingResult.Undercooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult, currentDish));
+            StartCoroutine(StartHeatingProcess(5, _storedResult, currentDish));
         }
         else if (currentSliderValue >= currentDish.perfectHeatRange.x && currentSliderValue <= currentDish.perfectHeatRange.y)
         {
@@ -79,7 +79,7 @@ public class MicrowaveSystem : MonoBehaviour
         {
             Debug.Log("菜品烤糊，报废");
             _storedResult = CookingResult.Overcooked;
-            StartCoroutine(StartHeatingProcess(currentDish.heatTime, _storedResult, currentDish));
+            StartCoroutine(StartHeatingProcess(5, _storedResult, currentDish));
         }
     }
 
