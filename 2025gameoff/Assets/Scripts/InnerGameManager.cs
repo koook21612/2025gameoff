@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InnerGameManager : MonoBehaviour
@@ -6,10 +8,10 @@ public class InnerGameManager : MonoBehaviour
     public bool isPlaying = false;
 
     public int days = 0;
-    private int currentGold = 50; // 初始金币
-    private int currentReputation = 3; // 初始声望
-    private int maxReputation = 3; // 声望上限
-    private int completedCustomers = 0; // 完成的顾客数量
+    public int currentGold = 50; // 初始金币
+    public int currentReputation = 3; // 初始声望
+    public int maxReputation = 3; // 声望上限
+    public int completedCustomers = 0; // 完成的顾客数量
 
 
     private object goldLock = new object();//线程锁，防止并发冲突
@@ -24,7 +26,8 @@ public class InnerGameManager : MonoBehaviour
 
     [Header("商店设置")]
     public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // 菜品池
-    public List<EquipmentDataSO> equipmentPool = new List<EquipmentDataSO>(); // 装备池
+    public List<EquipmentDataSO> rarePool = new List<EquipmentDataSO>();
+    public List<EquipmentDataSO> commonPool = new List<EquipmentDataSO>();
     public int storeEquipmentCount = 3; // 商店装备数量
     public int storeIngredientMinCount = 9; // 商店菜品最小数量
     public int storeIngredientMaxCount = 15; // 商店菜品最大数量
@@ -44,15 +47,10 @@ public class InnerGameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-    }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        GameStart();
     }
 
     //游戏开始
@@ -67,8 +65,9 @@ public class InnerGameManager : MonoBehaviour
         perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
 
         refreshCount = 0;
-        days = 1;
+        days = 0;
 
+        UpdateUI();
         EnterStore();
     }
 
@@ -81,16 +80,19 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
+        if (days == 7)
+        {
+            GameOver();
+        }
+        days++;
+        UpdateUI();
         isPlaying = false;
+        InitializeStoreContent();
     }
 
     // 新的一天开始
     public void StartNewDay()
     {
-        if (days == 7)
-        {
-            GameOver();
-        }
         if (LatterMicrowavesCount > 0)
         {
             MicrowavesCount += LatterMicrowavesCount;
@@ -100,16 +102,24 @@ public class InnerGameManager : MonoBehaviour
         {
 
         }
-        days++;
         isPlaying = true;
+        StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
     }
 
     // === 金币操作 ===
     public void AddGold(int amount)
     {
         currentGold += amount;
+        UpdateUI();
     }
-
+    public bool HasEnoughGold(int amount)
+    {
+        if (currentGold >= amount)
+        {
+            return true;
+        }
+        return false;
+    }
     public bool SpendGold(int amount)
     {
         lock (goldLock)
@@ -117,6 +127,7 @@ public class InnerGameManager : MonoBehaviour
             if (currentGold >= amount)
             {
                 currentGold -= amount;
+                UpdateUI();
                 return true;
             }
             return false;
@@ -127,7 +138,7 @@ public class InnerGameManager : MonoBehaviour
     public void LoseReputation()
     {
         currentReputation = Mathf.Max(0, currentReputation - 1);
-
+        UpdateUI();
         // 检查游戏结束
         if (currentReputation <= 0)
         {
@@ -153,6 +164,15 @@ public class InnerGameManager : MonoBehaviour
                 GameManager.Instance.AddTalentPoint(1);
                 Debug.Log($"声望已满，获得小费: {tipReward}和1天赋点");
             }
+            UpdateUI();
+        }
+    }
+
+    private void UpdateUI()
+    {
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateDayAndReputationDisplay();
         }
     }
 
@@ -191,67 +211,66 @@ public class InnerGameManager : MonoBehaviour
             return;
         }
 
-        // 随机选择装备
-        List<EquipmentDataSO> randomEquipments = GetRandomEquipments(storeEquipmentCount);
+        // 随机选择 4 个升级模块（3 普通 + 1 稀有 ）
+        List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
 
-        // 随机选择菜品
-        int ingredientCount = Random.Range(storeIngredientMinCount, storeIngredientMaxCount + 1);
-        List<IngredientScriptObjs> randomIngredients = GetRandomIngredients(ingredientCount);
+        // 冰柜中放入已经解锁的所有原料（无限量供给）
+        List<IngredientScriptObjs> allIngredients = new List<IngredientScriptObjs>(ingredientPool);
 
         // 设置商店内容
-        StoreManager.Instance.SetStoreContents(randomEquipments, randomIngredients);
-
+        StoreManager.Instance.SetStoreContents(randomEquipments, allIngredients);
     }
 
     // 随机获取装备
-    private List<EquipmentDataSO> GetRandomEquipments(int count)
+    private List<EquipmentDataSO> GetRandomEquipments()
     {
-        List<EquipmentDataSO> result = new List<EquipmentDataSO>();
+        List<EquipmentDataSO> result = new List<EquipmentDataSO>(storeEquipmentCount);
 
-        if (equipmentPool.Count == 0)
+        if ((commonPool == null || commonPool.Count == 0) && (rarePool == null || rarePool.Count == 0))
         {
             return result;
         }
 
-        // 创建临时列表用于随机抽取
-        List<EquipmentDataSO> tempPool = new List<EquipmentDataSO>(equipmentPool);
+        System.Random rng = new System.Random();
 
-        for (int i = 0; i < count && tempPool.Count > 0; i++)
+        //  1 个稀有
+        EquipmentDataSO rarePick = null;
+        if (rarePool != null && rarePool.Count > 0)
         {
-            EquipmentDataSO randomEquipment = tempPool.Draw();
-            if (randomEquipment != null)
+            rarePick = rarePool[rng.Next(rarePool.Count)];
+        }
+        if (rarePick != null) result.Add(rarePick);
+
+        // 再抽取 3 个普通
+        int commonNeeded = Mathf.Max(0, storeEquipmentCount - result.Count);
+        if (commonPool == null) commonPool = new List<EquipmentDataSO>();
+
+        if (commonPool.Count >= commonNeeded && commonPool.Count > 0)
+        {
+            List<EquipmentDataSO> copy = new List<EquipmentDataSO>(commonPool);
+            for (int i = 0; i < commonNeeded; i++)
             {
-                result.Add(randomEquipment);
+                int idx = rng.Next(copy.Count);
+                result.Add(copy[idx]);
+                copy.RemoveAt(idx);
             }
         }
+        else if (commonPool.Count > 0)
+        {
+            // 元素不足时，使用有放回抽取补足
+            for (int i = 0; i < commonNeeded; i++)
+            {
+                int idx = rng.Next(commonPool.Count);
+                result.Add(commonPool[idx]);
+            }
+        }
+
+        // 打乱顺序
+        result = result.OrderBy(x => rng.Next()).ToList();
 
         return result;
     }
 
-    // 随机获取菜品
-    private List<IngredientScriptObjs> GetRandomIngredients(int count)
-    {
-        List<IngredientScriptObjs> result = new List<IngredientScriptObjs>();
-
-        if (ingredientPool.Count == 0)
-        {
-            Debug.LogWarning("菜品池为空！");
-            return result;
-        }
-
-        List<IngredientScriptObjs> tempPool = new List<IngredientScriptObjs>(ingredientPool);
-
-        for (int i = 0; i < count && tempPool.Count > 0; i++)
-        {
-            IngredientScriptObjs randomIngredient = tempPool.Draw();
-            if (randomIngredient != null)
-            {
-                result.Add(randomIngredient);
-            }
-        }
-
-        return result;
-    }
 
     // 刷新装备
     public bool RefreshEquipment()
@@ -261,7 +280,7 @@ public class InnerGameManager : MonoBehaviour
         if (SpendGold(refreshPrice))
         {
 
-            List<EquipmentDataSO> randomEquipments = GetRandomEquipments(storeEquipmentCount);
+            List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
             StoreManager.Instance.SetStoreEquipments(randomEquipments);
 
             refreshCount++;

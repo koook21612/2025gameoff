@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class TalentTree : MonoBehaviour
 {
@@ -222,7 +223,7 @@ public class TalentTree : MonoBehaviour
 
     private void CloseTalentTree()
     {
-        
+        SceneManager.LoadScene(GameManager.Instance.currentScene);
     }
 
     [ContextMenu("刷新节点列表")]

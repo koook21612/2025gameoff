@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
+
         GameManager.Instance.currentScene = Constants.MENU_SCENE;
         isStart = false;
         MenuButtonAddListener();
