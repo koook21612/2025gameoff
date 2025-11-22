@@ -8,10 +8,10 @@ public class InnerGameManager : MonoBehaviour
     public bool isPlaying = false;
 
     public int days = 0;
-    private int currentGold = 50; // 初始金币
-    private int currentReputation = 3; // 初始声望
-    private int maxReputation = 3; // 声望上限
-    private int completedCustomers = 0; // 完成的顾客数量
+    public int currentGold = 50; // 初始金币
+    public int currentReputation = 3; // 初始声望
+    public int maxReputation = 3; // 声望上限
+    public int completedCustomers = 0; // 完成的顾客数量
 
 
     private object goldLock = new object();//线程锁，防止并发冲突
@@ -47,15 +47,10 @@ public class InnerGameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-    }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        GameStart();
     }
 
     //游戏开始
@@ -70,8 +65,9 @@ public class InnerGameManager : MonoBehaviour
         perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
 
         refreshCount = 0;
-        days = 1;
+        days = 0;
 
+        UpdateUI();
         EnterStore();
     }
 
@@ -84,16 +80,19 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
+        if (days == 7)
+        {
+            GameOver();
+        }
+        days++;
+        UpdateUI();
         isPlaying = false;
+        InitializeStoreContent();
     }
 
     // 新的一天开始
     public void StartNewDay()
     {
-        if (days == 7)
-        {
-            GameOver();
-        }
         if (LatterMicrowavesCount > 0)
         {
             MicrowavesCount += LatterMicrowavesCount;
@@ -103,16 +102,24 @@ public class InnerGameManager : MonoBehaviour
         {
 
         }
-        days++;
         isPlaying = true;
+        StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
     }
 
     // === 金币操作 ===
     public void AddGold(int amount)
     {
         currentGold += amount;
+        UpdateUI();
     }
-
+    public bool HasEnoughGold(int amount)
+    {
+        if (currentGold >= amount)
+        {
+            return true;
+        }
+        return false;
+    }
     public bool SpendGold(int amount)
     {
         lock (goldLock)
@@ -120,6 +127,7 @@ public class InnerGameManager : MonoBehaviour
             if (currentGold >= amount)
             {
                 currentGold -= amount;
+                UpdateUI();
                 return true;
             }
             return false;
@@ -130,7 +138,7 @@ public class InnerGameManager : MonoBehaviour
     public void LoseReputation()
     {
         currentReputation = Mathf.Max(0, currentReputation - 1);
-
+        UpdateUI();
         // 检查游戏结束
         if (currentReputation <= 0)
         {
@@ -156,6 +164,15 @@ public class InnerGameManager : MonoBehaviour
                 GameManager.Instance.AddTalentPoint(1);
                 Debug.Log($"声望已满，获得小费: {tipReward}和1天赋点");
             }
+            UpdateUI();
+        }
+    }
+
+    private void UpdateUI()
+    {
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateDayAndReputationDisplay();
         }
     }
 
