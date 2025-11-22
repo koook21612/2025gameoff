@@ -30,6 +30,10 @@ public class PlayerInteraction : MonoBehaviour
     // 射线检测的最大距离
     public float rayDistance = 5f;
 
+    // 观察冷却时间控制
+    private bool canInteract = true;
+    private float interactionCooldown = 1f; // 1秒冷却时间
+
     public static PlayerInteraction instance { get; private set; }
     private void Awake()
     {
@@ -41,14 +45,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     void Start()
     {
         myCam = Camera.main;
-
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -62,14 +65,21 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (canFinish)
             {
-                if (Input.GetMouseButton(0) || Input.GetKeyUp(KeyCode.Escape))
+                if (Input.GetMouseButton(1) || Input.GetKeyUp(KeyCode.Escape))
                 {
                     FinishView();
                 }
             }
-
             return;
         }
+
+        // 检查是否在冷却时间内
+        if (!canInteract)
+        {
+            UIManager.instance.SetHandCursor(false);
+            return;
+        }
+
         RaycastHit hit;
         Vector3 rayOrigin = myCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.5f));
         Vector3 rayDirection = myCam.transform.forward * rayDistance;
@@ -110,7 +120,10 @@ public class PlayerInteraction : MonoBehaviour
 
     void StartView()
     {
+        // 设置不能交互状态
+        canInteract = false;
         isViewing = true;
+        canFinish = true;
         originPosition = myCam.transform.position;
         originRotation = myCam.transform.rotation;
         onView.Invoke();
@@ -118,7 +131,6 @@ public class PlayerInteraction : MonoBehaviour
         StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
             UIManager.instance.SetPanel(currentInteractable.item.Function, true);
         }));
-        //currentInteractable.onInteract.Invoke();
     }
 
     void FinishView()
@@ -126,11 +138,20 @@ public class PlayerInteraction : MonoBehaviour
         canFinish = false;
         isViewing = false;
         UIManager.instance.SetPanel(currentInteractable.item.Function, false);
-        StartCoroutine(MovingCamera(originPosition, originRotation,()=> { UIManager.instance.SetAim(true); }));
-
-        onFinishView.Invoke();
+        StartCoroutine(MovingCamera(originPosition, originRotation, () => {
+            UIManager.instance.SetAim(true);
+            onFinishView.Invoke();
+            // 开始冷却计时
+            StartCoroutine(InteractionCooldown());
+        }));
     }
 
+    // 交互冷却协程
+    IEnumerator InteractionCooldown()
+    {
+        yield return new WaitForSeconds(interactionCooldown);
+        canInteract = true;
+    }
 
     IEnumerator MovingCamera(Vector3 targetPosition, Quaternion targetRotation, System.Action onComplete = null)
     {

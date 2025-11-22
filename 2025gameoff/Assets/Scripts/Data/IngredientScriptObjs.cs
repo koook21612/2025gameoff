@@ -6,5 +6,5 @@ public class IngredientScriptObjs : ScriptableObject
     [Tooltip("原料名称")]
     public string ingredientName;
     [Tooltip("售价")]
-    public float ingredientPrice;
+    public int ingredientPrice;
 }

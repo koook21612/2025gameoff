@@ -9,7 +9,7 @@ public class EquipmentDataSO : ScriptableObject
     [Tooltip("装备名称")]
     public string equipmentName;
     [Tooltip("售价")]
-    public float equipmentPrice;
+    public int equipmentPrice;
     [TextArea]
     public string description;
 }
