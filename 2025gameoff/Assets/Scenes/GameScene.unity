@@ -247,9 +247,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1396957560}
+  - {fileID: 272257689}
   - {fileID: 95676238}
   - {fileID: 658528768}
-  - {fileID: 272257689}
   - {fileID: 1282208313}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3969,7 +3969,7 @@ MonoBehaviour:
   m_StickToGroundForce: 10
   m_GravityMultiplier: 2
   m_HeadBob:
-    HorizontalBobRange: 0.05
+    HorizontalBobRange: 0.03
     VerticalBobRange: 0.03
     Bobcurve:
       serializedVersion: 2
@@ -4053,7 +4053,7 @@ MonoBehaviour:
   onFinishView:
     m_PersistentCalls:
       m_Calls: []
-  cameraMoveSpeed: 2
+  cameraMoveSpeed: 5
   rayDistance: 7
 --- !u!1 &1271658182
 GameObject:

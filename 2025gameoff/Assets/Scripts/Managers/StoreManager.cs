@@ -60,6 +60,7 @@ public class StoreManager : MonoBehaviour
             if (ingredient != null)
             {
                 ingredientPrices[ingredient] = ingredient.ingredientPrice;
+                Debug.Log(ingredient.ingredientPrice);
             }
         }
     }
@@ -163,12 +164,6 @@ public class StoreManager : MonoBehaviour
 
         pendingIngredientPurchases.Clear();
         Debug.Log("所有原料已入库");
-    }
-
-    // 获取购物车中原料的数量
-    public int GetIngredientInCartQuantity(IngredientScriptObjs ingredient)
-    {
-        return pendingIngredientPurchases.ContainsKey(ingredient) ? pendingIngredientPurchases[ingredient] : 0;
     }
 
     // 获取购物车总价

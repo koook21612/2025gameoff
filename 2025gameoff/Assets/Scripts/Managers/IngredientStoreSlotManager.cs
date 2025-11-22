@@ -2,12 +2,13 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 
 // 原料商店槽位管理器
 public class IngredientStoreSlotManager : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private List<IngredientStoreSlot> slots = new List<IngredientStoreSlot>(); // 序列化字段，通过Unity拖拽赋值
+    [SerializeField] private List<IngredientStoreSlot> slots = new List<IngredientStoreSlot>();
 
     [Header("Store Settings")]
     public int maxSlots = 5; // 最大槽位数量
@@ -38,7 +39,16 @@ public class IngredientStoreSlotManager : MonoBehaviour
     {
         // 从StoreManager获取可用的原料
         availableIngredients = StoreManager.Instance.availableIngredients;
+        for (int i = 0; i < availableIngredients.Count; i++)
+        {
+            IngredientScriptObjs ingredient = availableIngredients[i];
 
+            // 输出原料的基本信息
+            string ingredientInfo = $"原料 {i + 1}: ";
+            ingredientInfo += $"名称: {ingredient.ingredientName}";
+
+            Debug.Log(ingredientInfo);
+        }
         // 初始化槽位
         InitializeSlots();
 

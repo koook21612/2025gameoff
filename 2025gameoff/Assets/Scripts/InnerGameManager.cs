@@ -48,6 +48,11 @@ public class InnerGameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Start()
+    {
+        GameStart();
+    }
+
     //ÓÎÏ·¿ªÊ¼
     public void GameStart()
     {
