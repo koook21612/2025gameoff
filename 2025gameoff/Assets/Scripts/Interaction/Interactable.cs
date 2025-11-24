@@ -11,4 +11,6 @@ public class Interactable : MonoBehaviour
     public Item item;
     public UnityEvent onInteract;
 
+    [Header("交互设置")]
+    public bool isInstantInteract = false;//如果勾选，点击后直接触发事件，不移动相机
 }

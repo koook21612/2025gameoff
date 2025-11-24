@@ -5,14 +5,22 @@ using System.Linq;
 // 商店系统
 public class StoreManager : MonoBehaviour
 {
-    public List<IngredientScriptObjs> availableIngredients; // 可购买的原料列表
-    public List<EquipmentDataSO> availableEquipments; // 可购买的装备列表
-
-    private Dictionary<IngredientScriptObjs, int> ingredientPrices = new Dictionary<IngredientScriptObjs, int>();//原料价格
-    private Dictionary<EquipmentDataSO, int> equipmentPrices = new Dictionary<EquipmentDataSO, int>();
+    [Header("原料池配置")]
+    public List<IngredientScriptObjs> availableIngredients; // 已解锁原料
 
     // 原料商店相关
     private Dictionary<IngredientScriptObjs, int> pendingIngredientPurchases = new Dictionary<IngredientScriptObjs, int>(); // 待入库的原料
+
+    [Header("装备池配置")]
+    //public List<EquipmentDataSO> availableEquipments; // 可购买的装备列表
+    public List<EquipmentDataSO> commonEquipmentPool; // 普通装备池
+    public List<EquipmentDataSO> rareEquipmentPool;   // 稀有装备池
+
+    [Header("装备商店状态")]
+    public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的4个装备
+    public int refreshCount = 0; // 刷新次数(k)
+    public int newMicrowavePrice = 200; // 微波炉价格
+
 
     public static StoreManager Instance { get; private set; }
 
@@ -29,53 +37,54 @@ public class StoreManager : MonoBehaviour
     }
 
     // 设置商店内容
-    public void SetStoreContents(List<EquipmentDataSO> equipments, List<IngredientScriptObjs> ingredients)
+    public void SetStoreContents(List<IngredientScriptObjs> ingredients)
     {
-        availableEquipments = equipments;
+        //currentShelfEquipments = equipments;
         availableIngredients = ingredients;
-        InitializePrices();
+        //InitializePrices();
+        GenerateShelfItems();
         IngredientStoreSlotManager.Instance.InitializeStore();
     }
 
     // 只设置商店装备
     public void SetStoreEquipments(List<EquipmentDataSO> equipments)
     {
-        availableEquipments = equipments;
-        InitializeEquipmentPrices();
+        currentShelfEquipments = equipments;
+        //InitializeEquipmentPrices();
     }
 
-    // 设置价格
-    private void InitializePrices()
-    {
-        InitializeIngredientPrices();
-        InitializeEquipmentPrices();
-    }
+    //// 设置价格
+    //private void InitializePrices()
+    //{
+    //    InitializeIngredientPrices();
+    //    InitializeEquipmentPrices();
+    //}
 
-    //设置原料价格
-    private void InitializeIngredientPrices()
-    {
-        ingredientPrices.Clear();
-        foreach (var ingredient in availableIngredients)
-        {
-            if (ingredient != null)
-            {
-                ingredientPrices[ingredient] = ingredient.ingredientPrice;
-                Debug.Log(ingredient.ingredientPrice);
-            }
-        }
-    }
+    ////设置原料价格
+    //private void InitializeIngredientPrices()
+    //{
+    //    ingredientPrices.Clear();
+    //    foreach (var ingredient in availableIngredients)
+    //    {
+    //        if (ingredient != null)
+    //        {
+    //            ingredientPrices[ingredient] = ingredient.ingredientPrice;
+    //            Debug.Log(ingredient.ingredientPrice);
+    //        }
+    //    }
+    //}
 
-    private void InitializeEquipmentPrices()
-    {
-        equipmentPrices.Clear();
-        foreach (var equipment in availableEquipments)
-        {
-            if (equipment != null)
-            {
-                equipmentPrices[equipment] = equipment.equipmentPrice;
-            }
-        }
-    }
+    //private void InitializeEquipmentPrices()
+    //{
+    //    equipmentPrices.Clear();
+    //    foreach (var equipment in availableEquipments)
+    //    {
+    //        if (equipment != null)
+    //        {
+    //            equipmentPrices[equipment] = equipment.equipmentPrice;
+    //        }
+    //    }
+    //}
 
     // ========== 原料商店相关方法 ==========
 
@@ -84,13 +93,7 @@ public class StoreManager : MonoBehaviour
     {
         if (ingredient == null || quantity <= 0) return false;
 
-        if (!ingredientPrices.ContainsKey(ingredient))
-        {
-            Debug.LogWarning($"商店中未找到原料: {ingredient.ingredientName}");
-            return false;
-        }
-
-        int totalCost = ingredientPrices[ingredient] * quantity;
+        int totalCost = ingredient.ingredientPrice * quantity;
 
         // 检查金币是否足够
         if (InnerGameManager.Instance.HasEnoughGold(totalCost))
@@ -124,7 +127,7 @@ public class StoreManager : MonoBehaviour
 
         if (pendingIngredientPurchases.ContainsKey(ingredient) && pendingIngredientPurchases[ingredient] >= quantity)
         {
-            int refundAmount = ingredientPrices[ingredient] * quantity;
+            int refundAmount = ingredient.ingredientPrice * quantity;
             pendingIngredientPurchases[ingredient] -= quantity;
 
             // 返还金币
@@ -172,7 +175,10 @@ public class StoreManager : MonoBehaviour
         int total = 0;
         foreach (var purchase in pendingIngredientPurchases)
         {
-            total += ingredientPrices[purchase.Key] * purchase.Value;
+            if (purchase.Key != null)
+            {
+                total += purchase.Key.ingredientPrice * purchase.Value;
+            }
         }
         return total;
     }
@@ -191,17 +197,27 @@ public class StoreManager : MonoBehaviour
 
     // ========== 装备商店相关方法 ==========
 
+    // 购买新微波炉
+    public void BuyMicrowave()
+    {
+        if (InnerGameManager.Instance.SpendGold(newMicrowavePrice))
+        {
+            InnerGameManager.Instance.MicrowavesCount++;
+
+            Debug.Log($"购买成功！当前微波炉数量: {InnerGameManager.Instance.MicrowavesCount}");
+        }
+        else
+        {
+            Debug.LogWarning("金币不足，无法购买微波炉");
+        }
+    }
+
     // 购买装备
     public bool BuyEquipment(EquipmentDataSO equipment)
     {
         if (equipment == null) return false;
 
-        if (!equipmentPrices.ContainsKey(equipment))
-        {
-            return false;
-        }
-
-        int cost = equipmentPrices[equipment];
+        int cost = equipment.equipmentPrice;
 
         // 检查金币是否足够
         if (InnerGameManager.Instance.SpendGold(cost))
@@ -224,18 +240,82 @@ public class StoreManager : MonoBehaviour
     // 获取原料价格
     public int GetIngredientPrice(IngredientScriptObjs ingredient)
     {
-        return ingredientPrices.ContainsKey(ingredient) ? ingredientPrices[ingredient] : 0;
+        return ingredient != null ? ingredient.ingredientPrice : 0;
     }
 
     // 获取装备价格
     public int GetEquipmentPrice(EquipmentDataSO equipment)
     {
-        return equipmentPrices.ContainsKey(equipment) ? equipmentPrices[equipment] : 0;
+        return equipment != null ? equipment.equipmentPrice : 0;
     }
 
     // 刷新商店装备
     public void RefreshStoreItems()
     {
-        InnerGameManager.Instance.RefreshEquipment();
+        TryRefreshShelf();
+    }
+
+    public void TryRefreshShelf()
+    {
+        int cost = GetRefreshCost();
+        if (InnerGameManager.Instance.SpendGold(cost))
+        {
+            refreshCount++;
+            GenerateShelfItems();
+            Debug.Log("商店刷新成功！");
+            //这里可能需要调用一个事件或UI刷新方法来更新界面显示？
+        }
+        else
+        {
+            Debug.Log("金币不足！");
+        }
+    }
+
+    // 计算当前刷新所需的金币
+    public int GetRefreshCost()
+    {
+        int n = InnerGameManager.Instance.days;
+        int k = refreshCount;
+
+        int cost = 5 * (int)Mathf.Pow(2, k) + 5 * n;
+
+        return cost;
+    }
+
+    //生成商品
+    public void GenerateShelfItems()
+    {
+        currentShelfEquipments.Clear();
+
+        //抽取稀有装备1个
+        if (rareEquipmentPool != null && rareEquipmentPool.Count > 0)
+        {
+            int rareIndex = UnityEngine.Random.Range(0, rareEquipmentPool.Count);
+            currentShelfEquipments.Add(rareEquipmentPool[rareIndex]);
+        }
+
+        //抽取普通装备3个
+        if (commonEquipmentPool != null && commonEquipmentPool.Count > 0)
+        {
+            List<EquipmentDataSO> temporaryPool = new List<EquipmentDataSO>(commonEquipmentPool);
+
+            int countToDraw = Mathf.Min(3, temporaryPool.Count);
+
+            for (int i = 0; i < countToDraw; i++)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, temporaryPool.Count);
+                currentShelfEquipments.Add(temporaryPool[randomIndex]);
+                temporaryPool.RemoveAt(randomIndex);
+            }
+        }
+
+        ////如果需要打乱装备顺序
+        //for (int i = 0; i < currentShelfEquipments.Count; i++)
+        //{
+        //    int randomIndex = UnityEngine.Random.Range(i, currentShelfEquipments.Count);
+        //    EquipmentDataSO temp = currentShelfEquipments[i];
+        //    currentShelfEquipments[i] = currentShelfEquipments[randomIndex];
+        //    currentShelfEquipments[randomIndex] = temp;
+        //}
     }
 }
