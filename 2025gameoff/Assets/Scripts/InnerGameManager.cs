@@ -7,7 +7,7 @@ public class InnerGameManager : MonoBehaviour
 {
     public bool isPlaying = false;
 
-    public int days = 0;
+    public int days = 0;//天数
     public int currentGold = 50; // 初始金币
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
@@ -15,7 +15,6 @@ public class InnerGameManager : MonoBehaviour
 
 
     private object goldLock = new object();//线程锁，防止并发冲突
-    public CustomerManager customerManager;//顾客系统
 
     // 微波炉升级相关
     [Header("微波炉升级")]
@@ -29,12 +28,18 @@ public class InnerGameManager : MonoBehaviour
     public List<EquipmentDataSO> rarePool = new List<EquipmentDataSO>();
     public List<EquipmentDataSO> commonPool = new List<EquipmentDataSO>();
     public int storeEquipmentCount = 3; // 商店装备数量
-    public int storeIngredientMinCount = 9; // 商店菜品最小数量
-    public int storeIngredientMaxCount = 15; // 商店菜品最大数量
-
+    public List<DishScriptObjs> dishPool = new List<DishScriptObjs>();
     // 刷新功能相关
     private int refreshCount = 0; // 刷新次数
     private int baseRefreshPrice = 10; // 基础刷新价格
+
+    [Header("统计信息")]
+    public int totalIncome = 0; // 总收入
+    public int totalServedOrders = 0; // 总出餐数
+
+    [Header("总菜品池和原料池")]
+    public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // 总菜品池（所有菜品）
+    public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
 
     public static InnerGameManager Instance;
     private void Awake() {
@@ -85,9 +90,12 @@ public class InnerGameManager : MonoBehaviour
             GameOver();
         }
         days++;
+        UnlockDishesAndIngredientsByDay();
+        UIManager.instance.UpdateMenuDisplay();
         UpdateUI();
         isPlaying = false;
-        InitializeStoreContent();
+        CustomerManager.Instance.InitializeDailyCustomers();
+        InitializeStoreContent();//初始化商店
     }
 
     // 新的一天开始
@@ -98,12 +106,56 @@ public class InnerGameManager : MonoBehaviour
             MicrowavesCount += LatterMicrowavesCount;
             LatterMicrowavesCount = 0;
         }
-        if(customerManager != null)
-        {
-
-        }
+        CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
+    }
+
+    //更新解锁
+    private void UnlockDishesAndIngredientsByDay()
+    {
+        if (days > 3)
+        {
+            return;
+        }
+        // 清空当前池子
+        dishPool.Clear();
+        ingredientPool.Clear();
+
+        // 根据天数解锁菜品
+        int dishesToUnlock = 0;
+        if (days == 1) dishesToUnlock = 3;
+        else if (days == 2) dishesToUnlock = 5;
+        else if (days == 3) dishesToUnlock = 7;
+        else if (days >= 4) dishesToUnlock = Mathf.Min(9, totalDishPool.Count);
+
+        for (int i = 0; i < dishesToUnlock && i < totalDishPool.Count; i++)
+        {
+            dishPool.Add(totalDishPool[i]);
+        }
+
+        // 根据天数解锁原料
+        int ingredientsToUnlock = 0;
+        if (days == 1 || days == 2) ingredientsToUnlock = 3;
+        else if (days == 3) ingredientsToUnlock = 4;
+        else if (days >= 4) ingredientsToUnlock = Mathf.Min(5, totalIngredientPool.Count);
+
+        for (int i = 0; i < ingredientsToUnlock && i < totalIngredientPool.Count; i++)
+        {
+            ingredientPool.Add(totalIngredientPool[i]);
+        }
+
+        Debug.Log($"第{days}天解锁: {dishesToUnlock}个菜品, {ingredientsToUnlock}个原料");
+    }
+
+
+    public void AddDailyIncome(int income)
+    {
+        totalIncome += income;
+    }
+    public void AddDailyServedOrders(int servedOrders)
+    {
+        totalServedOrders += servedOrders;
     }
 
     // === 金币操作 ===

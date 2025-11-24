@@ -10,5 +10,4 @@ public class Interactable : MonoBehaviour
 {
     public Item item;
     public UnityEvent onInteract;
-
 }

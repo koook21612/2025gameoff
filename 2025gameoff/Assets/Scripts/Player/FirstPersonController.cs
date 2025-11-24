@@ -199,7 +199,6 @@ public class FirstPersonController : MonoBehaviour
 
     public void DisableController()
     {
-        Debug.Log("启用禁止移动");
         m_IsEnabled = false;
 
         // 重置移动方向，防止惯性移动

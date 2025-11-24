@@ -28,7 +28,6 @@ public class SettingManager : MonoBehaviour
     private int currentLanguageIndex = 0; // 当前语言索引
     private string currentLanguage; // 当前语言代码
 
-
     public TextMeshProUGUI resolutionLabelText; // 分辨率设置标签
     public TextMeshProUGUI fullscreenLabelText; // 全屏设置标签  
     public TextMeshProUGUI masterVolumeLabelText; // 主音量标签
@@ -56,7 +55,24 @@ public class SettingManager : MonoBehaviour
     {
         AddListener();
         Initialization();
+    }
 
+    // 新增：OnEnable时添加监听器
+    void OnEnable()
+    {
+        AddListener();
+    }
+
+    // 新增：OnDisable时移除监听器
+    void OnDisable()
+    {
+        RemoveListener();
+    }
+
+    // 新增：OnDestroy时移除监听器
+    void OnDestroy()
+    {
+        RemoveListener();
     }
 
     void AddListener()
@@ -70,6 +86,20 @@ public class SettingManager : MonoBehaviour
         musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
         effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
         LanguageButton.onClick.AddListener(UpdateLanguage);
+    }
+
+    // 新增：移除所有监听器
+    void RemoveListener()
+    {
+        fullscreenToggle.onValueChanged.RemoveListener(SetDisplayMode);
+        resolutionDropdown.onValueChanged.RemoveListener(SetResolution);
+        closeButton.onClick.RemoveListener(CloseSetting);
+        defaultButton.onClick.RemoveListener(ResetSetting);
+
+        masterVolumeSlider.onValueChanged.RemoveListener(SetMasterVolume);
+        musicVolumeSlider.onValueChanged.RemoveListener(SetMusicVolume);
+        effectVolumeSlider.onValueChanged.RemoveListener(SetEffectVolume);
+        LanguageButton.onClick.RemoveListener(UpdateLanguage);
     }
 
     void Initialization()
@@ -177,7 +207,7 @@ public class SettingManager : MonoBehaviour
     }
     private float SliderValueToDecibel(float value)
     {
-        return value > 0.0001f ? Mathf.Log10(value) * 20f : - 80f;
+        return value > 0.0001f ? Mathf.Log10(value) * 20f : -80f;
     }
 
     void SetMasterVolume(float value)

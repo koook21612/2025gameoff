@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro; // 添加这个命名空间
 using static UnityEditor.Progress;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -21,6 +23,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI reputationText; // 声望显示文本
     [SerializeField] private TextMeshProUGUI moneyText; // 金钱显示文本
 
+    [Header("Menu")]
+    [SerializeField] private TextMeshProUGUI[] Menu = new TextMeshProUGUI[6];
+    private List<DishScriptObjs> currentDisplayedDishes = new List<DishScriptObjs>();
+    [SerializeField] private Button ContinueGame;
+
     private void Awake()
     {
         if (instance == null)
@@ -31,6 +38,20 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private void Start()
+    {
+        ContinueGame.onClick.AddListener(StartGame);
+    }
+    void OnDestroy()
+    {
+        ContinueGame.onClick.RemoveListener(StartGame);
+    }
+
+    public void StartGame()
+    {
+        InnerGameManager.Instance.StartNewDay();
+        PlayerInteraction.instance.FinishView();
     }
 
     public void SetAim(bool state)
@@ -111,10 +132,6 @@ public class UIManager : MonoBehaviour
         {
             dayText.text = $"第{currentDay}天";
         }
-        else
-        {
-            Debug.LogWarning("天数文本引用未设置");
-        }
     }
 
     public void UpdateMoneyText(int currentMoney)
@@ -122,10 +139,6 @@ public class UIManager : MonoBehaviour
         if (moneyText != null)
         {
             moneyText.text = $"金币：{currentMoney}";
-        }
-        else
-        {
-            Debug.LogWarning("天数文本引用未设置");
         }
     }
 
@@ -136,9 +149,86 @@ public class UIManager : MonoBehaviour
         {
             reputationText.text = $"声望：{currentReputation}/{maxReputation}";
         }
-        else
+    }
+
+    //设置
+    public void UpdateMenuDisplay()
+    {
+        if (InnerGameManager.Instance == null) return;
+
+        // 获取当前解锁的菜品
+        currentDisplayedDishes = new List<DishScriptObjs>(InnerGameManager.Instance.dishPool);
+
+        // 更新每个菜单项的显示
+        for (int i = 0; i < Menu.Length; i++)
         {
-            Debug.LogWarning("声望文本引用未设置");
+            if (Menu[i] != null)
+            {
+                if (i < currentDisplayedDishes.Count)
+                {
+                    // 显示菜品信息
+                    DishScriptObjs dish = currentDisplayedDishes[i];
+                    string formattedText = FormatDishInfo(dish);
+                    Menu[i].text = formattedText;
+                    Menu[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    // 隐藏多余的菜单项
+                    Menu[i].gameObject.SetActive(false);
+                }
+            }
         }
     }
+
+    // 格式化菜品信息
+    private string FormatDishInfo(DishScriptObjs dish)
+    {
+        if (dish == null) return "未知菜品";
+
+        string dishName = dish.dishName;
+        string recipeText = "配方：";
+
+        // 统计配料的数量
+        Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
+        foreach (var ingredient in dish.recipe)
+        {
+            if (ingredient != null)
+            {
+                string ingredientName = ingredient.ingredientName;
+                if (ingredientCounts.ContainsKey(ingredientName))
+                {
+                    ingredientCounts[ingredientName]++;
+                }
+                else
+                {
+                    ingredientCounts[ingredientName] = 1;
+                }
+            }
+        }
+
+        // 构建配方字符串
+        bool firstIngredient = true;
+        foreach (var kvp in ingredientCounts)
+        {
+            if (!firstIngredient)
+            {
+                recipeText += "+";
+            }
+
+            if (kvp.Value > 1)
+            {
+                recipeText += $"{kvp.Key}x{kvp.Value}";
+            }
+            else
+            {
+                recipeText += kvp.Key;
+            }
+
+            firstIngredient = false;
+        }
+
+        return $"{dishName}\n{recipeText}";
+    }
+
 }
