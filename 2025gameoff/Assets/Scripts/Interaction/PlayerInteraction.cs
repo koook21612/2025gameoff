@@ -34,6 +34,7 @@ public class PlayerInteraction : MonoBehaviour
     private bool canInteract = true;
     private float interactionCooldown = 1f; // 1秒冷却时间
 
+    public RectTransform menu;
     public static PlayerInteraction instance { get; private set; }
     private void Awake()
     {
@@ -55,6 +56,7 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         CheckInteractables();
     }
 
@@ -120,20 +122,37 @@ public class PlayerInteraction : MonoBehaviour
 
     void StartView()
     {
-        // 设置不能交互状态
-        canInteract = false;
-        isViewing = true;
-        canFinish = true;
-        originPosition = myCam.transform.position;
-        originRotation = myCam.transform.rotation;
-        onView.Invoke();
-        UIManager.instance.SetAim(false);
-        StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
-            UIManager.instance.SetPanel(currentInteractable.item.Function, true);
-        }));
+        if(currentInteractable.item.state && InnerGameManager.Instance.isPlaying)
+        {
+            // 设置不能交互状态
+            canInteract = false;
+            isViewing = true;
+            canFinish = true;
+            originPosition = myCam.transform.position;
+            originRotation = myCam.transform.rotation;
+            onView.Invoke();
+            UIManager.instance.SetAim(false);
+            StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
+                UIManager.instance.SetPanel(currentInteractable.item.Function, true);
+            }));
+        }
+        if (!currentInteractable.item.state && !InnerGameManager.Instance.isPlaying)
+        {
+            // 设置不能交互状态
+            canInteract = false;
+            isViewing = true;
+            canFinish = true;
+            originPosition = myCam.transform.position;
+            originRotation = myCam.transform.rotation;
+            onView.Invoke();
+            UIManager.instance.SetAim(false);
+            StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
+                UIManager.instance.SetPanel(currentInteractable.item.Function, true);
+            }));
+        }
     }
 
-    void FinishView()
+    public void FinishView()
     {
         canFinish = false;
         isViewing = false;

@@ -9,11 +9,14 @@ public class IngredientStoreSlotManager : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private List<IngredientStoreSlot> slots = new List<IngredientStoreSlot>();
+    [SerializeField] private TextMeshProUGUI dishes;
 
     [Header("Store Settings")]
     public int maxSlots = 5; // 最大槽位数量
 
     private List<IngredientScriptObjs> availableIngredients = new List<IngredientScriptObjs>();
+
+    public TextMeshProUGUI predictionText;
 
     public static IngredientStoreSlotManager Instance { get; private set; }
 
@@ -46,13 +49,45 @@ public class IngredientStoreSlotManager : MonoBehaviour
             // 输出原料的基本信息
             string ingredientInfo = $"原料 {i + 1}: ";
             ingredientInfo += $"名称: {ingredient.ingredientName}";
-
-            Debug.Log(ingredientInfo);
         }
         // 初始化槽位
         InitializeSlots();
+        UpdatePredictionDisplay();
 
-        Debug.Log($"原料商店初始化完成，激活了 {GetActiveSlotCount()} 个槽位");
+        Debug.Log($"原料商店初始化完成");
+    }
+    public void UpdatePredictionDisplay()
+    {
+        if (predictionText == null)
+        {
+            return;
+        }
+
+        string predictionString = ConvertRequirementsToString();
+        predictionText.text = predictionString;
+    }
+    private string ConvertRequirementsToString()
+    {
+        Dictionary<DishScriptObjs, int> dailyDishesRequirement = CustomerManager.Instance._dailyDishesRequirement;
+        if (dailyDishesRequirement == null || dailyDishesRequirement.Count == 0)
+        {
+            return "订单预测：无";
+        }
+
+        List<string> dishStrings = new List<string>();
+
+        foreach (var kvp in dailyDishesRequirement)
+        {
+            DishScriptObjs dish = kvp.Key;
+            int quantity = kvp.Value;
+
+            if (dish != null)
+            {
+                dishStrings.Add($"{dish.dishName}x{quantity}");
+            }
+        }
+        string dishesList = string.Join(", ", dishStrings);
+        return $"订单预测：{dishesList}";
     }
 
     // 初始化所有槽位
@@ -60,7 +95,7 @@ public class IngredientStoreSlotManager : MonoBehaviour
     {
         if (slots == null || slots.Count == 0)
         {
-            Debug.LogError("槽位列表为空！请在Unity中拖拽赋值槽位。");
+            Debug.LogError("槽位列表为空");
             return;
         }
 
@@ -84,18 +119,6 @@ public class IngredientStoreSlotManager : MonoBehaviour
                 slots[i].Initialize(availableIngredients[i]);
             }
         }
-    }
-
-    // 获取激活的槽位数量
-    private int GetActiveSlotCount()
-    {
-        return slots.Count(slot => slot != null && slot.gameObject.activeInHierarchy);
-    }
-
-    // 获取指定原料的槽位
-    public IngredientStoreSlot GetSlotByIngredient(IngredientScriptObjs ingredient)
-    {
-        return slots.FirstOrDefault(slot => slot != null && slot.gameObject.activeInHierarchy && slot.GetIngredient() == ingredient);
     }
 
     // 获取所有激活的槽位

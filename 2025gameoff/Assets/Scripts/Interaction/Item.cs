@@ -7,5 +7,5 @@ public class Item : ScriptableObject
     public Vector3 position;
     public Quaternion rotation;
     public string Function;
-
+    public bool state;//”Œœ∑true£¨…ÃµÍfalse
 }

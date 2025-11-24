@@ -60,7 +60,6 @@ public class StoreManager : MonoBehaviour
             if (ingredient != null)
             {
                 ingredientPrices[ingredient] = ingredient.ingredientPrice;
-                Debug.Log(ingredient.ingredientPrice);
             }
         }
     }
@@ -112,8 +111,7 @@ public class StoreManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"金币不足，需要: {totalCost}金币");
-            return false;
+          return false;
         }
     }
 

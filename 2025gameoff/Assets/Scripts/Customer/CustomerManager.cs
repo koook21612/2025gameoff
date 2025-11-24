@@ -20,23 +20,20 @@ public class Order
     public float PendingPatienceMax;//滞留订单的最大耐心值
     public float ReceivedPatienceMax;//已接收订单的最大耐心值
     public float PatiencePoints;//剩余耐心值
+    public int TotalPrice; // 订单总价 - 修改点5：添加总价字段
 }
 
-[System.Serializable]
-public class DishUISlot
-{
-    public GameObject VisualRoot;//整行父物体
-    public TextMeshProUGUI DishNameText;//菜名
-    public TextMeshProUGUI QuantityText;//数量
-}
-
+// 修改点3：删除DishUISlot类，修改ReceivedOrderUISlot结构
 [System.Serializable]
 public class ReceivedOrderUISlot
 {
+    public GameObject VisualRoot;//整行父物体
     public TextMeshProUGUI OrderID;//订单号
-    public Slider PatienceSlider;//耐心进度条
+    public Image PatienceBackground; // 修改点4：将Slider改为Image
 
-    public DishUISlot[] DishSlots;//需求文本
+    public TextMeshProUGUI DishSlot1;//需求文本
+    public TextMeshProUGUI DishSlot2;
+    public TextMeshProUGUI DishSlot3;
 }
 
 [System.Serializable]
@@ -44,38 +41,11 @@ public class PendingOrderUISlot
 {
     public GameObject VisualRoot;//整行父物体
     public TextMeshProUGUI OrderID;//订单号
-    public Slider PatienceSlider;//耐心进度条
+    public Image PatienceBackground; // 修改点4：将Slider改为Image
 }
+
 public class CustomerManager : MonoBehaviour
 {
-    #region 原顾客系统部分变量
-    //public List<CustomerScriptObjs> customers;//所有的顾客配置
-    //private int _currentCostomerIndex;//当前顾客索引
-    //private Customer _currentCustomerScript;//当前顾客的脚本
-    //private Customer[] _counterCustomers = new Customer[3];//前台顾客
-    //private List<Customer> _queueCustomers = new List<Customer>();//队列顾客
-    //private int _queueCustomersQuantity;//队列顾客数量
-    //private int[] _waveCustomerCounts = new int[3];//波次顾客
-    //private int _currentWaveIndex;//当前波次索引
-    //private Dictionary<int, float> OrderDishesCountProbability = new Dictionary<int, float>();//点int道菜的概率float
-    //private float _TotalProbabilityValue;
-    //private float _currentProbabilityValue;
-    //private int _currentDishIndex;
-
-    ////测试用
-    //public TextMeshProUGUI countdownTime;
-    //public TextMeshProUGUI Wave;
-    //public TextMeshProUGUI WaveCustomers;
-    //public TextMeshProUGUI QueueCustomers;
-    //public TextMeshProUGUI SetPatienceMultiplier;
-    //public Button ButtonV;
-    //public Button ButtonP;
-    //public Button ButtonR;
-
-    //public DishScriptObjs Vegetable;
-    //public DishScriptObjs Pork;
-    //public DishScriptObjs Rice;
-    #endregion【
     public MicrowaveSystem MicrowaveSystem;//微波炉系统
 
     [Header("菜品池")]
@@ -90,47 +60,185 @@ public class CustomerManager : MonoBehaviour
     public PendingOrderUISlot[] PendingOrderUISlots;//滞留订单UI(20个
 
     [Header("策划配置")]
-    public int StartOrderCount;//开局生成数量
-    public float OrderGenerationInterval;//生成间隔（秒）
-    public int OrdersPerBatch;//每次生成数量
+    public int StartOrderCount = 1;//开局生成数量
+    public float OrderGenerationInterval = 20f;//生成间隔（秒）
+    public int OrdersPerBatch = 1;//每次生成数量
     public int PenaltyThreshold;//每满几个订单加快消耗耐心
     public float PenaltyRate;//加快百分之几
 
     private float _timer;//当前累积时间
+    public TextMeshProUGUI time;
 
-    [Header("运行时数据(当前点几道菜概率)")]
-    public float currentP3 = 0.2f;//随便设的初始值
-    public float currentP2 = 0.3f;
-    public float currentP1 = 0.5f;
+    // 修改点1：添加波次管理相关字段
+    private List<Order> _dailyCustomers = new List<Order>(); // 当天所有顾客
+    private int _currentCustomerIndex = 0; // 当前顾客索引
+    private int _currentWave = 0; // 当前波次 (0,1,2)
 
+    public Dictionary<DishScriptObjs, int> _dailyDishesRequirement = new Dictionary<DishScriptObjs, int>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private int _dailyIncome = 0; // 当天总收入
+    private int _dailyServedOrders = 0; // 当天出餐总数
+
+    // 新增：游戏时间相关变量
+    private float _gameTime = 0f; // 游戏运行时间
+    private bool _isGameRunning = false; // 游戏是否正在进行
+
+    public static CustomerManager Instance;
+    private void Awake()
     {
-        #region 原顾客系统部分逻辑
-        ////microwaveSystem.OnCookingComplete += OnCookingFinished;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-        ////测试用
-        //int[] textWaveCustomerCounts = new int[] { 5, 10, 15 };
-        //float textP3 = 0.1f;
-        //float textP2 = 0.3f;
-        //float textP1 = 0.6f;
-        //InitializeDay(textWaveCustomerCounts, textP3, textP2, textP1);
-        //ButtonV.onClick.AddListener(() => { TEST_CompleteDish(Vegetable); });
-        //ButtonP.onClick.AddListener(() => { TEST_CompleteDish(Pork); });
-        //ButtonR.onClick.AddListener(() => { TEST_CompleteDish(Rice); });
-        #endregion
+        Instance = this;
+        //DontDestroyOnLoad(gameObject);
 
-        // 开局生成
+        DisableAllUIPanels();
+    }
+
+    public void StartGame()
+    {
+        _isGameRunning = true;
+        _gameTime = 0f;
         for (int i = 0; i < StartOrderCount; i++)
         {
-            GenerateNewOrder(currentP3, currentP2, currentP1);
+            GenerateNewOrderFromDailyList();
         }
     }
 
-    // Update is called once per frame
+    // 修改点1：初始化当天顾客列表
+    public void InitializeDailyCustomers()
+    {
+        _dailyCustomers.Clear();
+        _currentCustomerIndex = 0;
+        _currentWave = 0;
+        _dailyDishesRequirement.Clear();
+        _dailyIncome = 0;
+        _dailyServedOrders = 0;
+        AllDishes = InnerGameManager.Instance.dishPool;
+        int day = InnerGameManager.Instance.days;
+        // 计算当天总顾客数 y = n + ln(n) + e^(n-7) + 10
+        int totalCustomers = CalculateDailyCustomerCount(day);
+
+        // 分波次计算顾客数
+        int wave1Count = Mathf.FloorToInt(totalCustomers * 0.3f);
+        int wave2Count = Mathf.CeilToInt(totalCustomers * 0.5f);
+        int wave3Count = totalCustomers - wave1Count - wave2Count;
+
+        // 生成所有顾客
+        for (int wave = 0; wave < 3; wave++)
+        {
+            int waveCustomerCount = (wave == 0) ? wave1Count : (wave == 1) ? wave2Count : wave3Count;
+
+            for (int i = 0; i < waveCustomerCount; i++)
+            {
+                // 计算当前波次的概率
+                float p3 = CalculateP3(day, wave + 1);
+                float p2 = CalculateP2(day, wave + 1, p3);
+                float p1 = 1 - p2 - p3;
+
+                Order customer = GenerateNewOrder(p1, p2, p3);
+                _dailyCustomers.Add(customer);
+
+                CountDishesRequirement(customer);
+            }
+        }
+        Debug.Log("成功生成所有顾客");
+    }
+
+    //计算菜数
+    private void CountDishesRequirement(Order order)
+    {
+        foreach (OrderItem item in order.Dishes)
+        {
+            if (_dailyDishesRequirement.ContainsKey(item.DishName))
+            {
+                _dailyDishesRequirement[item.DishName] += item.DishQuantity;
+            }
+            else
+            {
+                _dailyDishesRequirement[item.DishName] = item.DishQuantity;
+            }
+        }
+    }
+
+    // 修改点1：计算当天顾客总数
+    private int CalculateDailyCustomerCount(int day)
+    {
+        return Mathf.RoundToInt(day + Mathf.Log(day) + Mathf.Exp(day - 7) + 10);
+    }
+
+    // 修改点1：计算P3概率
+    private float CalculateP3(int day, int wave)
+    {
+        return 0.2f * (day - 3) + 0.2f - 0.1f * (wave - 2) * (wave - 2);
+    }
+
+    // 修改点1：计算P2概率
+    private float CalculateP2(int day, int wave, float p3)
+    {
+        return (0.2f * (day - 2) + 0.2f - 0.1f * (wave - 2) * (wave - 2)) * (1 - p3);
+    }
+
+    // 修改点1：从每日顾客列表中生成订单
+    private void GenerateNewOrderFromDailyList()
+    {
+        if (_currentCustomerIndex < _dailyCustomers.Count)
+        {
+            Order newOrder = _dailyCustomers[_currentCustomerIndex];
+            _currentCustomerIndex++;
+            _pendingOrders.Add(newOrder);
+        }
+    }
+
+    private void DisableAllUIPanels()
+    {
+        // 禁用已接收订单UI
+        if (ReceivedOrderUISlots != null)
+        {
+            foreach (var slot in ReceivedOrderUISlots)
+            {
+                if (slot != null && slot.VisualRoot != null)
+                {
+                    slot.VisualRoot.SetActive(false);
+                }
+
+                if (slot.DishSlot1 != null) slot.DishSlot1.gameObject.SetActive(false);
+                if (slot.DishSlot2 != null) slot.DishSlot2.gameObject.SetActive(false);
+                if (slot.DishSlot3 != null) slot.DishSlot3.gameObject.SetActive(false);
+            }
+        }
+
+        // 禁用滞留订单UI
+        if (PendingOrderUISlots != null)
+        {
+            foreach (var slot in PendingOrderUISlots)
+            {
+                if (slot != null && slot.VisualRoot != null)
+                {
+                    slot.VisualRoot.SetActive(false);
+                }
+            }
+        }
+    }
+
     void Update()
     {
+        if (!InnerGameManager.Instance.isPlaying)
+        {
+            _isGameRunning = false;
+            return;
+        }
+
+        // 新增：更新时间显示
+        UpdateTimeDisplay();
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            AcceptOrderFromPending();
+        }
         //每过countdownTime秒生成generateQuantity个订单
         _timer += Time.deltaTime;
         if (_timer >= OrderGenerationInterval)
@@ -138,7 +246,7 @@ public class CustomerManager : MonoBehaviour
             _timer -= OrderGenerationInterval;
             for (int i = 0; i < OrdersPerBatch; i++)
             {
-                GenerateNewOrder(currentP3, currentP2, currentP1);
+                GenerateNewOrderFromDailyList();
             }
         }
 
@@ -166,7 +274,43 @@ public class CustomerManager : MonoBehaviour
             }
         }
 
-        //扯单逻辑
+        //UI更新逻辑
+        UpdateReceivedOrdersUI();
+        UpdatePendingOrdersUI();
+    }
+
+    // 新增：更新时间显示
+    private void UpdateTimeDisplay()
+    {
+        if (_isGameRunning && time != null)
+        {
+            _gameTime += Time.deltaTime;
+
+            // 将秒数转换为分钟和秒
+            int minutes = Mathf.FloorToInt(_gameTime / 60f);
+            int seconds = Mathf.FloorToInt(_gameTime % 60f);
+
+            time.text = $"{minutes:00}:{seconds:00}";
+        }
+    }
+
+    // 新增：获取当前游戏时间（用于其他系统）
+    public float GetCurrentGameTime()
+    {
+        return _gameTime;
+    }
+
+    // 新增：获取格式化时间字符串
+    public string GetFormattedGameTime()
+    {
+        int minutes = Mathf.FloorToInt(_gameTime / 60f);
+        int seconds = Mathf.FloorToInt(_gameTime % 60f);
+        return $"{minutes:00}:{seconds:00}";
+    }
+
+    // 手动扯单方法
+    public void AcceptOrderFromPending()
+    {
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
             if (_receivedOrders[i] == null && _pendingOrders.Count > 0)
@@ -175,265 +319,13 @@ public class CustomerManager : MonoBehaviour
                 _pendingOrders.RemoveAt(0);
                 _receivedOrders[i].PatiencePoints = _receivedOrders[i].ReceivedPatienceMax;
                 InitializeReceivedOrderUI(i, _receivedOrders[i]);
+                break;
             }
         }
-
-        //UI更新逻辑
-        UpdateReceivedOrdersUI();
-        UpdatePendingOrdersUI();
-        
-
-        #region 原顾客系统部分逻辑
-        ////if (!InnerGameManager.Instance.isPlaying) return;
-
-        
-
-        ////当前波次中无剩余顾客时进入下一波次
-        //if (_waveCustomerCounts[_currentWaveIndex] == 0 && _currentWaveIndex < 2)
-        //{
-        //    _currentWaveIndex++;
-        //    switch (_currentWaveIndex)
-        //    {
-        //        case 1:
-        //            Debug.LogError("订单高峰！");
-        //            break;
-        //        case 2:
-        //            Debug.LogError("订单高峰结束！");
-        //            break;
-        //    }
-        //}
-
-        ////前台小于3人时从队列中调取顾客
-        //for (int i = 0; i < _counterCustomers.Length; i++)
-        //{
-        //    if ( _counterCustomers[i] == null && _queueCustomers.Count != 0)
-        //    {
-        //        _counterCustomers[i] = _queueCustomers[0];
-        //        _queueCustomers.RemoveAt(0);
-        //    }
-        //}
-
-        ////排队队列中每有5个顾客，前台顾客的耐心值下降增快10%
-        //_queueCustomersQuantity = _queueCustomers.Count;
-        //foreach(var customer in _counterCustomers)
-        //{
-        //    customer.SetPatienceMultiplier(1 + Mathf.FloorToInt(_queueCustomersQuantity / 5) * 0.1f);
-        //}
-
-
-
-        ////测试用
-        //countdownTime.text = $"调取顾客倒计时：{_countdownTime.ToString("F0")}";
-        //Wave.text = $"当前波次：{_currentWaveIndex+1}/3  ";
-        //WaveCustomers.text = $"当前波次剩余顾客： {_waveCustomerCounts[_currentWaveIndex]}";
-        //QueueCustomers.text = $"队列顾客： {_queueCustomers.Count}/20";
-        //SetPatienceMultiplier.text = $"当前前台顾客耐心下降速度增快{Mathf.FloorToInt(_queueCustomersQuantity / 5) * 10}%";
-
-        //for (int i = 0; i < customerUISlots.Length; i++)
-        //{
-        //    Customer currentCustomer = _counterCustomers[i];
-        //    CustomerUISlot currentSlot = customerUISlots[i];
-
-        //    if (currentCustomer != null)
-        //    {
-        //        currentSlot.PaitenceRemainingTime.text = $"耐心剩余时间：{currentCustomer.PatienceRemainingTime.ToString("F0")}/15";
-
-        //        currentSlot.Needed1.gameObject.SetActive(currentCustomer.CurrentDishes.Count > 0);
-        //        currentSlot.Needed2.gameObject.SetActive(currentCustomer.CurrentDishes.Count > 1);
-        //        currentSlot.Needed3.gameObject.SetActive(currentCustomer.CurrentDishes.Count > 2);
-
-        //        if (currentCustomer.CurrentDishes.Count > 0)
-        //        {
-        //            currentSlot.Needed1.text = currentCustomer.CurrentDishes[0].dishName;
-        //        }
-        //        if (currentCustomer.CurrentDishes.Count > 1)
-        //        {
-        //            currentSlot.Needed2.text = currentCustomer.CurrentDishes[1].dishName;
-        //        }
-        //        if (currentCustomer.CurrentDishes.Count > 2)
-        //        {
-        //            currentSlot.Needed3.text = currentCustomer.CurrentDishes[2].dishName;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        currentSlot.PaitenceRemainingTime.text = "";
-
-        //        currentSlot.Needed1.gameObject.SetActive(false);
-        //        currentSlot.Needed2.gameObject.SetActive(false);
-        //        currentSlot.Needed3.gameObject.SetActive(false);
-        //    }
-        //}
-        #endregion
-    }
-
-    #region 原顾客系统部分逻辑
-    ////生成顾客
-    //public Customer SpawnNewCustomer()
-    //{
-    //    if(customers.Count == 0) return null;
-    //    _currentCostomerIndex = UnityEngine.Random.Range(0, customers.Count);
-    //    GameObject newCustomerObject = Instantiate(customers[_currentCostomerIndex].customerPrefab);
-    //    Customer customerScript = newCustomerObject.GetComponent<Customer>();
-    //    customerScript.customerScriptObjs= customers[_currentCostomerIndex];
-    //    //_currentCustomerScript = customerScript;
-    //    //customerScript.OnPatienceZero += OnCustomerFailed;
-
-    //    //顾客点几道菜
-    //    _TotalProbabilityValue = 0;
-    //    foreach (var probablity in OrderDishesCountProbability)
-    //    {
-    //        _TotalProbabilityValue += probablity.Value;
-    //    }
-    //    _currentProbabilityValue = UnityEngine.Random.Range(0, _TotalProbabilityValue);
-    //    foreach (var probablity in OrderDishesCountProbability)
-    //    {
-    //        List<DishScriptObjs> tempDishList = new List<DishScriptObjs>(customerScript.customerScriptObjs.neededDishes);
-    //        if (_currentProbabilityValue< probablity.Value)
-    //        {
-    //            //顾客点哪道菜：从顾客配置中的需求菜肴抽取对应数量菜肴
-    //            for(int i = 0; i < probablity.Key;i++)
-    //            {
-    //                _currentDishIndex = UnityEngine.Random.Range(0, tempDishList.Count);
-    //                customerScript.CurrentDishes.Add(tempDishList[_currentDishIndex]);
-    //                tempDishList.RemoveAt(_currentDishIndex);
-    //            }
-    //            break;
-    //        }
-    //        else
-    //        {
-    //            _currentProbabilityValue-= probablity.Value;
-    //        }
-    //    }
-
-    //    return customerScript;
-    //}
-
-    ////顾客耐心值归零时调用
-    //private void OnCustomerFailed(Customer failedCustomer)
-    //{
-    //    Destroy(failedCustomer.gameObject);
-    //    //InnerGameManager.Instance.LoseReputation();
-    //    //_currentCustomerScript = null;
-    //    int index= Array.IndexOf(_counterCustomers,failedCustomer);
-    //    if (index != -1)
-    //    {
-    //        _counterCustomers[index] = null;
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("一个顾客耐心值归零离开了，但他不在前台数组中");
-    //    }
-
-    //    TrySpawnCustomerIntoQueue();
-
-    //    Debug.LogError("顾客耐心值归零离开，前台出现空位，调取一顾客");//测试用
-    //}
-
-    ////玩家完成烹饪时调用
-    //private void OnCookingFinished(CookingResult cookingResult, DishScriptObjs playerCook)
-    //{
-    //    if (cookingResult != CookingResult.Perfect) return;
-    //    bool dishWasDelivered = false;
-    //    //if (_counterCustomers.Count == 0)
-    //    //{
-    //    //    //TODO:当前不存在顾客...菜肴搁置？
-    //    //    return;
-    //    //}
-    //    for(int i = 0; i < _counterCustomers.Length; i++)
-    //    {
-    //        if (_counterCustomers[i] == null)
-    //        {
-    //            continue;
-    //        }
-    //        if (_counterCustomers[i].CurrentDishes.Contains(playerCook))
-    //        {
-    //            int index = _counterCustomers[i].CurrentDishes.IndexOf(playerCook);
-    //            Debug.LogError($"顾客{i + 1}订单{playerCook.dishName}完成");//测试用
-    //            //InnerGameManager.Instance.AddGold(playerCook.DishPrice);
-    //            _counterCustomers[i].CurrentDishes.RemoveAt(index);
-
-
-    //            if (_counterCustomers[i].CurrentDishes.Count == 0)
-    //            {
-    //                Debug.LogError($"顾客{i + 1}订单全部完成");//测试用
-
-    //                //InnerGameManager.Instance.CompleteCustomer();
-    //                Destroy(_counterCustomers[i].gameObject);
-    //                _counterCustomers[i] = null;
-
-    //                TrySpawnCustomerIntoQueue();
-    //            }
-    //            dishWasDelivered = true;
-    //            break;
-    //        }
-    //    }
-    //    if (!dishWasDelivered)
-    //    {
-    //        bool isCounterEmpty = true;
-    //        for (int i = 0; i < _counterCustomers.Length; i++)
-    //        {
-    //            if (_counterCustomers[i] != null)
-    //            {
-    //                isCounterEmpty = false;
-    //                break;
-    //            }
-    //        }
-
-    //        if (isCounterEmpty)
-    //        {
-    //            // TODO: 菜肴搁置
-    //            Debug.LogError("前台没人，菜做好了先放着");
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning("上错菜了！扣声望");
-    //            //InnerGameManager.Instance.LoseReputation();
-    //        }
-    //    }
-    //}
-
-    ////接收波次及点菜概率数据
-    //public void InitializeDay(int[] currentWaveCustomerCounts, float p3, float p2, float p1)
-    //{
-    //    _currentWaveIndex = 0;
-    //    _waveCustomerCounts = currentWaveCustomerCounts;
-    //    OrderDishesCountProbability[3] = p3;
-    //    OrderDishesCountProbability[2] = p2;
-    //    OrderDishesCountProbability[1] = p1;
-    //    //初始化计时
-    //    _countdownTime = 0;
-    //}
-
-    ////队列小于20人时生成顾客进入队列
-    //private void TrySpawnCustomerIntoQueue()
-    //{
-    //    if (_queueCustomers.Count < 20 && _waveCustomerCounts[_currentWaveIndex] != 0)
-    //    {
-    //        Customer newCustomer = SpawnNewCustomer();
-    //        newCustomer.OnPatienceZero += OnCustomerFailed;
-    //        _queueCustomers.Add(newCustomer);
-    //        _waveCustomerCounts[_currentWaveIndex] -= 1;
-    //    }
-    //}
-
-    ////测试用
-    //public void TEST_CompleteDish(DishScriptObjs testDish)
-    //{
-    //    OnCookingFinished(CookingResult.Perfect, testDish);
-    //}
-    #endregion
-
-    //接收点菜概率
-    public void UpdateGenerationProbabilities(float p3, float p2, float p1)
-    {
-        currentP3 = p3;
-        currentP2 = p2;
-        currentP1 = p1;
     }
 
     //订单生成
-    public void GenerateNewOrder(float p3, float p2, float p1)
+    public Order GenerateNewOrder(float p1, float p2, float p3)
     {
         //顾客点几道菜
         int dishesCount = 0;
@@ -458,8 +350,11 @@ public class CustomerManager : MonoBehaviour
         //创建订单和菜品选择逻辑
         _orderNumber++;
         Order newOrder = new Order();
-        newOrder.OrderNumber=_orderNumber;
+        newOrder.OrderNumber = _orderNumber;
         newOrder.Dishes = new List<OrderItem>();
+
+        int totalPrice = 0; // 修改点5：计算总价
+
         for (int i = 0; i < dishesCount; i++)
         {
             bool dishFound = false;
@@ -467,28 +362,31 @@ public class CustomerManager : MonoBehaviour
             DishScriptObjs chosenDish = AllDishes[randomIndex];
             foreach (OrderItem item in newOrder.Dishes)
             {
-                if(chosenDish == item.DishName)
+                if (chosenDish == item.DishName)
                 {
                     item.DishQuantity++;
                     dishFound = true;
                     break;
                 }
             }
-            if(!dishFound)
+            if (!dishFound)
             {
                 OrderItem newOrderItem = new OrderItem();
                 newOrderItem.DishName = chosenDish;
                 newOrderItem.DishQuantity = 1;
                 newOrder.Dishes.Add(newOrderItem);
             }
+
+            totalPrice += chosenDish.DishPrice; // 修改点5：累加价格
         }
 
         //计算耐心值并赋值
         newOrder.ReceivedPatienceMax = 45 + 20 * (dishesCount - 1);
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
-        //加入滞留订单列表
-        _pendingOrders.Add(newOrder);
+        newOrder.TotalPrice = totalPrice; // 修改点5：设置总价
+
+        return newOrder;
     }
 
     //初始化已接收列表静态UI
@@ -496,27 +394,25 @@ public class CustomerManager : MonoBehaviour
     {
         ReceivedOrderUISlot slot = ReceivedOrderUISlots[slotIndex];
         slot.OrderID.text = order.OrderNumber.ToString("000");
-        if (slot.PatienceSlider != null)
+
+        // 修改点3：设置三个菜品槽
+        TextMeshProUGUI[] dishSlots = new TextMeshProUGUI[] { slot.DishSlot1, slot.DishSlot2, slot.DishSlot3 };
+
+        for (int j = 0; j < dishSlots.Length; j++)
         {
-            slot.PatienceSlider.maxValue = order.ReceivedPatienceMax;
-        }
-        for (int j = 0; j < slot.DishSlots.Length; j++)
-        {
-            DishUISlot dishUI = slot.DishSlots[j];
             if (j < order.Dishes.Count)
             {
-                if (dishUI.VisualRoot != null) dishUI.VisualRoot.SetActive(true);
-                dishUI.DishNameText.text = order.Dishes[j].DishName?.dishName ?? "未知菜品";
-                dishUI.QuantityText.text = order.Dishes[j].DishQuantity.ToString();
+                dishSlots[j].gameObject.SetActive(true);
+                dishSlots[j].text = $"{order.Dishes[j].DishName.dishName} X {order.Dishes[j].DishQuantity}";
             }
             else
             {
-                if (dishUI.VisualRoot != null) dishUI.VisualRoot.SetActive(false);
+                dishSlots[j].gameObject.SetActive(false);
             }
         }
     }
 
-    //已接收列表UI更新逻辑（进度条数值)
+    //已接收列表UI更新逻辑
     private void UpdateReceivedOrdersUI()
     {
         for (int i = 0; i < ReceivedOrderUISlots.Length; i++)
@@ -526,18 +422,22 @@ public class CustomerManager : MonoBehaviour
 
             if (order != null)
             {
-                if (slot.PatienceSlider != null)
+                slot.VisualRoot.SetActive(true);
+                // 修改点4：更新背景颜色
+                if (slot.PatienceBackground != null)
                 {
-                    slot.PatienceSlider.value = order.PatiencePoints;
+                    float patienceRatio = order.PatiencePoints / order.ReceivedPatienceMax;
+                    slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
                 }
             }
-            else//订单为空
+            else
             {
+                slot.VisualRoot.SetActive(false);
                 slot.OrderID.text = "";
-                if (slot.PatienceSlider != null) slot.PatienceSlider.value = 0;
-                // 隐藏所有菜品
-                for (int j = 0; j < slot.DishSlots.Length; j++)
-                    if (slot.DishSlots[j].VisualRoot != null) slot.DishSlots[j].VisualRoot.SetActive(false);
+                // 修改点3：隐藏所有菜品槽
+                slot.DishSlot1.gameObject.SetActive(false);
+                slot.DishSlot2.gameObject.SetActive(false);
+                slot.DishSlot3.gameObject.SetActive(false);
             }
         }
     }
@@ -545,19 +445,22 @@ public class CustomerManager : MonoBehaviour
     //滞留订单UI更新逻辑
     private void UpdatePendingOrdersUI()
     {
+        // 修改点3：只显示有订单的槽
         for (int i = 0; i < PendingOrderUISlots.Length; i++)
         {
             PendingOrderUISlot slot = PendingOrderUISlots[i];
-            int dataIndex = _pendingOrders.Count - 1 - i;
-            if (dataIndex >= 0)
+
+            if (i < _pendingOrders.Count)
             {
-                Order order = _pendingOrders[dataIndex];
+                Order order = _pendingOrders[i];
                 if (slot.VisualRoot != null) slot.VisualRoot.SetActive(true);
                 slot.OrderID.text = order.OrderNumber.ToString("000");
-                if (slot.PatienceSlider != null)
+
+                // 修改点4：更新背景颜色
+                if (slot.PatienceBackground != null)
                 {
-                    slot.PatienceSlider.maxValue = order.PendingPatienceMax;
-                    slot.PatienceSlider.value = order.PatiencePoints;
+                    float patienceRatio = order.PatiencePoints / order.PendingPatienceMax;
+                    slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
                 }
             }
             else
@@ -566,6 +469,22 @@ public class CustomerManager : MonoBehaviour
             }
         }
     }
+
+    public void ResetForNewDay()
+    {
+        if (InnerGameManager.Instance != null)
+        {
+            InnerGameManager.Instance.AddDailyIncome(_dailyIncome);
+            InnerGameManager.Instance.AddDailyServedOrders(_dailyServedOrders);
+        }
+        _receivedOrders = new Order[3];
+        _pendingOrders.Clear();
+        _timer = 0f;
+        _gameTime = 0f; // 重置游戏时间
+        _isGameRunning = false; // 停止计时
+        DisableAllUIPanels();
+    }
+
     //菜品交付
     public void DeliverDishToOrder(DishScriptObjs deliveredDish, CookingResult result, int orderSlotIndex)
     {
@@ -581,11 +500,14 @@ public class CustomerManager : MonoBehaviour
                 if (result == CookingResult.Perfect)
                 {
                     item.DishQuantity--;
-                    InnerGameManager.Instance.AddGold(deliveredDish.DishPrice);
+
+                    // 修改点5：只在订单完全完成时结算钱
                     if (item.DishQuantity > 0)
                     {
-                        ReceivedOrderUISlots[orderSlotIndex].DishSlots[i].QuantityText.text = item.DishQuantity.ToString();
+                        // 更新UI显示
+                        InitializeReceivedOrderUI(orderSlotIndex, currentOrder);
                     }
+
                     if (item.DishQuantity <= 0)
                     {
                         currentOrder.Dishes.Remove(item);
@@ -595,6 +517,8 @@ public class CustomerManager : MonoBehaviour
 
                         if (currentOrder.Dishes.Count == 0)
                         {
+                            // 修改点5：订单完全完成，结算总价
+                            InnerGameManager.Instance.AddGold(currentOrder.TotalPrice);
                             InnerGameManager.Instance.CompleteCustomer();
                             _receivedOrders[orderSlotIndex] = null;
                         }
@@ -605,7 +529,7 @@ public class CustomerManager : MonoBehaviour
                     Debug.Log("提交了失败料理，扣除声望");
                     InnerGameManager.Instance.LoseReputation();
                 }
-                    return;
+                return;
             }
         }
 
