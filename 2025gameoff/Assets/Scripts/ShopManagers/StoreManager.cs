@@ -10,9 +10,7 @@ public class StoreManager : MonoBehaviour
 
     // 原料商店相关
     private Dictionary<IngredientScriptObjs, int> pendingIngredientPurchases = new Dictionary<IngredientScriptObjs, int>(); // 待入库的原料
-
     [Header("装备池配置")]
-    //public List<EquipmentDataSO> availableEquipments; // 可购买的装备列表
     public List<EquipmentDataSO> commonEquipmentPool; // 普通装备池
     public List<EquipmentDataSO> rareEquipmentPool;   // 稀有装备池
 
@@ -39,7 +37,6 @@ public class StoreManager : MonoBehaviour
     // 设置商店内容
     public void SetStoreContents(List<IngredientScriptObjs> ingredients)
     {
-        //currentShelfEquipments = equipments;
         availableIngredients = ingredients;
         //InitializePrices();
         GenerateShelfItems();
@@ -52,39 +49,6 @@ public class StoreManager : MonoBehaviour
         currentShelfEquipments = equipments;
         //InitializeEquipmentPrices();
     }
-
-    //// 设置价格
-    //private void InitializePrices()
-    //{
-    //    InitializeIngredientPrices();
-    //    InitializeEquipmentPrices();
-    //}
-
-    //设置原料价格
-    private void InitializeIngredientPrices()
-    {
-        ingredientPrices.Clear();
-        foreach (var ingredient in availableIngredients)
-        {
-            if (ingredient != null)
-            {
-                ingredientPrices[ingredient] = ingredient.ingredientPrice;
-                Debug.Log(ingredient.ingredientPrice);
-            }
-        }
-    }
-
-    //private void InitializeEquipmentPrices()
-    //{
-    //    equipmentPrices.Clear();
-    //    foreach (var equipment in availableEquipments)
-    //    {
-    //        if (equipment != null)
-    //        {
-    //            equipmentPrices[equipment] = equipment.equipmentPrice;
-    //        }
-    //    }
-    //}
 
     // ========== 原料商店相关方法 ==========
 
@@ -221,12 +185,7 @@ public class StoreManager : MonoBehaviour
         // 检查金币是否足够
         if (InnerGameManager.Instance.SpendGold(cost))
         {
-            // 创建装备实例并添加到库存
-            GameObject equipmentObj = new GameObject($"Equipment_{equipment.equipmentName}");
-            Equipment newEquipment = equipmentObj.AddComponent<Equipment>();
-            newEquipment.EquipmentData = equipment;
-
-            InventorySystem.Instance.AddEquipment(newEquipment);
+            InventorySystem.Instance.AddEquipment(equipment);
 
             return true;
         }
@@ -307,14 +266,6 @@ public class StoreManager : MonoBehaviour
                 temporaryPool.RemoveAt(randomIndex);
             }
         }
-
-        ////如果需要打乱装备顺序
-        //for (int i = 0; i < currentShelfEquipments.Count; i++)
-        //{
-        //    int randomIndex = UnityEngine.Random.Range(i, currentShelfEquipments.Count);
-        //    EquipmentDataSO temp = currentShelfEquipments[i];
-        //    currentShelfEquipments[i] = currentShelfEquipments[randomIndex];
-        //    currentShelfEquipments[randomIndex] = temp;
-        //}
+        StoreDisplayManager.Instance.RefreshShelves();
     }
 }

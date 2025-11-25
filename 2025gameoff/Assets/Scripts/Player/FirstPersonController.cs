@@ -6,7 +6,7 @@ using UnityStandardAssets.Utility;
 public class FirstPersonController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float m_Speed = 5f;                 // 单一移动速度
+    [SerializeField] private float m_Speed = 520f;                 // 单一移动速度
     [SerializeField] private float m_StickToGroundForce = 5f;    // 接地时施加的小向下力
     [SerializeField] private float m_GravityMultiplier = 2f;     // 重力倍率
     [SerializeField] private CurveControlledBob m_HeadBob = new CurveControlledBob();

@@ -8,7 +8,7 @@ public class InventorySystem : MonoBehaviour
 {
     public List<DishScriptObjs> dishes; // 解锁的菜品
     public Dictionary<IngredientScriptObjs, int> ingredients; // 原料字典：原料类型 -> 数量
-    public List<Equipment> equipments; // 仓库里的装备
+    public List<EquipmentDataSO> equipments; // 仓库里的装备
     public static InventorySystem Instance { get; private set; }
 
     private void Awake()
@@ -76,16 +76,16 @@ public class InventorySystem : MonoBehaviour
         return GetIngredientQuantity(ingredientType) >= quantity;
     }
 
-    public void AddEquipment(Equipment equipment)
+    public void AddEquipment(EquipmentDataSO equipment)
     {
         if (equipment != null)
         {
             equipments.Add(equipment);
-            InnerGameManager.Instance.ApplyEffects(equipment.EquipmentData);
+            InnerGameManager.Instance.ApplyEffects(equipment);
         }
     }
 
-    public bool RemoveEquipment(Equipment equipment)
+    public bool RemoveEquipment(EquipmentDataSO equipment)
     {
         if (equipment != null && equipments.Contains(equipment))
         {

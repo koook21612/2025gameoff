@@ -97,12 +97,21 @@ public class PlayerInteraction : MonoBehaviour
                 // 改变光标显示物体可交互
                 UIManager.instance.SetHandCursor(true);
 
+                if (interactable.isInstantInteract)
+                {
+                    if(interactable.storeShelf != null)
+                    {
+                        StoreDisplayManager.Instance.ShowItemInfo(interactable.storeShelf);
+                    }
+                }
+
                 if (Input.GetMouseButtonDown(0))
                 {
                     if (interactable.isInstantInteract)
                     {
                         // 如果是即时交互（买装备），直接触发事件
                         interactable.onInteract.Invoke();
+                        interactable.TryBuyItem();
                     }
                     else
                     {
@@ -118,6 +127,11 @@ public class PlayerInteraction : MonoBehaviour
         }
         else
         {
+            if (!InnerGameManager.Instance.isPlaying)
+            {
+                StoreDisplayManager.Instance.HideItemInfo();
+            }
+            
             UIManager.instance.SetHandCursor(false);
         }
     }
