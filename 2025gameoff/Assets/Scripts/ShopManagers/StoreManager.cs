@@ -207,12 +207,6 @@ public class StoreManager : MonoBehaviour
         return equipment != null ? equipment.equipmentPrice : 0;
     }
 
-    // 刷新商店装备
-    public void RefreshStoreItems()
-    {
-        TryRefreshShelf();
-    }
-
     public void TryRefreshShelf()
     {
         int cost = GetRefreshCost();

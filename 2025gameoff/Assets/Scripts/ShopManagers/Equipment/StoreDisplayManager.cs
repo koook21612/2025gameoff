@@ -74,12 +74,16 @@ public class StoreDisplayManager : MonoBehaviour
         if (NameText != null)
             NameText.text = shelf._data.equipmentName;
 
-        if(shelf._data.equipmentName == "refresh")
-        {
-            CostText.text = $"{StoreManager.Instance.GetRefreshCost()} G";
-        }
         if (CostText != null)
-            CostText.text = $"{shelf._data.equipmentPrice} G";
+            if (shelf._data.equipmentName == "refresh")
+            {
+                NameText.text = "Ë¢ÐÂ";
+                CostText.text = $"{StoreManager.Instance.GetRefreshCost()} G";
+            }
+            else
+            {
+                CostText.text = $"{shelf._data.equipmentPrice} G";
+            }
 
         if (DescriptionText != null)
             DescriptionText.text = shelf._data.description;
@@ -102,6 +106,7 @@ public class StoreDisplayManager : MonoBehaviour
     //UI°´Å¥µã»÷Âß¼­
     private void OnRefreshClicked()
     {
+        Debug.Log("refresh");
         StoreManager.Instance.TryRefreshShelf();
         RefreshShelves();
     }

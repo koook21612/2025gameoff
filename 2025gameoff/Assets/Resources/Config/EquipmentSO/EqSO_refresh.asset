@@ -10,12 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12e38cfbf80d11148ae5d133712d901b, type: 3}
-  m_Name: EquipmentSO_test3
+  m_Name: EqSO_refresh
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
-  effects:
-  - effectType: 0
-    value: 10
-  equipmentName: "\u6D4B\u8BD5\u88C5\u59071"
+  equipmentTexture: {fileID: 0}
+  effects: []
+  equipmentName: refresh
   equipmentPrice: 0
-  description: "\u8FD9\u662F\u6D4B\u8BD5\u88C5\u59071\u7684\u63CF\u8FF0"
+  description: "\u5237\u65B0"

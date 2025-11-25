@@ -14,8 +14,6 @@ public class Interactable : MonoBehaviour
     public bool isInstantInteract = false;//如果勾选，点击后直接触发事件，不移动相机
 
     public StoreShelf storeShelf; // 关联的商品货架
-    public int count;
-
     // 新的交互方法，专门用于购买
     public void TryBuyItem()
     {

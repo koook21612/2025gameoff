@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2282d9b4031d7b44b849091406e586cd, type: 3}
   m_Name: InteracteSO_Material
   m_EditorClassIdentifier: 
-  position: {x: 5.814, y: 9.933, z: 6.687}
-  rotation: {x: 0.2342823, y: 0.6994238, z: -0.24694966, w: 0.6284378}
+  position: {x: 6.13, y: 11.23, z: 7.82}
+  rotation: {x: 0.27032393, y: 0.68630254, z: -0.27929178, w: 0.6147437}
   Function: ingredient
+  state: 0

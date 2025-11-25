@@ -26,7 +26,7 @@ public class InnerGameManager : MonoBehaviour
 
     [Header("商店设置")]
     public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // 菜品池
-
+    public List<DishScriptObjs> dishPool = new List<DishScriptObjs>();
     [Header("统计信息")]
     public int totalIncome = 0; // 总收入
     public int totalServedOrders = 0; // 总出餐数
@@ -35,7 +35,6 @@ public class InnerGameManager : MonoBehaviour
     public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // 总菜品池（所有菜品）
     public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
     public static InnerGameManager Instance;
-    public List<DishScriptObjs> dishPool = new List<DishScriptObjs>();
     private void Awake() {
         if (Instance != null && Instance != this)
         {
