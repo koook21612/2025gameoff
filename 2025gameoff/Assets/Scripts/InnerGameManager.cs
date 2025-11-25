@@ -23,23 +23,18 @@ public class InnerGameManager : MonoBehaviour
     private float heatingTimeMultiplier = 1f;
     private float perfectZoneBonus = 0f;
 
+
     [Header("商店设置")]
     public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // 菜品池
-    public List<EquipmentDataSO> rarePool = new List<EquipmentDataSO>();
-    public List<EquipmentDataSO> commonPool = new List<EquipmentDataSO>();
-    public int storeEquipmentCount = 3; // 商店装备数量
-    public List<DishScriptObjs> dishPool = new List<DishScriptObjs>();
-    // 刷新功能相关
-    private int refreshCount = 0; // 刷新次数
-    private int baseRefreshPrice = 10; // 基础刷新价格
+    //public List<EquipmentDataSO> rarePool = new List<EquipmentDataSO>();
+    //public List<EquipmentDataSO> commonPool = new List<EquipmentDataSO>();
+    //public int storeEquipmentCount = 3; // 商店装备数量
+    //public int storeIngredientMinCount = 9; // 商店菜品最小数量
+    //public int storeIngredientMaxCount = 15; // 商店菜品最大数量
 
-    [Header("统计信息")]
-    public int totalIncome = 0; // 总收入
-    public int totalServedOrders = 0; // 总出餐数
-
-    [Header("总菜品池和原料池")]
-    public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // 总菜品池（所有菜品）
-    public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
+    //// 刷新功能相关
+    //private int refreshCount = 0; // 刷新次数
+    //private int baseRefreshPrice = 10; // 基础刷新价格
 
     public static InnerGameManager Instance;
     private void Awake() {
@@ -69,7 +64,11 @@ public class InnerGameManager : MonoBehaviour
         heatingTimeMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
         perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
 
-        refreshCount = 0;
+        //refreshCount = 0;
+        if (StoreManager.Instance != null)
+        {
+            StoreManager.Instance.refreshCount = 0;
+        }
         days = 0;
 
         UpdateUI();
@@ -237,18 +236,22 @@ public class InnerGameManager : MonoBehaviour
         {
             switch (effect.effectType)
             {
-                case EffectType.HeatingSpeed:
-                    heatingTimeMultiplier *= (1 - effect.value / 100f);
-                    break;
-                case EffectType.PerfectZoneBonus:
-                    perfectZoneBonus += effect.value;
-                    break;
-                case EffectType.addMicrowavesCount:
+                // 移除局部效果(由MicrowaveSystem.CalculateStats处理)
+                //case EffectType.HeatingSpeed:
+                //    heatingTimeMultiplier *= (1 - effect.value / 100f);
+                //    break;
+                //case EffectType.PerfectZoneBonus:
+                //    perfectZoneBonus += effect.value;
+                //    break;
+
+                //全局效果
+                case EffectType.AddMicrowave:
                     MicrowavesCount++;
                     break;
-                case EffectType.addMicrowavesCountLater:
+                case EffectType.ThreeDPrinter:
                     LatterMicrowavesCount++;
                     break;
+                //TODO:其他全局效果
             }
         }
     }
@@ -263,96 +266,98 @@ public class InnerGameManager : MonoBehaviour
             return;
         }
 
-        // 随机选择 4 个升级模块（3 普通 + 1 稀有 ）
-        List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
+        //// 随机选择 4 个升级模块（3 普通 + 1 稀有 ）
+        //List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
 
-        // 冰柜中放入已经解锁的所有原料（无限量供给）
-        List<IngredientScriptObjs> allIngredients = new List<IngredientScriptObjs>(ingredientPool);
+        //// 冰柜中放入已经解锁的所有原料（无限量供给）
+        //List<IngredientScriptObjs> allIngredients = new List<IngredientScriptObjs>(ingredientPool);
 
         // 设置商店内容
-        StoreManager.Instance.SetStoreContents(randomEquipments, allIngredients);
+        StoreManager.Instance.SetStoreContents(ingredientPool);
     }
 
-    // 随机获取装备
-    private List<EquipmentDataSO> GetRandomEquipments()
-    {
-        List<EquipmentDataSO> result = new List<EquipmentDataSO>(storeEquipmentCount);
+    #region 商店相关逻辑迁移至StoreManager.cs处理
+    //// 随机获取装备
+    //private List<EquipmentDataSO> GetRandomEquipments()
+    //{
+    //    List<EquipmentDataSO> result = new List<EquipmentDataSO>(storeEquipmentCount);
 
-        if ((commonPool == null || commonPool.Count == 0) && (rarePool == null || rarePool.Count == 0))
-        {
-            return result;
-        }
+    //    if ((commonPool == null || commonPool.Count == 0) && (rarePool == null || rarePool.Count == 0))
+    //    {
+    //        return result;
+    //    }
 
-        System.Random rng = new System.Random();
+    //    System.Random rng = new System.Random();
 
-        //  1 个稀有
-        EquipmentDataSO rarePick = null;
-        if (rarePool != null && rarePool.Count > 0)
-        {
-            rarePick = rarePool[rng.Next(rarePool.Count)];
-        }
-        if (rarePick != null) result.Add(rarePick);
+    //    //  1 个稀有
+    //    EquipmentDataSO rarePick = null;
+    //    if (rarePool != null && rarePool.Count > 0)
+    //    {
+    //        rarePick = rarePool[rng.Next(rarePool.Count)];
+    //    }
+    //    if (rarePick != null) result.Add(rarePick);
 
-        // 再抽取 3 个普通
-        int commonNeeded = Mathf.Max(0, storeEquipmentCount - result.Count);
-        if (commonPool == null) commonPool = new List<EquipmentDataSO>();
+    //    // 再抽取 3 个普通
+    //    int commonNeeded = Mathf.Max(0, storeEquipmentCount - result.Count);
+    //    if (commonPool == null) commonPool = new List<EquipmentDataSO>();
 
-        if (commonPool.Count >= commonNeeded && commonPool.Count > 0)
-        {
-            List<EquipmentDataSO> copy = new List<EquipmentDataSO>(commonPool);
-            for (int i = 0; i < commonNeeded; i++)
-            {
-                int idx = rng.Next(copy.Count);
-                result.Add(copy[idx]);
-                copy.RemoveAt(idx);
-            }
-        }
-        else if (commonPool.Count > 0)
-        {
-            // 元素不足时，使用有放回抽取补足
-            for (int i = 0; i < commonNeeded; i++)
-            {
-                int idx = rng.Next(commonPool.Count);
-                result.Add(commonPool[idx]);
-            }
-        }
+    //    if (commonPool.Count >= commonNeeded && commonPool.Count > 0)
+    //    {
+    //        List<EquipmentDataSO> copy = new List<EquipmentDataSO>(commonPool);
+    //        for (int i = 0; i < commonNeeded; i++)
+    //        {
+    //            int idx = rng.Next(copy.Count);
+    //            result.Add(copy[idx]);
+    //            copy.RemoveAt(idx);
+    //        }
+    //    }
+    //    else if (commonPool.Count > 0)
+    //    {
+    //        // 元素不足时，使用有放回抽取补足
+    //        for (int i = 0; i < commonNeeded; i++)
+    //        {
+    //            int idx = rng.Next(commonPool.Count);
+    //            result.Add(commonPool[idx]);
+    //        }
+    //    }
 
-        // 打乱顺序
-        result = result.OrderBy(x => rng.Next()).ToList();
+    //    // 打乱顺序
+    //    result = result.OrderBy(x => rng.Next()).ToList();
 
-        return result;
-    }
+    //    return result;
+    //}
 
 
-    // 刷新装备
-    public bool RefreshEquipment()
-    {
-        int refreshPrice = GetRefreshPrice();
+    //// 刷新装备
+    //public bool RefreshEquipment()
+    //{
+    //    int refreshPrice = GetRefreshPrice();
 
-        if (SpendGold(refreshPrice))
-        {
+    //    if (SpendGold(refreshPrice))
+    //    {
 
-            List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
-            StoreManager.Instance.SetStoreEquipments(randomEquipments);
+    //        List<EquipmentDataSO> randomEquipments = GetRandomEquipments();
+    //        StoreManager.Instance.SetStoreEquipments(randomEquipments);
 
-            refreshCount++;
+    //        refreshCount++;
 
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
-    // 获取当前刷新价格
-    public int GetRefreshPrice()
-    {
-        if (refreshCount == 0)
-        {
-            return baseRefreshPrice;
-        }
+    //// 获取当前刷新价格
+    //public int GetRefreshPrice()
+    //{
+    //    if (refreshCount == 0)
+    //    {
+    //        return baseRefreshPrice;
+    //    }
 
-        return baseRefreshPrice * (int)Mathf.Pow(2, refreshCount);
-    }
+    //    return baseRefreshPrice * (int)Mathf.Pow(2, refreshCount);
+    //}
+    #endregion
 }

@@ -158,7 +158,7 @@ public class IngredientStoreSlot : MonoBehaviour
         // 更新图标
         if (ingredientIcon != null)
         {
-            // ingredientIcon.sprite = currentIngredient.icon;
+            ingredientIcon.sprite = currentIngredient.icon;
         }
 
         // 更新数量显示

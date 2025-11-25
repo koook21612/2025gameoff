@@ -99,8 +99,16 @@ public class PlayerInteraction : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    currentInteractable = interactable;
-                    StartView();
+                    if (interactable.isInstantInteract)
+                    {
+                        // 如果是即时交互（买装备），直接触发事件
+                        interactable.onInteract.Invoke();
+                    }
+                    else
+                    {
+                        currentInteractable = interactable;
+                        StartView();
+                    }
                 }
             }
             else
