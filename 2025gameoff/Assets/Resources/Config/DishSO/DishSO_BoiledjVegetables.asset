@@ -16,6 +16,7 @@ MonoBehaviour:
   recipe:
   - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
   DishPrice: 10
-  perfectHeatRange: {x: 0, y: 0.33333334}
-  sliderSpeed: 1
+  perfectHeatRanges:
+  - {x: 0.5, y: 1}
+  sliderSpeed: 0.5
   heatTime: 7

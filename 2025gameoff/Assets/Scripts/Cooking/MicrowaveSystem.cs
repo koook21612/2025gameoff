@@ -5,177 +5,159 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+// 烹饪结果枚举
 public enum CookingResult
 {
-    Undercooked,
-    Perfect,
-    Overcooked
+    Undercooked,    // 未煮熟
+    Perfect,        // 完美烹饪
+    Overcooked      // 煮过头
 }
+
+// 微波炉状态枚举
+public enum MicrowaveState
+{
+    Idle,           // 空闲状态
+    Cooking,        // 烹饪中
+    Heating,        // 加热中
+    Ready,          // 完成，等待收获
+    Broken,          // 故障状态
+    unlock
+}
+
 public class MicrowaveSystem : MonoBehaviour
 {
-    public DishScriptObjs currentDish;
-    public Transform sliderTransform;
-    public Button stopExerciseButton;
-    public float currentSliderValue;
-    public bool isPositive=true;
-    public bool isStop=false;
-    public Vector2Int sliderRadian;
-    public event Action<CookingResult, DishScriptObjs> OnCookingComplete;
-    private CookingResult _storedResult;
+    [Header("微波炉状态")]
+    public MicrowaveState currentState = MicrowaveState.Idle;  // 当前微波炉状态
+    public DishScriptObjs currentDish;                         // 当前处理的菜品
+    public CookingResult cookingResult;                        // 烹饪结果
+    public DishScriptObjs wrongDish;
 
-    [Header("微波炉升级模块")]
-    public List<EquipmentDataSO> installedEquipments = new List<EquipmentDataSO>(); // 当前微波炉安装模块
+    [Header("微波炉装备")]
+    public List<EquipmentDataSO> installedEquipments = new List<EquipmentDataSO>(); // 已安装的装备列表
 
-    [Header("运行时属性倍率 (自动计算)")]
-    public float heatingTimeMultiplier = 1f;//加热时间倍率
-    public float sliderSpeedMultiplier = 1f;//判定线速度倍率
-    public float perfectZoneMultiplier = 1f;//完美区域大小倍率
-    public float overheatZoneMultiplier = 1f;//过热区域大小倍率
+    [Header("运行时倍率")]
+    public float heatingTimeMultiplier = 1f; // 加热时间倍率
 
-    private Vector2 _currentPerfectRange;//当前完美区间
+    // 事件定义
+    public event Action<CookingResult, DishScriptObjs> OnHeatingComplete; // 加热完成事件
+    public event Action<MicrowaveState> OnStateChanged;                   // 状态改变事件
 
-    //调试用
-    //public TextMeshProUGUI debugValueText;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // 私有变量
+    private Coroutine _heatingCoroutine; // 加热协程引用
+
     void Start()
     {
-        stopExerciseButton.onClick.AddListener(OnStopButtonClick);
+        SetState(MicrowaveState.Idle); // 初始化为空闲状态
+        StartCookingProcess(currentDish);
     }
 
-    // Update is called once per frame
-    void Update()
+    // 开始烹饪流程
+    public void StartCookingProcess(DishScriptObjs dish)
     {
-        if (isStop == true) return;
-        //调试用
-        //if (isStop == true)
-        //{
-        //    if (debugValueText != null)
-        //    {
-        //        debugValueText.text = currentSliderValue.ToString("F2");
-        //    }
-        //}
-        //if (debugValueText != null)
-        //{
-        //    debugValueText.text = currentSliderValue.ToString("F2");
-        //}
-
-        switch (isPositive)
+        if (currentState != MicrowaveState.Idle)
         {
-            case true:
-                currentSliderValue += GetFinalSliderSpeed() * Time.deltaTime;
-                break;
-            case false:
-                currentSliderValue += GetFinalSliderSpeed() * Time.deltaTime;
-                break;
+            Debug.Log("微波炉忙碌中");
+            return;
         }
-        if(currentSliderValue>1)isPositive = false;
-        if(currentSliderValue < 0) isPositive = true;
-        float currentAngle= Mathf.Lerp(sliderRadian.x, sliderRadian.y, currentSliderValue);
-        sliderTransform.rotation= Quaternion.Euler(0, 0, currentAngle);
+
+        currentDish = dish;
+        SetState(MicrowaveState.Cooking);
+
+        // 调用烹饪系统开始QTE烹饪
+        CookingSystem.Instance.StartCooking(dish, this);
     }
 
-    public void OnStopButtonClick()
+    // 开始加热流程
+    public void StartHeating(CookingResult result, DishScriptObjs dish)
     {
-        isStop = true;
-        if (currentSliderValue < _currentPerfectRange.x)
-        {
-            Debug.Log("菜品不熟，报废");
-            _storedResult = CookingResult.Undercooked;
-            StartCoroutine(StartHeatingProcess(5, _storedResult, currentDish));
-        }
-        else if (currentSliderValue >= _currentPerfectRange.x && currentSliderValue <= _currentPerfectRange.y)
-        {
-            Debug.Log("烹饪成功");
-            _storedResult = CookingResult.Perfect;
-            StartCoroutine(StartHeatingProcess(GetFinalHeatTime(), _storedResult, currentDish));
-        }
-        else
-        {
-            Debug.Log("菜品烤糊，报废");
-            _storedResult = CookingResult.Overcooked;
-            StartCoroutine(StartHeatingProcess(5, _storedResult, currentDish));
-        }
+        cookingResult = result;
+        currentDish = dish;
+        SetState(MicrowaveState.Heating);
+
+        // 计算加热时间并启动加热协程
+        float heatingTime = CalculateHeatingTime(result);
+        _heatingCoroutine = StartCoroutine(HeatingProcess(heatingTime));
     }
 
-    private IEnumerator StartHeatingProcess( float timeToWait, CookingResult resultToBroadcast, DishScriptObjs playerCook)
+    public void StartHeatingWrong()
     {
-        yield return new WaitForSeconds(timeToWait);
-        OnCookingComplete?.Invoke(resultToBroadcast, playerCook);
+        SetState(MicrowaveState.Heating);
+        currentDish = wrongDish;
+        _heatingCoroutine = StartCoroutine(HeatingProcess(5f));
+        PlayerInteraction.instance.FinishView();
     }
 
-    public void StartCooking(DishScriptObjs playerCook)
+    // 加热协程
+    private IEnumerator HeatingProcess(float heatingTime)
     {
-        currentDish = playerCook;
-        isStop = false;
-        currentSliderValue = 0;
+        Debug.Log($"开始加热，预计时间: {heatingTime}秒");
 
-        //重新计算装备带来的倍率
-        CalculateStats();
+        yield return new WaitForSeconds(heatingTime); // 等待加热完成
 
-        //获取原始区间信息
-        float originalMin = currentDish.perfectHeatRange.x;
-        float originalMax = currentDish.perfectHeatRange.y;
-        float center = (originalMin + originalMax) / 2f;
-        float originalWidth = originalMax - originalMin;
+        SetState(MicrowaveState.Ready); // 设置为可收获状态
+        OnHeatingComplete?.Invoke(cookingResult, currentDish); // 触发加热完成事件
 
-        //获取全局天赋加成
-        float globalPerfectZonePercent = 0f;
-        if (GameManager.Instance != null)
+        Debug.Log("加热完成，等待收获");
+    }
+
+    // 收获菜品
+    public void CollectDish()
+    {
+        if (currentState != MicrowaveState.Ready)
         {
-            globalPerfectZonePercent = GameManager.Instance.pendingData.perfectZoneBonus;
+            Debug.Log("没有可以收获的菜品");
+            return;
         }
 
-        //计算新宽度
-        float newWidth = originalWidth * perfectZoneMultiplier * (1 + globalPerfectZonePercent / 100f);
+        // 重置微波炉状态
+        currentDish = null;
+        cookingResult = CookingResult.Undercooked;
+        SetState(MicrowaveState.Idle);
 
-        //散热模块逻辑(GDD:过热区-40%多出来的部分匀给完美区)
-        // float overheatShrink =
-        // newWidth += overheatShrink;
-
-        //重新计算区间
-        newWidth = Mathf.Max(0f, newWidth);
-
-        float newMin = center - (newWidth / 2f);
-        float newMax = center + (newWidth / 2f);
-
-        //存储最终的完美区间供QTE判定使用
-        _currentPerfectRange = new Vector2(newMin, newMax);
-
-        Debug.Log($"开始烹饪: {currentDish.dishName}, 完美区间宽度: {originalWidth} -> {newWidth}");
+        Debug.Log("菜品已收获");
     }
 
-    //获取应用了倍率后的加热时间
-    public float GetFinalHeatTime()
+    // 计算加热时间
+    private float CalculateHeatingTime(CookingResult result)
     {
         if (currentDish == null) return 0;
-        //自身装备倍率
+
+        float baseTime;
+        switch (result)
+        {
+            case CookingResult.Perfect:
+                baseTime = currentDish.heatTime; // 完美烹饪使用标准加热时间
+                break;
+            case CookingResult.Undercooked:
+            case CookingResult.Overcooked:
+                currentDish = wrongDish;
+                baseTime = 5f; // 烹饪失败使用固定加热时间
+                return baseTime;
+            default:
+                baseTime = currentDish.heatTime;
+                break;
+        }
+
+        // 应用装备倍率
         float localMultiplier = heatingTimeMultiplier;
 
-        //全局天赋倍率
+        // 应用全局天赋倍率
         float globalMultiplier = 1f;
         if (GameManager.Instance != null)
         {
             globalMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
         }
 
-        return currentDish.heatTime * localMultiplier * globalMultiplier;
+        return baseTime * (localMultiplier + globalMultiplier);
     }
 
-    //获取应用了倍率后的滑块速度
-    public float GetFinalSliderSpeed()
+    // 计算微波炉属性
+    public void CalculateMicrowaveStats()
     {
-        if (currentDish == null) return 0;
-        return currentDish.sliderSpeed * sliderSpeedMultiplier;
-    }
+        heatingTimeMultiplier = 1f; // 重置倍率
 
-    //计算微波炉的最终属性
-    public void CalculateStats()
-    {
-        heatingTimeMultiplier = 1f;
-        sliderSpeedMultiplier = 1f;
-        perfectZoneMultiplier = 1f;
-        overheatZoneMultiplier = 1f;
-
+        // 遍历所有装备计算总倍率
         foreach (var equipment in installedEquipments)
         {
             if (equipment == null || equipment.effects == null) continue;
@@ -183,26 +165,24 @@ public class MicrowaveSystem : MonoBehaviour
             {
                 switch (effect.effectType)
                 {
-                    case EffectType.HighPower://大功率(加热时间-20%)
-                        heatingTimeMultiplier *= (1 - effect.value / 100f);
+                    case EffectType.HighPower:
+                        heatingTimeMultiplier *= (1 - effect.value / 100f); // 大功率减少加热时间
                         break;
-
-                    case EffectType.Precision://精密(完美区-40%，加热时间-40%)
-                        perfectZoneMultiplier *= (1 - effect.value / 100f);
-                        heatingTimeMultiplier *= (1 - effect.value / 100f);
+                    case EffectType.Precision:
+                        heatingTimeMultiplier *= (1 - effect.value / 100f); // 精密装备减少加热时间
                         break;
-
-                    case EffectType.HeatDissipation://散热(过热区-40%)
-                        overheatZoneMultiplier *= (1 - effect.value / 100f);
-                        break;
-
-                    //TODO:其他特殊效果
-                    default:
-                        break;
+                        // 可添加其他微波炉专用效果
                 }
             }
         }
 
         Debug.Log($"微波炉属性更新: 加热倍率={heatingTimeMultiplier}");
+    }
+
+    // 设置微波炉状态
+    private void SetState(MicrowaveState newState)
+    {
+        currentState = newState;
+        OnStateChanged?.Invoke(newState); // 触发状态改变事件
     }
 }

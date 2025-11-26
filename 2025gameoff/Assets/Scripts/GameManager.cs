@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         public int talentPoints = 3;
 
         // 动态计算的效果
-        public float heatingTimeMultiplier = 1f;
+        public float heatingTimeMultiplier = 0f;
         public float perfectZoneBonus = 0f;
         public string currentLanguage;
     }

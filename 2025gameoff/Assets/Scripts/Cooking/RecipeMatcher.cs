@@ -3,41 +3,53 @@ using System.Collections.Generic;
 
 public class RecipeMatcher : MonoBehaviour
 {
-    public MicrowaveSystem microwaveSystem;
-    public List<DishScriptObjs> dishes;
     public List<IngredientScriptObjs> currentIngredients;
 
-    public void AddIngredient(IngredientScriptObjs ingredientToAdd)
+    public static RecipeMatcher instance { get; private set; }
+
+    private void Awake()
     {
-        currentIngredients.Add(ingredientToAdd);
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
-    public void TryToCook()
+
+    public void TryToCook(MicrowaveSystem targetMicrowave)
     {
         bool matchWasFound = false;
-        foreach (var dish in dishes)
+
+        foreach (var dish in InnerGameManager.Instance.dishPool)
         {
             if (currentIngredients.Count != dish.recipe.Count) continue;
+
             bool isAllMatch = true;
             foreach (var ingredient in currentIngredients)
             {
-                if(dish.recipe.Contains(ingredient) == false)
+                if (dish.recipe.Contains(ingredient) == false)
                 {
                     isAllMatch = false;
                     break;
                 }
             }
+
             if (isAllMatch)
             {
-                microwaveSystem.StartCooking(dish);
+                targetMicrowave.StartCookingProcess(dish);
                 matchWasFound = true;
                 break;
             }
         }
+
         if (!matchWasFound)
         {
-            Debug.Log("配方无效");
-            //TODO:放了配方以后直接成糊糊，不进微波炉系统
+            targetMicrowave.StartHeatingWrong();
         }
+
         currentIngredients.Clear();
     }
 }

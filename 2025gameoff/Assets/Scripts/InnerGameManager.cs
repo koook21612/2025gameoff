@@ -23,6 +23,10 @@ public class InnerGameManager : MonoBehaviour
     private float heatingTimeMultiplier = 1f;
     private float perfectZoneBonus = 0f;
 
+    [Header("微波炉模型")]
+    public GameObject[] microwaveModels = new GameObject[5];
+    private int currentActiveMicrowaves = 0;
+
 
     [Header("商店设置")]
     public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // 菜品池
@@ -48,7 +52,19 @@ public class InnerGameManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeMicrowaves();
         GameStart();
+    }
+    // 初始化微波炉显示
+    private void InitializeMicrowaves()
+    {
+        foreach (var microwave in microwaveModels)
+        {
+            if (microwave != null)
+                microwave.SetActive(false);
+        }
+        currentActiveMicrowaves = 0;
+        UpdateMicrowaveDisplay();
     }
 
     //游戏开始
@@ -69,6 +85,7 @@ public class InnerGameManager : MonoBehaviour
         }
         days = 0;
 
+        UpdateMicrowaveDisplay();
         UpdateUI();
         EnterStore();
     }
@@ -87,6 +104,12 @@ public class InnerGameManager : MonoBehaviour
             GameOver();
         }
         days++;
+        if (LatterMicrowavesCount > 0)
+        {
+            MicrowavesCount += LatterMicrowavesCount;
+            LatterMicrowavesCount = 0;
+            UpdateMicrowaveDisplay();
+        }
         UnlockDishesAndIngredientsByDay();
         UIManager.instance.UpdateMenuDisplay();
         UpdateUI();
@@ -98,11 +121,6 @@ public class InnerGameManager : MonoBehaviour
     // 新的一天开始
     public void StartNewDay()
     {
-        if (LatterMicrowavesCount > 0)
-        {
-            MicrowavesCount += LatterMicrowavesCount;
-            LatterMicrowavesCount = 0;
-        }
         CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
@@ -145,6 +163,31 @@ public class InnerGameManager : MonoBehaviour
         Debug.Log($"第{days}天解锁: {dishesToUnlock}个菜品, {ingredientsToUnlock}个原料");
     }
 
+    // 更新微波炉显示
+    private void UpdateMicrowaveDisplay()
+    {
+        int targetCount = Mathf.Min(MicrowavesCount, microwaveModels.Length);
+        if (currentActiveMicrowaves == targetCount) return;
+
+        // 激活需要的微波炉
+        for (int i = 0; i < targetCount; i++)
+        {
+            if (microwaveModels[i] != null && !microwaveModels[i].activeInHierarchy)
+            {
+                microwaveModels[i].SetActive(true);
+            }
+        }
+        for (int i = targetCount; i < microwaveModels.Length; i++)
+        {
+            if (microwaveModels[i] != null && microwaveModels[i].activeInHierarchy)
+            {
+                microwaveModels[i].SetActive(false);
+            }
+        }
+
+        currentActiveMicrowaves = targetCount;
+        //Debug.Log($"更新微波炉显示: {currentActiveMicrowaves}/{MicrowavesCount}个微波炉激活");
+    }
 
     public void AddDailyIncome(int income)
     {
@@ -239,6 +282,7 @@ public class InnerGameManager : MonoBehaviour
                 //全局效果
                 case EffectType.AddMicrowave:
                     MicrowavesCount++;
+                    UpdateMicrowaveDisplay();
                     break;
                 case EffectType.ThreeDPrinter:
                     LatterMicrowavesCount++;

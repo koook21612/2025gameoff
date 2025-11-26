@@ -40,8 +40,9 @@ public class ReceivedOrderUISlot
 public class PendingOrderUISlot
 {
     public GameObject VisualRoot;//整行父物体
-    public TextMeshProUGUI OrderID;//订单号
-    public Image PatienceBackground; // 修改点4：将Slider改为Image
+    public TextMeshProUGUI waiting;
+    public TextMeshProUGUI PendingCountText;
+    //public Image PatienceBackground; // 修改点4：将Slider改为Image
 }
 
 public class CustomerManager : MonoBehaviour
@@ -102,6 +103,7 @@ public class CustomerManager : MonoBehaviour
     {
         _isGameRunning = true;
         _gameTime = 0f;
+        PendingOrderUISlots[0].waiting.text = "前方滞留";
         for (int i = 0; i < StartOrderCount; i++)
         {
             GenerateNewOrderFromDailyList();
@@ -231,9 +233,7 @@ public class CustomerManager : MonoBehaviour
             _isGameRunning = false;
             return;
         }
-
-        // 新增：更新时间显示
-        UpdateTimeDisplay();
+        //UpdateTimeDisplay();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -279,34 +279,34 @@ public class CustomerManager : MonoBehaviour
         UpdatePendingOrdersUI();
     }
 
-    // 新增：更新时间显示
-    private void UpdateTimeDisplay()
-    {
-        if (_isGameRunning && time != null)
-        {
-            _gameTime += Time.deltaTime;
+    //// 更新时间显示
+    //private void UpdateTimeDisplay()
+    //{
+    //    if (_isGameRunning && time != null)
+    //    {
+    //        _gameTime += Time.deltaTime;
 
-            // 将秒数转换为分钟和秒
-            int minutes = Mathf.FloorToInt(_gameTime / 60f);
-            int seconds = Mathf.FloorToInt(_gameTime % 60f);
+    //        // 将秒数转换为分钟和秒
+    //        int minutes = Mathf.FloorToInt(_gameTime / 60f);
+    //        int seconds = Mathf.FloorToInt(_gameTime % 60f);
 
-            time.text = $"{minutes:00}:{seconds:00}";
-        }
-    }
+    //        time.text = $"{minutes:00}:{seconds:00}";
+    //    }
+    //}
 
-    // 新增：获取当前游戏时间（用于其他系统）
+    // 获取当前游戏时间
     public float GetCurrentGameTime()
     {
         return _gameTime;
     }
 
-    // 新增：获取格式化时间字符串
-    public string GetFormattedGameTime()
-    {
-        int minutes = Mathf.FloorToInt(_gameTime / 60f);
-        int seconds = Mathf.FloorToInt(_gameTime % 60f);
-        return $"{minutes:00}:{seconds:00}";
-    }
+    //// 获取格式化时间字符串
+    //public string GetFormattedGameTime()
+    //{
+    //    int minutes = Mathf.FloorToInt(_gameTime / 60f);
+    //    int seconds = Mathf.FloorToInt(_gameTime % 60f);
+    //    return $"{minutes:00}:{seconds:00}";
+    //}
 
     // 手动扯单方法
     public void AcceptOrderFromPending()
@@ -445,28 +445,46 @@ public class CustomerManager : MonoBehaviour
     //滞留订单UI更新逻辑
     private void UpdatePendingOrdersUI()
     {
-        // 修改点3：只显示有订单的槽
-        for (int i = 0; i < PendingOrderUISlots.Length; i++)
+        if (PendingOrderUISlots.Length > 0 && PendingOrderUISlots[0] != null)
         {
-            PendingOrderUISlot slot = PendingOrderUISlots[i];
-
-            if (i < _pendingOrders.Count)
+            PendingOrderUISlot slot = PendingOrderUISlots[0];
+            if (slot.VisualRoot != null)
             {
-                Order order = _pendingOrders[i];
-                if (slot.VisualRoot != null) slot.VisualRoot.SetActive(true);
-                slot.OrderID.text = order.OrderNumber.ToString("000");
+                slot.VisualRoot.SetActive(true);
+            }
 
-                // 修改点4：更新背景颜色
-                if (slot.PatienceBackground != null)
-                {
-                    float patienceRatio = order.PatiencePoints / order.PendingPatienceMax;
-                    slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
-                }
-            }
-            else
+            if (slot.PendingCountText != null)
             {
-                if (slot.VisualRoot != null) slot.VisualRoot.SetActive(false);
+                slot.PendingCountText.text = $"{_pendingOrders.Count} 单";
             }
+            //if (_pendingOrders.Count > 0)
+            //{
+            //    // 显示UI并更新文本内容
+
+            //}
+            //// 修改点3：只显示有订单的槽
+            //for (int i = 0; i < PendingOrderUISlots.Length; i++)
+            //{
+            //    PendingOrderUISlot slot = PendingOrderUISlots[i];
+
+            //    if (i < _pendingOrders.Count)
+            //    {
+            //        Order order = _pendingOrders[i];
+            //        if (slot.VisualRoot != null) slot.VisualRoot.SetActive(true);
+            //        slot.OrderID.text = order.OrderNumber.ToString("000");
+
+            //        // 修改点4：更新背景颜色
+            //        if (slot.PatienceBackground != null)
+            //        {
+            //            float patienceRatio = order.PatiencePoints / order.PendingPatienceMax;
+            //            slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (slot.VisualRoot != null) slot.VisualRoot.SetActive(false);
+            //    }
+            //}
         }
     }
 
