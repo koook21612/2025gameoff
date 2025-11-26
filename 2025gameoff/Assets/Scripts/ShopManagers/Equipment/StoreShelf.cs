@@ -42,6 +42,7 @@ public class StoreShelf : MonoBehaviour
         if (_isSold || _data == null) return;
         if(_data.equipmentName == "refresh")
         {
+            StoreDisplayManager.Instance.OnRefreshClicked();
             return;
         }
         //调用后台逻辑买东西

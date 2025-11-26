@@ -104,7 +104,7 @@ public class StoreDisplayManager : MonoBehaviour
     }
 
     //UI°´Å¥µã»÷Âß¼­
-    private void OnRefreshClicked()
+    public void OnRefreshClicked()
     {
         Debug.Log("refresh");
         StoreManager.Instance.TryRefreshShelf();

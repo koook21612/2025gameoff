@@ -6,7 +6,6 @@ using UnityEngine;
 // 库存系统
 public class InventorySystem : MonoBehaviour
 {
-    public List<DishScriptObjs> dishes; // 解锁的菜品
     public Dictionary<IngredientScriptObjs, int> ingredients; // 原料字典：原料类型 -> 数量
     public List<EquipmentDataSO> equipments; // 仓库里的装备
     public static InventorySystem Instance { get; private set; }
@@ -93,13 +92,5 @@ public class InventorySystem : MonoBehaviour
             return removed;
         }
         return false;
-    }
-
-    public void UnlockDish(DishScriptObjs dish)
-    {
-        if (dish != null && !dishes.Contains(dish))
-        {
-            dishes.Add(dish);
-        }
     }
 }
