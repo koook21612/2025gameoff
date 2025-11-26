@@ -14,4 +14,6 @@ public class EquipmentDataSO : ScriptableObject
     public int equipmentPrice;
     [TextArea(3, 10)]
     public string description;
+
+    public bool isGlobal;
 }

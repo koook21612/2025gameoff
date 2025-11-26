@@ -13,10 +13,11 @@ public class UIManager : MonoBehaviour
     [Header("UI Panels")]
     [SerializeField] private GameObject cookingPanel;
     [SerializeField] private GameObject materialStorePanel;
-    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject selectPanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject dialoguePanel;
+    [SerializeField] private GameObject maincookPanel;
 
     [Header("HUD Elements")]
     [SerializeField] private TextMeshProUGUI dayText; // 天数显示文本
@@ -82,10 +83,9 @@ public class UIManager : MonoBehaviour
                     materialStorePanel.SetActive(state);
                 break;
 
-            case "pause":
-            case "pausepanel":
-                if (pausePanel != null)
-                    pausePanel.SetActive(state);
+            case "select":
+                if (selectPanel != null)
+                    selectPanel.SetActive(state);
                 break;
 
             case "gameover":
@@ -95,11 +95,13 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "dialogue":
-            case "dialoguepanel":
                 if (dialoguePanel != null)
                     dialoguePanel.SetActive(state);
                 break;
-
+            case "Maincooking":
+                if (maincookPanel != null)
+                    maincookPanel.SetActive(state);
+                break;
             case "none":
             case "closeall":
                 break;
@@ -151,7 +153,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //设置
+
+    //配方设置
     public void UpdateMenuDisplay()
     {
         if (InnerGameManager.Instance == null) return;

@@ -15,7 +15,7 @@ public class StoreManager : MonoBehaviour
     public List<EquipmentDataSO> rareEquipmentPool;   // 稀有装备池
 
     [Header("装备商店状态")]
-    public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的4个装备
+    public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的5个装备
     public int refreshCount = 0; // 刷新次数(k)
     public int newMicrowavePrice = 200; // 微波炉价格
 
@@ -130,6 +130,7 @@ public class StoreManager : MonoBehaviour
 
         pendingIngredientPurchases.Clear();
         Debug.Log("所有原料已入库");
+        SelectionSystem.Instance.RefreshUI();
     }
 
     // 获取购物车总价
@@ -185,7 +186,14 @@ public class StoreManager : MonoBehaviour
         // 检查金币是否足够
         if (InnerGameManager.Instance.SpendGold(cost))
         {
-            InventorySystem.Instance.AddEquipment(equipment);
+            if (equipment.isGlobal)
+            {
+                InventorySystem.Instance.AddEquipment(equipment);
+            }
+            else
+            {
+                PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
+            }
 
             return true;
         }
@@ -246,12 +254,12 @@ public class StoreManager : MonoBehaviour
             currentShelfEquipments.Add(rareEquipmentPool[rareIndex]);
         }
 
-        //抽取普通装备3个
+        //抽取普通装备4个
         if (commonEquipmentPool != null && commonEquipmentPool.Count > 0)
         {
             List<EquipmentDataSO> temporaryPool = new List<EquipmentDataSO>(commonEquipmentPool);
 
-            int countToDraw = Mathf.Min(3, temporaryPool.Count);
+            int countToDraw = Mathf.Min(4, temporaryPool.Count);
 
             for (int i = 0; i < countToDraw; i++)
             {

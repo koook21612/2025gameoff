@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2282d9b4031d7b44b849091406e586cd, type: 3}
-  m_Name: InteracteSO_Select
+  m_Name: InSO_MainCooking
   m_EditorClassIdentifier: 
-  position: {x: -1.084857, y: 6.095038, z: 12.45}
-  rotation: {x: 0, y: 0, z: -0.011702165, w: 0.9999315}
-  Function: select
+  position: {x: -0.7826741, y: 10.22363, z: 5.718561}
+  rotation: {x: -0.004348988, y: -0.6590602, z: -0.004809008, w: 0.75206226}
+  Function: Maincooking
   state: 1
