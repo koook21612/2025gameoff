@@ -10,9 +10,9 @@ public class DishScriptObjs : ScriptableObject
     public List<IngredientScriptObjs> recipe;
     [Tooltip("售价")]
     public int DishPrice;
-    [Tooltip("完美加热区间 [x, y]")]
-    public Vector2 perfectHeatRange;
-    [Tooltip("判定线速度")]
+    [Tooltip("完美加热区间列表，每个Vector2代表一个区间 [x, y]")]
+    public Vector2[] perfectHeatRanges;
+    [Tooltip("判定线速度 (0-1的小数)")]
     public float sliderSpeed;
     [Tooltip("加热时间")]
     public float heatTime;

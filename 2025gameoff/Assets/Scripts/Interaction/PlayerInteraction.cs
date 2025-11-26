@@ -70,7 +70,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (canFinish)
             {
-                if (Input.GetMouseButton(1) || Input.GetKeyUp(KeyCode.Escape))
+                if (Input.GetKeyUp(KeyCode.Escape))
                 {
                     FinishView();
                 }
@@ -156,9 +156,13 @@ public class PlayerInteraction : MonoBehaviour
         }
         if(targetInteractable.item.Function == "Maincooking" && currentInteractable.item.Function == "select")
         {
+            UIManager.instance.SetPanel(currentInteractable.item.Function, false);
             MainCookingSystem.instance.beforeInteraction = currentInteractable.item;
+        }else if(targetInteractable.item.Function == "Maincooking")
+        {
+            MainCookingSystem.instance.beforeInteraction = null;
         }
-        currentInteractable = targetInteractable;
+            currentInteractable = targetInteractable;
         StartView();
     }
 

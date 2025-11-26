@@ -79,8 +79,16 @@ public class InventorySystem : MonoBehaviour
     {
         if (equipment != null)
         {
-            equipments.Add(equipment);
-            InnerGameManager.Instance.ApplyEffects(equipment);
+            if (equipment.isGlobal)
+            {
+                equipments.Add(equipment);
+                InnerGameManager.Instance.ApplyEffects(equipment);
+            }
+            else
+            {
+                MainCookingSystem.instance.equipment = equipment;
+                PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
+            }
         }
     }
 

@@ -99,8 +99,10 @@ public class UIManager : MonoBehaviour
                     dialoguePanel.SetActive(state);
                 break;
             case "Maincooking":
-                if (maincookPanel != null)
+                if (maincookPanel != null) {
                     maincookPanel.SetActive(state);
+                }
+                Debug.Log("main");
                 break;
             case "none":
             case "closeall":

@@ -40,7 +40,7 @@ public class ReceivedOrderUISlot
 public class PendingOrderUISlot
 {
     public GameObject VisualRoot;//整行父物体
-    //public TextMeshProUGUI OrderID;//订单号
+    public TextMeshProUGUI waiting;
     public TextMeshProUGUI PendingCountText;
     //public Image PatienceBackground; // 修改点4：将Slider改为Image
 }
@@ -103,6 +103,7 @@ public class CustomerManager : MonoBehaviour
     {
         _isGameRunning = true;
         _gameTime = 0f;
+        PendingOrderUISlots[0].waiting.text = "前方滞留";
         for (int i = 0; i < StartOrderCount; i++)
         {
             GenerateNewOrderFromDailyList();
@@ -454,7 +455,7 @@ public class CustomerManager : MonoBehaviour
 
             if (slot.PendingCountText != null)
             {
-                slot.PendingCountText.text = $"前方滞留 {_pendingOrders.Count} 单";
+                slot.PendingCountText.text = $"{_pendingOrders.Count} 单";
             }
             //if (_pendingOrders.Count > 0)
             //{

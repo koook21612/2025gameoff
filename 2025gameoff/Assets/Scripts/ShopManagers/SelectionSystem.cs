@@ -172,13 +172,18 @@ public class SelectionSystem : MonoBehaviour
                 }
             }
         }
+        PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
 
         // 重置选择
-        InitializeSelectionSystem();
-        PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
-        UpdateUI();
 
         Debug.Log("结算完成");
+    }
+
+    public void Cost()
+    {
+        // 重置选择
+        InitializeSelectionSystem();
+        UpdateUI();
     }
 
     public void RefreshUI()

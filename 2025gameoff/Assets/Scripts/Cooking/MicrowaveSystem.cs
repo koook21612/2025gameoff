@@ -18,10 +18,11 @@ public enum CookingResult
 public enum MicrowaveState
 {
     Idle,           // 空闲状态
-    Cooking,        // 烹饪中 (QTE进行中)
+    Cooking,        // 烹饪中
     Heating,        // 加热中
     Ready,          // 完成，等待收获
-    Broken          // 故障状态
+    Broken,          // 故障状态
+    unlock
 }
 
 public class MicrowaveSystem : MonoBehaviour
@@ -30,6 +31,7 @@ public class MicrowaveSystem : MonoBehaviour
     public MicrowaveState currentState = MicrowaveState.Idle;  // 当前微波炉状态
     public DishScriptObjs currentDish;                         // 当前处理的菜品
     public CookingResult cookingResult;                        // 烹饪结果
+    public DishScriptObjs wrongDish;
 
     [Header("微波炉装备")]
     public List<EquipmentDataSO> installedEquipments = new List<EquipmentDataSO>(); // 已安装的装备列表
@@ -47,7 +49,7 @@ public class MicrowaveSystem : MonoBehaviour
     void Start()
     {
         SetState(MicrowaveState.Idle); // 初始化为空闲状态
-        CalculateMicrowaveStats();     // 计算微波炉属性
+        StartCookingProcess(currentDish);
     }
 
     // 开始烹饪流程
@@ -76,6 +78,14 @@ public class MicrowaveSystem : MonoBehaviour
         // 计算加热时间并启动加热协程
         float heatingTime = CalculateHeatingTime(result);
         _heatingCoroutine = StartCoroutine(HeatingProcess(heatingTime));
+    }
+
+    public void StartHeatingWrong()
+    {
+        SetState(MicrowaveState.Heating);
+        currentDish = wrongDish;
+        _heatingCoroutine = StartCoroutine(HeatingProcess(5f));
+        PlayerInteraction.instance.FinishView();
     }
 
     // 加热协程
@@ -121,8 +131,9 @@ public class MicrowaveSystem : MonoBehaviour
                 break;
             case CookingResult.Undercooked:
             case CookingResult.Overcooked:
+                currentDish = wrongDish;
                 baseTime = 5f; // 烹饪失败使用固定加热时间
-                break;
+                return baseTime;
             default:
                 baseTime = currentDish.heatTime;
                 break;
@@ -138,11 +149,11 @@ public class MicrowaveSystem : MonoBehaviour
             globalMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
         }
 
-        return baseTime * localMultiplier * globalMultiplier;
+        return baseTime * (localMultiplier + globalMultiplier);
     }
 
     // 计算微波炉属性
-    private void CalculateMicrowaveStats()
+    public void CalculateMicrowaveStats()
     {
         heatingTimeMultiplier = 1f; // 重置倍率
 

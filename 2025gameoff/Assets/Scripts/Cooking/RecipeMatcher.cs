@@ -5,6 +5,20 @@ public class RecipeMatcher : MonoBehaviour
 {
     public List<IngredientScriptObjs> currentIngredients;
 
+    public static RecipeMatcher instance { get; private set; }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void TryToCook(MicrowaveSystem targetMicrowave)
     {
         bool matchWasFound = false;
@@ -33,8 +47,7 @@ public class RecipeMatcher : MonoBehaviour
 
         if (!matchWasFound)
         {
-            Debug.Log("配方无效");
-            // TODO: 处理无效配方
+            targetMicrowave.StartHeatingWrong();
         }
 
         currentIngredients.Clear();
