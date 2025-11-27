@@ -119,6 +119,10 @@ public class InnerGameManager : MonoBehaviour
     // 新的一天开始
     public void StartNewDay()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SwitchToNormalMusic();
+        }
         CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
