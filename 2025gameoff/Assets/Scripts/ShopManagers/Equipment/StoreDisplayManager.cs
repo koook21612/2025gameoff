@@ -84,6 +84,10 @@ public class StoreDisplayManager : MonoBehaviour
                 NameText.text = "Ë¢ÐÂ";
                 CostText.text = $"{StoreManager.Instance.GetRefreshCost()} G";
             }
+            else if (shelf._data.equipmentName == "newMicrowave") {
+                NameText.text = "ÐÂÎ¢²¨Â¯";
+                CostText.text = $"{shelf._data.equipmentPrice} G";
+            }
             else
             {
                 CostText.text = $"{shelf._data.equipmentPrice} G";
