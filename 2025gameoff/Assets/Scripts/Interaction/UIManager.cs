@@ -18,10 +18,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private GameObject maincookPanel;
+    [SerializeField] private GameObject SettingPanel;
 
     [Header("HUD Elements")]
     [SerializeField] private TextMeshProUGUI dayText; // 天数显示文本
-    [SerializeField] private TextMeshProUGUI reputationText; // 声望显示文本
+    [SerializeField] private Image[] reputationImages = new Image[3];  // 声望显示
     [SerializeField] private TextMeshProUGUI moneyText; // 金钱显示文本
 
     [Header("Menu")]
@@ -102,7 +103,10 @@ public class UIManager : MonoBehaviour
                 if (maincookPanel != null) {
                     maincookPanel.SetActive(state);
                 }
-                Debug.Log("main");
+                break;
+            case "setting":
+                if (SettingPanel != null)
+                    SettingPanel.SetActive(state);
                 break;
             case "none":
             case "closeall":
@@ -146,13 +150,27 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateReputationImages(int currentReputation)
+    {
+        if (reputationImages == null || reputationImages.Length != 3) return;
+
+        for (int i = 0; i < reputationImages.Length; i++)
+        {
+            if (reputationImages[i] != null)
+            {
+                reputationImages[i].gameObject.SetActive(i < currentReputation);
+            }
+        }
+    }
+
     // 更新声望文本
     public void UpdateReputationText(int currentReputation, int maxReputation)
     {
-        if (reputationText != null)
-        {
-            reputationText.text = $"{currentReputation}/{maxReputation}";
-        }
+        UpdateReputationImages(currentReputation);
+        //if (reputationText != null)
+        //{
+        //    reputationText.text = $"{currentReputation}/{maxReputation}";
+        //}
     }
 
 

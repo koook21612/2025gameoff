@@ -44,6 +44,10 @@ public class StoreShelf : MonoBehaviour
         {
             StoreDisplayManager.Instance.OnRefreshClicked();
             return;
+        }else if(_data.equipmentName == "newMicrowave")
+        {
+            StoreDisplayManager.Instance.OnBuyMicrowaveClicked();
+            return;
         }
         //调用后台逻辑买东西
         if (StoreManager.Instance.BuyEquipment(_data))

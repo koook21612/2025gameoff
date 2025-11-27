@@ -32,8 +32,10 @@ public class PlayerInteraction : MonoBehaviour
     public float rayDistance = 5f;
 
     // 观察冷却时间控制
-    private bool canInteract = true;
+    public bool canInteract = true;
     private float interactionCooldown = 1f; // 1秒冷却时间
+
+    private System.Action onViewComplete;
 
     public RectTransform menu;
 
@@ -59,7 +61,6 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
         CheckInteractables();
     }
 
@@ -76,6 +77,17 @@ public class PlayerInteraction : MonoBehaviour
                 }
             }
             return;
+        }
+        else
+        {
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                UIManager.instance.SetPanel("setting", true);
+                canInteract = false;
+                isViewing = true;
+                onView.Invoke();
+                UIManager.instance.SetAim(false);
+            }
         }
 
         // 检查是否在冷却时间内
@@ -96,15 +108,50 @@ public class PlayerInteraction : MonoBehaviour
 
             if (interactable != null)
             {
-                Debug.Log(hit.collider);
+                if (interactable.item != null)
+                {
+
+                    if (interactable.item.Function == "cooking")
+                    {
+                        MicrowaveSystem microwave = interactable.GetComponent<MicrowaveSystem>();
+                        if (microwave != null && microwave.currentState == MicrowaveState.Ready)
+                        {
+                            UIManager.instance.SetHandCursor(true);
+
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                // 直接拉起交菜系统，不移动相机
+                                DeliverySystem.Instance.StartDelivery(microwave);
+                                canInteract = false;
+                                isViewing = true;
+                                onView.Invoke();
+                                UIManager.instance.SetAim(false);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            UIManager.instance.SetHandCursor(false);
+                            return;
+                        }
+                    }
+                }
+                //Debug.Log(hit.collider);
                 // 改变光标显示物体可交互
                 UIManager.instance.SetHandCursor(true);
 
                 if (interactable.isInstantInteract)
                 {
-                    if(interactable.storeShelf != null)
+                    if (interactable.storeShelf != null)
                     {
-                        StoreDisplayManager.Instance.ShowItemInfo(interactable.storeShelf);
+                        if (!InnerGameManager.Instance.isPlaying)
+                        {
+                            StoreDisplayManager.Instance.ShowItemInfo(interactable.storeShelf);
+                        }
+                        else
+                        {
+                            StoreDisplayManager.Instance.ShowCantBuy();
+                        }
                     }
                 }
 
@@ -112,9 +159,12 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     if (interactable.isInstantInteract)
                     {
-                        // 如果是即时交互（买装备），直接触发事件
-                        interactable.onInteract.Invoke();
-                        interactable.TryBuyItem();
+                        if (!InnerGameManager.Instance.isPlaying)
+                        {
+                            // 如果是即时交互（买装备），直接触发事件
+                            interactable.onInteract.Invoke();
+                            interactable.TryBuyItem();
+                        }
                     }
                     else
                     {
@@ -136,7 +186,7 @@ public class PlayerInteraction : MonoBehaviour
             {
                 StoreDisplayManager.Instance.HideItemInfo();
             }
-            
+
             UIManager.instance.SetHandCursor(false);
         }
     }
@@ -147,22 +197,23 @@ public class PlayerInteraction : MonoBehaviour
         currentItem = item;
     }
 
-    public void SwitchToInteractable(Interactable targetInteractable)
+    public void SwitchToInteractable(Interactable targetInteractable, System.Action onComplete = null)
     {
         if (targetInteractable == null) return;
         if (isViewing && currentInteractable != null)
         {
             UIManager.instance.SetPanel(currentInteractable.item.Function, false);
+            Debug.Log(currentInteractable.item.Function + " " + targetInteractable.item.Function);
         }
         if(targetInteractable.item.Function == "Maincooking" && currentInteractable.item.Function == "select")
         {
-            UIManager.instance.SetPanel(currentInteractable.item.Function, false);
             MainCookingSystem.instance.beforeInteraction = currentInteractable.item;
         }else if(targetInteractable.item.Function == "Maincooking")
         {
             MainCookingSystem.instance.beforeInteraction = null;
         }
-            currentInteractable = targetInteractable;
+        currentInteractable = targetInteractable;
+        onViewComplete = onComplete;
         StartView();
     }
 
@@ -173,7 +224,7 @@ public class PlayerInteraction : MonoBehaviour
             // 设置不能交互状态
             canInteract = false;
             isViewing = true;
-            if(currentInteractable.item.Function == "Maincooking")
+            if(currentInteractable.item.Function == "Maincooking" || currentInteractable.item.Function == "cooking")
             {
                 canFinish = false;
             }
@@ -185,6 +236,8 @@ public class PlayerInteraction : MonoBehaviour
             UIManager.instance.SetAim(false);
             StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
                 UIManager.instance.SetPanel(currentInteractable.item.Function, true);
+                onViewComplete?.Invoke();
+                onViewComplete = null;
             }));
         }
         if (!currentInteractable.item.state && !InnerGameManager.Instance.isPlaying)
@@ -199,6 +252,8 @@ public class PlayerInteraction : MonoBehaviour
             UIManager.instance.SetAim(false);
             StartCoroutine(MovingCamera(currentInteractable.item.position, currentInteractable.item.rotation, () => {
                 UIManager.instance.SetPanel(currentInteractable.item.Function, true);
+                onViewComplete?.Invoke();
+                onViewComplete = null;
             }));
         }
     }
@@ -217,7 +272,7 @@ public class PlayerInteraction : MonoBehaviour
     }
 
     // 交互冷却协程
-    IEnumerator InteractionCooldown()
+    public IEnumerator InteractionCooldown()
     {
         yield return new WaitForSeconds(interactionCooldown);
         canInteract = true;

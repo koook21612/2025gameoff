@@ -457,34 +457,6 @@ public class CustomerManager : MonoBehaviour
             {
                 slot.PendingCountText.text = $"{_pendingOrders.Count} 单";
             }
-            //if (_pendingOrders.Count > 0)
-            //{
-            //    // 显示UI并更新文本内容
-
-            //}
-            //// 修改点3：只显示有订单的槽
-            //for (int i = 0; i < PendingOrderUISlots.Length; i++)
-            //{
-            //    PendingOrderUISlot slot = PendingOrderUISlots[i];
-
-            //    if (i < _pendingOrders.Count)
-            //    {
-            //        Order order = _pendingOrders[i];
-            //        if (slot.VisualRoot != null) slot.VisualRoot.SetActive(true);
-            //        slot.OrderID.text = order.OrderNumber.ToString("000");
-
-            //        // 修改点4：更新背景颜色
-            //        if (slot.PatienceBackground != null)
-            //        {
-            //            float patienceRatio = order.PatiencePoints / order.PendingPatienceMax;
-            //            slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (slot.VisualRoot != null) slot.VisualRoot.SetActive(false);
-            //    }
-            //}
         }
     }
 
@@ -504,7 +476,7 @@ public class CustomerManager : MonoBehaviour
     }
 
     //菜品交付
-    public void DeliverDishToOrder(DishScriptObjs deliveredDish, CookingResult result, int orderSlotIndex)
+    public void DeliverSingleDishToOrder(DishScriptObjs deliveredDish, CookingResult result, int orderSlotIndex)
     {
         if (orderSlotIndex < 0 || orderSlotIndex >= _receivedOrders.Length) return;
         if (_receivedOrders[orderSlotIndex] == null) return;
@@ -553,5 +525,36 @@ public class CustomerManager : MonoBehaviour
 
         Debug.Log("上错菜，扣除声望");
         InnerGameManager.Instance.LoseReputation();
+    }
+
+    // 获取指定订单槽的订单
+    public Order GetOrderAtSlot(int slotIndex)
+    {
+        if (slotIndex >= 0 && slotIndex < _receivedOrders.Length)
+        {
+            return _receivedOrders[slotIndex];
+        }
+        return null;
+    }
+
+    // 检查订单是否需要指定菜品
+    public bool OrderNeedsDish(int orderSlotIndex, DishScriptObjs dish)
+    {
+        Order order = GetOrderAtSlot(orderSlotIndex);
+        if (order == null) return false;
+
+        foreach (OrderItem item in order.Dishes)
+        {
+            if (item.DishName == dish && item.DishQuantity > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Order[] GetReceivedOrders()
+    {
+        return _receivedOrders;
     }
 }

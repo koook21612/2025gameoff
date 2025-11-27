@@ -2916,7 +2916,7 @@ MonoBehaviour:
     m_FontSize: 72
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 7
+    m_MinSize: 0
     m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -5071,8 +5071,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 528704789}
   - {fileID: 1718991431}
-  - {fileID: 1543897902}
   - {fileID: 629592908}
+  - {fileID: 1543897902}
   - {fileID: 1634031574}
   - {fileID: 1222025394}
   - {fileID: 1435048058}

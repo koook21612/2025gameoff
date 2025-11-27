@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class SettingManager : MonoBehaviour
 {
     public Toggle fullscreenToggle;// 全屏切换开关
-    public Text toggleLabel; // 全屏切换标签文本
+    public TextMeshProUGUI toggleLabel; // 全屏切换标签文本
 
     public TMP_Dropdown resolutionDropdown; // 分辨率下拉选择框
     private Resolution[] availableResolutions;// 可用的分辨率数组

@@ -16,4 +16,5 @@ public class DishScriptObjs : ScriptableObject
     public float sliderSpeed;
     [Tooltip("加热时间")]
     public float heatTime;
+    public GameObject model;
 }

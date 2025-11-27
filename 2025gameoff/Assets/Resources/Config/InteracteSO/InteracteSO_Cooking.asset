@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2282d9b4031d7b44b849091406e586cd, type: 3}
   m_Name: InteracteSO_Cooking
   m_EditorClassIdentifier: 
-  position: {x: -8.01, y: 8.73, z: 4.18}
-  rotation: {x: 0, y: -0.7551216, z: 0, w: 0.65558475}
+  position: {x: -10.20149, y: 8.840553, z: 6.508793}
+  rotation: {x: 0.056196235, y: -0.78690153, z: 0.06865871, w: 0.6106668}
   Function: cooking
   state: 1

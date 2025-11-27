@@ -28,7 +28,7 @@ public enum MicrowaveState
 public class MicrowaveSystem : MonoBehaviour
 {
     [Header("微波炉状态")]
-    public MicrowaveState currentState = MicrowaveState.Idle;  // 当前微波炉状态
+    public MicrowaveState currentState = MicrowaveState.unlock;  // 当前微波炉状态
     public DishScriptObjs currentDish;                         // 当前处理的菜品
     public CookingResult cookingResult;                        // 烹饪结果
     public DishScriptObjs wrongDish;
@@ -48,7 +48,6 @@ public class MicrowaveSystem : MonoBehaviour
 
     void Start()
     {
-        SetState(MicrowaveState.Idle); // 初始化为空闲状态
         //StartCookingProcess(currentDish);
     }
 
@@ -180,9 +179,10 @@ public class MicrowaveSystem : MonoBehaviour
     }
 
     // 设置微波炉状态
-    private void SetState(MicrowaveState newState)
+    public void SetState(MicrowaveState newState)
     {
         currentState = newState;
-        OnStateChanged?.Invoke(newState); // 触发状态改变事件
+        //Debug.Log(newState);
+        //OnStateChanged?.Invoke(newState); // 触发状态改变事件
     }
 }

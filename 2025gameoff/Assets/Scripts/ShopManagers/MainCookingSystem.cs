@@ -6,6 +6,7 @@ public class MainCookingSystem : MonoBehaviour
     public Item beforeInteraction;
     public Button[] selectionButtons = new Button[5];
     public MicrowaveSystem[] microwave = new MicrowaveSystem[5];
+    public Interactable[] interactables = new Interactable[5];
     public EquipmentDataSO equipment;
     public static MainCookingSystem instance { get; private set; }
 
@@ -23,6 +24,7 @@ public class MainCookingSystem : MonoBehaviour
 
     void Start()
     {
+        InitializeMicrowaveSystems();
         SetupButtonEvents();
     }
 
@@ -32,6 +34,35 @@ public class MainCookingSystem : MonoBehaviour
         {
             int index = i;
             selectionButtons[i].onClick.AddListener(() => OnButtonLeftClick(index));
+        }
+
+    }
+
+
+    private void InitializeMicrowaveSystems()
+    {
+        if (InnerGameManager.Instance != null && InnerGameManager.Instance.microwaveModels != null)
+        {
+            for (int i = 0; i < Mathf.Min(microwave.Length, InnerGameManager.Instance.microwaveModels.Length); i++)
+            {
+                if (InnerGameManager.Instance.microwaveModels[i] != null)
+                {
+                    microwave[i] = InnerGameManager.Instance.microwaveModels[i].GetComponent<MicrowaveSystem>();
+                    interactables[i] = InnerGameManager.Instance.microwaveModels[i].GetComponent<Interactable>();
+                    if (microwave[i] == null)
+                    {
+                        Debug.LogError($"微波炉模型 {i} 上没有找到 MicrowaveSystem 组件！");
+                    }
+                    if(interactables[i] == null)
+                    {
+                        Debug.LogError($"微波炉模型 {i} 上没有找到 Interactable 组件！");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("InnerGameManager 实例或 microwaveModels 未找到！");
         }
     }
 
@@ -52,37 +83,32 @@ public class MainCookingSystem : MonoBehaviour
             Debug.LogError($"索引 {buttonIndex} 的微波炉未设置！");
             return;
         }
-
         // 根据beforeInteraction判断功能类型
         if (beforeInteraction != null)
         {
-            // 功能1: 选择烹饪的微波炉
-            HandleCookingSelection(targetMicrowave);
+            // 选择烹饪的微波炉
+            Debug.Log("进入烹饪");
+            HandleCookingSelection(buttonIndex);
         }
         else
         {
-            // 功能2: 选择添加武器的微波炉
+            // 选择添加武器的微波炉
+            Debug.Log("添加武器");
             HandleWeaponAddition(targetMicrowave);
         }
-
-        // 重置选择
-        beforeInteraction = null;
-
-        // 关闭选择界面，返回主烹饪界面
-        PlayerInteraction.instance.FinishView();
     }
 
-    private void HandleCookingSelection(MicrowaveSystem targetMicrowave)
+    private void HandleCookingSelection(int buttonIndex)
     {
+        MicrowaveSystem targetMicrowave = microwave[buttonIndex];
+        Debug.Log(targetMicrowave.currentState);
         // 检查微波炉是否空闲
         if (targetMicrowave.currentState != MicrowaveState.Idle)
         {
-            //Debug.Log("该微波炉正在使用中，无法烹饪！");
             return;
         }
 
 
-        // 将选择的食材转换为RecipeMatcher需要的格式
         RecipeMatcher.instance.currentIngredients.Clear();
 
         foreach (var kvp in SelectionSystem.Instance.currentSelections)
@@ -96,13 +122,14 @@ public class MainCookingSystem : MonoBehaviour
                 }
             }
         }
-
-        // 尝试烹饪
-        RecipeMatcher.instance.TryToCook(targetMicrowave);
-
-        // 结算食材
+        //结算食材
         SelectionSystem.Instance.Cost();
-
+        // 尝试烹饪
+        PlayerInteraction.instance.SwitchToInteractable(interactables[buttonIndex], () => {
+            RecipeMatcher.instance.TryToCook(targetMicrowave);
+        });
+        // 重置选择
+        beforeInteraction = null;
         Debug.Log($"开始在微波炉 {System.Array.IndexOf(microwave, targetMicrowave)} 进行烹饪");
     }
 
@@ -130,6 +157,8 @@ public class MainCookingSystem : MonoBehaviour
         equipment = null;
         // 更新UI显示
         UpdateMicrowaveUI(targetMicrowave);
+        // 重置选择
+        beforeInteraction = null;
     }
 
     private void CloseSelectionInterface()
