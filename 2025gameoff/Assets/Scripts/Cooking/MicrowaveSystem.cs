@@ -49,7 +49,7 @@ public class MicrowaveSystem : MonoBehaviour
     void Start()
     {
         SetState(MicrowaveState.Idle); // 初始化为空闲状态
-        StartCookingProcess(currentDish);
+        //StartCookingProcess(currentDish);
     }
 
     // 开始烹饪流程

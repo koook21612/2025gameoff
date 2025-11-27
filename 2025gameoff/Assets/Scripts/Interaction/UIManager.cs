@@ -142,7 +142,7 @@ public class UIManager : MonoBehaviour
     {
         if (moneyText != null)
         {
-            moneyText.text = $"½ð±Ò£º{currentMoney}";
+            moneyText.text = $"{currentMoney}";
         }
     }
 
@@ -151,7 +151,7 @@ public class UIManager : MonoBehaviour
     {
         if (reputationText != null)
         {
-            reputationText.text = $"ÉùÍû£º{currentReputation}/{maxReputation}";
+            reputationText.text = $"{currentReputation}/{maxReputation}";
         }
     }
 
