@@ -250,6 +250,8 @@ public class CustomerManager : MonoBehaviour
             }
         }
 
+        CheckAndUpdateMusicState();
+
         //已接收订单倒计时
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
@@ -527,34 +529,28 @@ public class CustomerManager : MonoBehaviour
         InnerGameManager.Instance.LoseReputation();
     }
 
-    // 获取指定订单槽的订单
-    public Order GetOrderAtSlot(int slotIndex)
+    private void CheckAndUpdateMusicState()
     {
-        if (slotIndex >= 0 && slotIndex < _receivedOrders.Length)
+        if (AudioManager.Instance == null) return;
+
+        int pendingOrdersCount = _pendingOrders.Count;
+        int currentReputation = InnerGameManager.Instance.currentReputation;
+
+        // 根据条件判断当前应该播放的音乐
+        if (pendingOrdersCount > 15 || currentReputation == 1)
         {
-            return _receivedOrders[slotIndex];
+            // extreme 条件：滞留订单高于15 或 声望等于1
+            AudioManager.Instance.SwitchToExtremeMusic();
         }
-        return null;
-    }
-
-    // 检查订单是否需要指定菜品
-    public bool OrderNeedsDish(int orderSlotIndex, DishScriptObjs dish)
-    {
-        Order order = GetOrderAtSlot(orderSlotIndex);
-        if (order == null) return false;
-
-        foreach (OrderItem item in order.Dishes)
+        else if (pendingOrdersCount > 10)
         {
-            if (item.DishName == dish && item.DishQuantity > 0)
-            {
-                return true;
-            }
+            // stress 条件：滞留订单高于10
+            AudioManager.Instance.SwitchToStressMusic();
         }
-        return false;
-    }
-
-    public Order[] GetReceivedOrders()
-    {
-        return _receivedOrders;
+        else
+        {
+            // normal 条件：订单不多的情况
+            AudioManager.Instance.SwitchToNormalMusic();
+        }
     }
 }

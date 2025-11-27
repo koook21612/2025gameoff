@@ -6,13 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
-
     public AudioMixer audioMixer;
     public AudioMixerGroup musicGroup;
     public AudioMixerGroup effectGroup;
 
     private AudioSource musicSource;
+    private AudioSource musicSource2; // 第二个音源用于交叉淡入淡出
     private AudioSource voiceSource;
+
+    private bool isFirstSourceActive = true;
+    private Coroutine fadeCoroutine;
+
+    // 当前播放的音乐状态
+    private string currentMusicState = "";
 
     public static AudioManager Instance { get; private set; }
 
@@ -23,9 +29,16 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
+            // 创建两个音乐音源用于交叉淡入淡出
             musicSource = gameObject.AddComponent<AudioSource>();
             musicSource.outputAudioMixerGroup = musicGroup;
             musicSource.loop = true;
+            musicSource.volume = 0f;
+
+            musicSource2 = gameObject.AddComponent<AudioSource>();
+            musicSource2.outputAudioMixerGroup = musicGroup;
+            musicSource2.loop = true;
+            musicSource2.volume = 0f;
 
             voiceSource = gameObject.AddComponent<AudioSource>();
             voiceSource.outputAudioMixerGroup = effectGroup;
@@ -48,27 +61,87 @@ public class AudioManager : MonoBehaviour
         }
         else if (scene.name == Constants.GAME_SCENE)
         {
+            // 游戏场景的音乐将在 StartNewDay() 中开始
         }
     }
 
     public void PlayBackground(string musicFileName)
     {
-        if (string.IsNullOrEmpty(musicFileName))
+        if (string.IsNullOrEmpty(musicFileName) || currentMusicState == musicFileName)
         {
             return;
         }
+
         AudioClip clip = Resources.Load<AudioClip>(Constants.MUSIC_PATH + musicFileName);
         if (clip == null)
         {
             Debug.LogError(Constants.AUDIO_LOAD_FAILED + musicFileName);
             return;
         }
-        if (musicSource.clip == clip)
+
+        currentMusicState = musicFileName;
+        CrossFadeTo(clip, 1.5f); // 1.5秒的淡入淡出时间
+    }
+
+    // 新增：根据游戏状态切换音乐
+    public void SwitchToNormalMusic()
+    {
+        PlayBackground(Constants.MUSIC_OPERATING_NORMAL);
+    }
+
+    public void SwitchToStressMusic()
+    {
+        PlayBackground(Constants.MUSIC_OPERATING_STRESS);
+    }
+
+    public void SwitchToExtremeMusic()
+    {
+        PlayBackground(Constants.MUSIC_OPERATING_EXTREME);
+    }
+
+    // 交叉淡入淡出方法
+    private void CrossFadeTo(AudioClip newClip, float fadeDuration)
+    {
+        if (fadeCoroutine != null)
         {
-            return;
+            StopCoroutine(fadeCoroutine);
         }
-        musicSource.clip = clip;
-        musicSource.Play();
+        fadeCoroutine = StartCoroutine(CrossFadeCoroutine(newClip, fadeDuration));
+    }
+
+    private IEnumerator CrossFadeCoroutine(AudioClip newClip, float fadeDuration)
+    {
+        AudioSource oldSource = isFirstSourceActive ? musicSource : musicSource2;
+        AudioSource newSource = isFirstSourceActive ? musicSource2 : musicSource;
+
+        // 设置新音源并开始播放
+        newSource.clip = newClip;
+        newSource.Play();
+        newSource.volume = 0f;
+
+        float timer = 0f;
+
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            float ratio = timer / fadeDuration;
+
+            // 淡出新音源，淡入新音源
+            oldSource.volume = Mathf.Lerp(1f, 0f, ratio);
+            newSource.volume = Mathf.Lerp(0f, 1f, ratio);
+
+            yield return null;
+        }
+
+        // 确保音量正确设置
+        oldSource.volume = 0f;
+        newSource.volume = 1f;
+
+        // 停止旧音源
+        oldSource.Stop();
+
+        // 切换活跃音源
+        isFirstSourceActive = !isFirstSourceActive;
     }
 
     public void PlayEffect(string effectFileName)
@@ -82,7 +155,6 @@ public class AudioManager : MonoBehaviour
         voiceSource.clip = clip;
         voiceSource.Play();
     }
-
 
     public void PlayUIEffect(string effectFileName)
     {

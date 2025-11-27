@@ -14,7 +14,12 @@ public class Constants
     public static string EFFECT_PATH = "audio/effect/";
     public static string UI_EFFECT_PATH = "audio/effect/ui/";
     public static string AUDIO_LOAD_FAILED = "Dailed to load audio√ªƒ‹≤•∑≈“Ù∆µ: ";
+
+
     public static string MENU_MUSIC_FILE_NAME = "BGM_menu";
+    public static string MUSIC_OPERATING_EXTREME = "music_operating_extreme";
+    public static string MUSIC_OPERATING_NORMAL = "music_operating_normal";
+    public static string MUSIC_OPERATING_STRESS = "music_operating_stress";
     public static string CREDITS_MUSIC_FILE_NAME = "";
 
     public static string STORY_PATH = "dialogues/content";
