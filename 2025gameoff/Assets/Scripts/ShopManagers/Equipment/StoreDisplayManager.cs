@@ -61,6 +61,10 @@ public class StoreDisplayManager : MonoBehaviour
         //    refreshCostText.text = $"刷新 ({cost} G)";
         //}
     }
+    public void ShowCantBuy()
+    {
+        DescriptionText.text = "现在无法购买";
+    }
     public void ShowItemInfo(StoreShelf shelf)
     {
         if (shelf == null) return;
@@ -111,9 +115,8 @@ public class StoreDisplayManager : MonoBehaviour
         RefreshShelves();
     }
 
-    private void OnBuyMicrowaveClicked()
+    public void OnBuyMicrowaveClicked()
     {
         StoreManager.Instance.BuyMicrowave();
-        buyMicrowaveButton.SetActive(false);
     }
 }

@@ -6,7 +6,7 @@ using TMPro;
 public class IngredientStoreSlot : MonoBehaviour
 {
     [Header("UI References")]
-    public Image ingredientIcon;
+    //public Image ingredientIcon;
     public TextMeshProUGUI ingredientNameText; // 显示名称和价格
     public TMP_InputField quantityInput;
     public Button increaseButton;
@@ -155,11 +155,11 @@ public class IngredientStoreSlot : MonoBehaviour
         int price = StoreManager.Instance.GetIngredientPrice(currentIngredient);
         ingredientNameText.text = $"{currentIngredient.ingredientName} - {price}金币";
 
-        // 更新图标
-        if (ingredientIcon != null)
-        {
-            ingredientIcon.sprite = currentIngredient.icon;
-        }
+        //// 更新图标
+        //if (ingredientIcon != null)
+        //{
+        //    ingredientIcon.sprite = currentIngredient.icon;
+        //}
 
         // 更新数量显示
         quantityInput.text = currentQuantity.ToString();

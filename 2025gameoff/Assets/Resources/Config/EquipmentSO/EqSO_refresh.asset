@@ -17,3 +17,4 @@ MonoBehaviour:
   equipmentName: refresh
   equipmentPrice: 0
   description: "\u5237\u65B0"
+  isGlobal: 1

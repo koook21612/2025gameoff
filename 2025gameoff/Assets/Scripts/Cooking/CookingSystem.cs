@@ -51,13 +51,12 @@ public class CookingSystem : MonoBehaviour
 
     void Start()
     {
-        //cookingPanel.SetActive(false);
+        cookingPanel.SetActive(false);
     }
 
     void Update()
     {
         if (isStop == true) return;
-         //|| !cookingPanel.activeInHierarchy
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
             OnStopButtonClick();
@@ -105,7 +104,7 @@ public class CookingSystem : MonoBehaviour
         GeneratePerfectZoneMarkers();
 
         // 显示面板
-        //cookingPanel.SetActive(true);
+        cookingPanel.SetActive(true);
 
         Debug.Log($"开始烹饪: {_currentDish.dishName}, 完美区间数量: {_currentPerfectRanges.Count}");
     }
@@ -166,7 +165,7 @@ public class CookingSystem : MonoBehaviour
     private IEnumerator HidePanelAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        //cookingPanel.SetActive(false);
+        cookingPanel.SetActive(false);
         PlayerInteraction.instance.FinishView();
         ResetCookingSystem();
     }
@@ -178,7 +177,6 @@ public class CookingSystem : MonoBehaviour
     {
         _currentDish = null;
         _targetMicrowave = null;
-        isStop = false;
         currentSliderValue = 0;
         _currentPerfectRanges.Clear();
         ClearPerfectZoneMarkers();

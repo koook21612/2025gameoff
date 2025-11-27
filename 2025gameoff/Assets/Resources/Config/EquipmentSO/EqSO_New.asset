@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentTexture: {fileID: 0}
   effects: []
-  equipmentName: "\u5FAE\u6CE2\u7089"
+  equipmentName: newMicrowave
   equipmentPrice: 200
-  description: 
-  isGlobal: 0
+  description: "\u9A6C\u4E0A\u83B7\u5F97\u4E00\u4E2A\u65B0\u7684\u5FAE\u6CE2\u7089"
+  isGlobal: 1

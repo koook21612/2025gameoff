@@ -254,12 +254,12 @@ public class StoreManager : MonoBehaviour
             currentShelfEquipments.Add(rareEquipmentPool[rareIndex]);
         }
 
-        //抽取普通装备4个
+        //抽取普通装备3个
         if (commonEquipmentPool != null && commonEquipmentPool.Count > 0)
         {
             List<EquipmentDataSO> temporaryPool = new List<EquipmentDataSO>(commonEquipmentPool);
 
-            int countToDraw = Mathf.Min(4, temporaryPool.Count);
+            int countToDraw = Mathf.Min(3, temporaryPool.Count);
 
             for (int i = 0; i < countToDraw; i++)
             {

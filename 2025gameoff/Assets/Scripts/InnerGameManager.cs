@@ -84,8 +84,6 @@ public class InnerGameManager : MonoBehaviour
             StoreManager.Instance.refreshCount = 0;
         }
         days = 0;
-
-        UpdateMicrowaveDisplay();
         UpdateUI();
         EnterStore();
     }
@@ -172,14 +170,29 @@ public class InnerGameManager : MonoBehaviour
         // 激活需要的微波炉
         for (int i = 0; i < targetCount; i++)
         {
-            if (microwaveModels[i] != null && !microwaveModels[i].activeInHierarchy)
+            if (microwaveModels[i] != null)
             {
                 microwaveModels[i].SetActive(true);
+                MicrowaveSystem microwave = microwaveModels[i].GetComponent<MicrowaveSystem>();
+                if (microwave != null)
+                {
+                    //Debug.Log("准备解锁");
+                    microwave.SetState(MicrowaveState.Idle);
+                }
+            }
+        }
+        for(int i = 0; i < targetCount; i++)
+        {
+            MicrowaveSystem microwave = microwaveModels[i].GetComponent<MicrowaveSystem>();
+            if (microwave != null)
+            {
+                //Debug.Log("二次解锁");
+                microwave.SetState(MicrowaveState.Idle);
             }
         }
         for (int i = targetCount; i < microwaveModels.Length; i++)
         {
-            if (microwaveModels[i] != null && microwaveModels[i].activeInHierarchy)
+            if (microwaveModels[i] != null)
             {
                 microwaveModels[i].SetActive(false);
             }

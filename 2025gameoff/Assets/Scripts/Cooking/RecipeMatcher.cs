@@ -21,6 +21,7 @@ public class RecipeMatcher : MonoBehaviour
 
     public void TryToCook(MicrowaveSystem targetMicrowave)
     {
+        Debug.Log("成功尝试制作");
         bool matchWasFound = false;
 
         foreach (var dish in InnerGameManager.Instance.dishPool)
@@ -39,6 +40,7 @@ public class RecipeMatcher : MonoBehaviour
 
             if (isAllMatch)
             {
+                Debug.Log("开始制作");
                 targetMicrowave.StartCookingProcess(dish);
                 matchWasFound = true;
                 break;
@@ -47,6 +49,8 @@ public class RecipeMatcher : MonoBehaviour
 
         if (!matchWasFound)
         {
+            Debug.Log("配方失败");
+            PlayerInteraction.instance.FinishView();
             targetMicrowave.StartHeatingWrong();
         }
 
