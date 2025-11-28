@@ -106,7 +106,7 @@ public class InnerGameManager : MonoBehaviour
     // Ω¯»Î…ÃµÍ
     public void EnterStore()
     {
-
+        AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         if (days == 7)
         {
             GameOver();
