@@ -86,6 +86,7 @@ public class SelectionSystem : MonoBehaviour
 
             if (currentStock > 0 && currentSelected < currentStock)
             {
+                AudioManager.Instance.PlayChoosingItem();
                 currentSelections[ingredient]++;
                 UpdateUI();
             }
@@ -172,6 +173,8 @@ public class SelectionSystem : MonoBehaviour
                 }
             }
         }
+        string clickSound = "ui_button_click";
+        AudioManager.Instance.PlayUIEffect(clickSound);
         PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
 
         // 重置选择
@@ -189,5 +192,43 @@ public class SelectionSystem : MonoBehaviour
     public void RefreshUI()
     {
         UpdateUI();
+    }
+
+    /// <summary>
+    /// 返回所有已选择的食材到仓库
+    /// </summary>
+    public void ReturnAllIngredients()
+    {
+        int totalReturned = 0;
+        List<IngredientScriptObjs> ingredientsToReturn = new List<IngredientScriptObjs>();
+
+        // 收集所有需要返回的食材
+        foreach (var kvp in currentSelections)
+        {
+            if (kvp.Value > 0)
+            {
+                ingredientsToReturn.Add(kvp.Key);
+                totalReturned += kvp.Value;
+            }
+        }
+
+        // 将所有选择的食材返回给仓库
+        foreach (var ingredient in ingredientsToReturn)
+        {
+            int quantity = currentSelections[ingredient];
+            if (quantity > 0)
+            {
+                // 将食材添加回库存
+                InventorySystem.Instance.AddIngredient(ingredient, quantity);
+
+                Debug.Log($"返回食材: {ingredient.ingredientName} x{quantity}");
+            }
+        }
+
+        // 重置选择状态
+        InitializeSelectionSystem();
+        UpdateUI();
+
+        Debug.Log($"已返回所有食材，共 {totalReturned} 个");
     }
 }

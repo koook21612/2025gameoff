@@ -22,8 +22,8 @@ public class PlayerInteraction : MonoBehaviour
     private Vector3 originPosition;
     // 存储相机原始旋转
     private Quaternion originRotation;
-    private bool isViewing;
-    private bool canFinish = true;
+    public bool isViewing;
+    public bool canFinish = true;
     public Interactable MainCooking;
     // 相机移动速度
     public float cameraMoveSpeed = 1f;
@@ -76,18 +76,22 @@ public class PlayerInteraction : MonoBehaviour
                     FinishView();
                 }
             }
-            return;
-        }
-        else
-        {
-            if (Input.GetKeyUp(KeyCode.Escape))
+            if(currentInteractable.item != null)
             {
-                UIManager.instance.SetPanel("setting", true);
-                canInteract = false;
-                isViewing = true;
-                onView.Invoke();
-                UIManager.instance.SetAim(false);
+                if (currentInteractable.item.Function == "Maincooking")
+                {
+                    if (Input.GetKeyUp(KeyCode.Escape))
+                    {
+                        if (MainCookingSystem.instance.beforeInteraction != null)
+                        {
+                            SelectionSystem.Instance.ReturnAllIngredients();
+                            FinishView();
+                        }
+
+                    }
+                }
             }
+            return;
         }
 
         // 检查是否在冷却时间内
@@ -157,6 +161,13 @@ public class PlayerInteraction : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0))
                 {
+                    if (interactable.item != null && interactable.item.Function == "setting")
+                    {
+                        currentInteractable = interactable;
+                        OpenSetting();
+                        return;
+
+                    }
                     if (interactable.isInstantInteract)
                     {
                         if (!InnerGameManager.Instance.isPlaying)
@@ -203,7 +214,7 @@ public class PlayerInteraction : MonoBehaviour
         if (isViewing && currentInteractable != null)
         {
             UIManager.instance.SetPanel(currentInteractable.item.Function, false);
-            Debug.Log(currentInteractable.item.Function + " " + targetInteractable.item.Function);
+            //Debug.Log(currentInteractable.item.Function + " " + targetInteractable.item.Function);
         }
         if(targetInteractable.item.Function == "Maincooking" && currentInteractable.item.Function == "select")
         {
@@ -215,6 +226,16 @@ public class PlayerInteraction : MonoBehaviour
         currentInteractable = targetInteractable;
         onViewComplete = onComplete;
         StartView();
+    }
+
+    public void OpenSetting()
+    {
+        canInteract = false;
+        canFinish = true;
+        isViewing = true;
+        UIManager.instance.SetAim(false);
+        UIManager.instance.SetPanel("setting", true);
+        onView.Invoke();
     }
 
     void StartView()
@@ -263,6 +284,13 @@ public class PlayerInteraction : MonoBehaviour
         canFinish = false;
         isViewing = false;
         UIManager.instance.SetPanel(currentInteractable.item.Function, false);
+        if(currentInteractable.item.Function == "setting")
+        {
+            UIManager.instance.SetAim(true);
+            onFinishView.Invoke();
+            StartCoroutine(InteractionCooldown());
+            return;
+        }
         StartCoroutine(MovingCamera(originPosition, originRotation, () => {
             UIManager.instance.SetAim(true);
             onFinishView.Invoke();

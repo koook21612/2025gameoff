@@ -53,6 +53,7 @@ public class RecipeMatcher : MonoBehaviour
         if (!matchWasFound)
         {
             Debug.Log("≈‰∑Ω ß∞‹");
+            AudioManager.Instance.PlayMicrowaveHeatingFail();
             PlayerInteraction.instance.FinishView();
             targetMicrowave.StartHeatingWrong();
         }

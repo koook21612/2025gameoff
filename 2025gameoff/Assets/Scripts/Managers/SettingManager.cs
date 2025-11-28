@@ -234,7 +234,17 @@ public class SettingManager : MonoBehaviour
         //SceneManager.LoadScene(GameManager.Instance.currentScene);
         if (GameManager.Instance.hasStart)
         {
-            UIManager.instance.SetPanel("setting", false);
+            PlayerInteraction.instance.FinishView();
+            //PlayerInteraction.instance.canFinish = false;
+            //PlayerInteraction.instance.isViewing = false;
+            //PlayerInteraction.instance.canInteract = true;
+            //UIManager.instance.SetAim(true);
+            //PlayerInteraction.instance.onFinishView.Invoke();
+            //UIManager.instance.SetPanel("setting", false);
+        }
+        else
+        {
+            SceneManager.LoadScene(GameManager.Instance.currentScene);
         }
     }
 
