@@ -10,14 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
-  m_Name: DishSO_PorkChop
+  m_Name: DishSO_8Bread 1
   m_EditorClassIdentifier: 
-  dishName: "\u732A\u8089\u6392"
+  dishName: "\u6C49\u5821"
   recipe:
   - {fileID: 11400000, guid: 432d35e1c1119fc4285dc54b4965eb4f, type: 2}
-  DishPrice: 20
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  DishPrice: 45
   perfectHeatRanges:
-  - {x: 0.66, y: 1}
-  sliderSpeed: 0.15
-  heatTime: 15
-  model: {fileID: 6122336513326100359, guid: 3b838aec6bc200e4a813caf3a5b1f809, type: 3}
+  - {x: 0.4, y: 0.5}
+  - {x: 0.6, y: 0.7}
+  - {x: 0.9, y: 1}
+  sliderSpeed: 0.25
+  heatTime: 30
+  model: {fileID: 1138216619080793479, guid: 0a64eaca309f96e478e5be648ce207d0, type: 3}

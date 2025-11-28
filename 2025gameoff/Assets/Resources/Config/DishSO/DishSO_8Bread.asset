@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
+  m_Name: DishSO_8Bread
+  m_EditorClassIdentifier: 
+  dishName: "\u9762\u5305"
+  recipe:
+  - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  DishPrice: 25
+  perfectHeatRanges:
+  - {x: 0.6, y: 0.7}
+  - {x: 0.8, y: 0.9}
+  sliderSpeed: 0.1
+  heatTime: 25
+  model: {fileID: 8834008521810557276, guid: de91e0431ddb8744ab975ead3269242a, type: 3}

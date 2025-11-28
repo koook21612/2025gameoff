@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
-  m_Name: DishSO_BoiledjVegetables
+  m_Name: DishSO_5VRice 1
   m_EditorClassIdentifier: 
-  dishName: "\u6C34\u716E\u83DC"
+  dishName: "\u83DC\u996D"
   recipe:
+  - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
   - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
-  DishPrice: 10
-  perfectHeatRanges:
-  - {x: 0, y: 0.3}
-  sliderSpeed: 0.15
-  heatTime: 7
-  model: {fileID: 2297081696210395965, guid: 25aab5bda7ec30d4e879f8de5c4b7475, type: 3}
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  DishPrice: 26
+  perfectHeatRanges: []
+  sliderSpeed: 0.2
+  heatTime: 1
+  model: {fileID: 9005290401692122359, guid: cfe399910e130bc4b8990dc4b628b1c3, type: 3}
