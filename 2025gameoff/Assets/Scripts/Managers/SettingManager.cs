@@ -235,12 +235,6 @@ public class SettingManager : MonoBehaviour
         if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
             PlayerInteraction.instance.FinishView();
-            //PlayerInteraction.instance.canFinish = false;
-            //PlayerInteraction.instance.isViewing = false;
-            //PlayerInteraction.instance.canInteract = true;
-            //UIManager.instance.SetAim(true);
-            //PlayerInteraction.instance.onFinishView.Invoke();
-            //UIManager.instance.SetPanel("setting", false);
         }
         else
         {
