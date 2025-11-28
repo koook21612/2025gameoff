@@ -37108,7 +37108,7 @@ MonoBehaviour:
   currentState: 0
   currentDish: {fileID: 0}
   cookingResult: 0
-  wrongDish: {fileID: 0}
+  wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
@@ -38127,7 +38127,7 @@ MonoBehaviour:
   currentState: 5
   currentDish: {fileID: 11400000, guid: e3f085698712bd14a8009d5dbd72d0d5, type: 2}
   cookingResult: 0
-  wrongDish: {fileID: 0}
+  wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
@@ -40719,7 +40719,7 @@ MonoBehaviour:
   currentState: 0
   currentDish: {fileID: 0}
   cookingResult: 0
-  wrongDish: {fileID: 0}
+  wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
@@ -42495,7 +42495,7 @@ MonoBehaviour:
   currentState: 0
   currentDish: {fileID: 0}
   cookingResult: 0
-  wrongDish: {fileID: 0}
+  wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
@@ -43095,7 +43095,7 @@ MonoBehaviour:
   currentState: 0
   currentDish: {fileID: 0}
   cookingResult: 0
-  wrongDish: {fileID: 0}
+  wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1

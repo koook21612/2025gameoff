@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 public class PlayerInteraction : MonoBehaviour
 {
