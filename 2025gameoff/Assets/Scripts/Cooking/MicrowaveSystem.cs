@@ -46,6 +46,10 @@ public class MicrowaveSystem : MonoBehaviour
     // 私有变量
     private Coroutine _heatingCoroutine; // 加热协程引用
 
+    [Header("视觉表现")]
+    public Transform dishHolder; // 用来定位模型生成在哪里
+    private GameObject internalDishModel; // 记录当前微波炉里生成的那个模型
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -93,6 +97,8 @@ public class MicrowaveSystem : MonoBehaviour
         SetState(MicrowaveState.Heating);
         currentDish = wrongDish;
 
+        anim.SetTrigger("Close");
+
         // 播放开始加热音效
         AudioManager.Instance.PlayMicrowaveHeatingStart();
         AudioManager.Instance.AddHeatingMicrowave();
@@ -111,6 +117,7 @@ public class MicrowaveSystem : MonoBehaviour
         // 播放结束加热音效和开门音效
         AudioManager.Instance.PlayMicrowaveHeatingEnd();
         AudioManager.Instance.PlayMicrowaveOpen();
+        ShowInternalDish();
         anim.SetTrigger("Open");
         AudioManager.Instance.RemoveHeatingMicrowave();
 
@@ -120,6 +127,26 @@ public class MicrowaveSystem : MonoBehaviour
         Debug.Log("加热完成，等待收获");
     }
 
+    // 显示微波炉内部的模型
+    private void ShowInternalDish()
+    {
+        if (internalDishModel != null)
+        {
+            Destroy(internalDishModel);
+            internalDishModel = null;
+        }
+
+        if (currentDish != null && currentDish.model != null && dishHolder != null)
+        {
+            internalDishModel = Instantiate(currentDish.model, dishHolder);
+
+            internalDishModel.transform.localPosition = Vector3.zero;
+            internalDishModel.transform.localRotation = Quaternion.identity;
+
+            internalDishModel.SetActive(true);
+        }
+    }
+
     // 收获菜品
     public void CollectDish()
     {
@@ -127,6 +154,12 @@ public class MicrowaveSystem : MonoBehaviour
         {
             Debug.Log("没有可以收获的菜品");
             return;
+        }
+
+        if (internalDishModel != null)
+        {
+            Destroy(internalDishModel);
+            internalDishModel = null;
         }
 
         // 重置微波炉状态
