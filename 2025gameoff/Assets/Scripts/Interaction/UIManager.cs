@@ -82,14 +82,6 @@ public class UIManager : MonoBehaviour
             case "ingredient":
                 if (materialStorePanel != null)
                 {
-                    if (state)
-                    {
-                        AudioManager.Instance.PlayFridgeOpen();
-                    }
-                    else
-                    {
-                        AudioManager.Instance.PlayFridgeClose();
-                    }
                     materialStorePanel.SetActive(state);
                 }
                 break;
