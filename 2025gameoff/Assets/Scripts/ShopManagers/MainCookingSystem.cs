@@ -84,6 +84,10 @@ public class MainCookingSystem : MonoBehaviour
             Debug.LogError($"索引 {buttonIndex} 的微波炉未设置！");
             return;
         }
+        if(targetMicrowave.currentState != MicrowaveState.Idle)
+        {
+            return;
+        }
         // 根据beforeInteraction判断功能类型
         if (beforeInteraction != null)
         {
@@ -93,7 +97,7 @@ public class MainCookingSystem : MonoBehaviour
                 return;
             }
             // 选择烹饪的微波炉
-            Debug.Log("进入烹饪");
+            //Debug.Log("进入烹饪");
             HandleCookingSelection(buttonIndex);
         }
         else

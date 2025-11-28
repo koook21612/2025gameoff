@@ -91,7 +91,13 @@ public class InnerGameManager : MonoBehaviour
     // 游戏结束
     private void GameOver()
     {
-        
+        if (currentReputation <= 0)
+        {
+        }
+        else
+        {
+
+        }
     }
 
     // 进入商店
@@ -220,6 +226,7 @@ public class InnerGameManager : MonoBehaviour
     // === 金币操作 ===
     public void AddGold(int amount)
     {
+        AudioManager.Instance.PlayGainCoins();
         currentGold += amount;
         UpdateUI();
     }
@@ -249,6 +256,7 @@ public class InnerGameManager : MonoBehaviour
     //失去声望
     public void LoseReputation()
     {
+        AudioManager.Instance.PlayOrderOutOfTime();
         currentReputation = Mathf.Max(0, currentReputation - 1);
         UpdateUI();
         // 检查游戏结束
@@ -268,6 +276,7 @@ public class InnerGameManager : MonoBehaviour
         {
             if (currentReputation < maxReputation)
             {
+                AudioManager.Instance.PlayReputationUp();
                 currentReputation++;
             }
             else

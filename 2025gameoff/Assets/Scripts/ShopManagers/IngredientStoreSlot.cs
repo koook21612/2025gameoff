@@ -44,7 +44,7 @@ public class IngredientStoreSlot : MonoBehaviour
     public void IncreaseQuantity()
     {
         if (currentQuantity >= maxQuantity) return;
-
+        AudioManager.Instance.PlayStoreBuyGoods();
         int newQuantity = currentQuantity + 1;
         SetQuantity(newQuantity);
     }
@@ -53,7 +53,7 @@ public class IngredientStoreSlot : MonoBehaviour
     public void DecreaseQuantity()
     {
         if (currentQuantity <= minQuantity) return;
-
+        AudioManager.Instance.PlayStoreBuyGoods();
         int newQuantity = currentQuantity - 1;
         SetQuantity(newQuantity);
     }

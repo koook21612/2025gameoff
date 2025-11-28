@@ -199,6 +199,7 @@ public class CustomerManager : MonoBehaviour
     {
         if (_currentCustomerIndex < _dailyCustomers.Count)
         {
+            AudioManager.Instance.PlayPrinterPrinting();
             Order newOrder = _dailyCustomers[_currentCustomerIndex];
             _currentCustomerIndex++;
             _pendingOrders.Add(newOrder);
@@ -380,6 +381,7 @@ public class CustomerManager : MonoBehaviour
         {
             if (_receivedOrders[i] == null && _pendingOrders.Count > 0)
             {
+                AudioManager.Instance.PlayPrinterTearOrder();
                 _receivedOrders[i] = _pendingOrders[0];
                 _pendingOrders.RemoveAt(0);
                 _receivedOrders[i].PatiencePoints = _receivedOrders[i].ReceivedPatienceMax;
@@ -488,11 +490,13 @@ public class CustomerManager : MonoBehaviour
             if (order != null)
             {
                 slot.VisualRoot.SetActive(true);
-                // 修改点4：更新背景颜色
                 if (slot.PatienceBackground != null)
                 {
                     float patienceRatio = order.PatiencePoints / order.ReceivedPatienceMax;
-                    slot.PatienceBackground.color = Color.Lerp(Color.red, Color.white, patienceRatio);
+
+                    // 只改变RGB，保持alpha不变
+                    Color targetColor = Color.Lerp(Color.red, Color.white, patienceRatio);
+                    slot.PatienceBackground.color = new Color(targetColor.r, targetColor.g, targetColor.b, slot.PatienceBackground.color.a);
                 }
             }
             else

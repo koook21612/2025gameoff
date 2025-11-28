@@ -32,7 +32,7 @@ public class MicrowaveSystem : MonoBehaviour
     public DishScriptObjs currentDish;                         // 当前处理的菜品
     public CookingResult cookingResult;                        // 烹饪结果
     public DishScriptObjs wrongDish;
-
+    public Animator anim;
     [Header("微波炉装备")]
     public List<EquipmentDataSO> installedEquipments = new List<EquipmentDataSO>(); // 已安装的装备列表
 
@@ -48,6 +48,7 @@ public class MicrowaveSystem : MonoBehaviour
 
     void Start()
     {
+        anim = GetComponent<Animator>();
         //StartCookingProcess(currentDish);
     }
 
@@ -63,6 +64,10 @@ public class MicrowaveSystem : MonoBehaviour
         currentDish = dish;
         SetState(MicrowaveState.Cooking);
 
+        // 播放关门音效
+        AudioManager.Instance.PlayMicrowaveClose();
+        anim.SetTrigger("Close");
+
         // 调用烹饪系统开始QTE烹饪
         CookingSystem.Instance.StartCooking(dish, this);
     }
@@ -74,6 +79,10 @@ public class MicrowaveSystem : MonoBehaviour
         currentDish = dish;
         SetState(MicrowaveState.Heating);
 
+        // 播放开始加热音效
+        AudioManager.Instance.PlayMicrowaveHeatingStart();
+        AudioManager.Instance.AddHeatingMicrowave();
+
         // 计算加热时间并启动加热协程
         float heatingTime = CalculateHeatingTime(result);
         _heatingCoroutine = StartCoroutine(HeatingProcess(heatingTime));
@@ -83,6 +92,11 @@ public class MicrowaveSystem : MonoBehaviour
     {
         SetState(MicrowaveState.Heating);
         currentDish = wrongDish;
+
+        // 播放开始加热音效
+        AudioManager.Instance.PlayMicrowaveHeatingStart();
+        AudioManager.Instance.AddHeatingMicrowave();
+
         _heatingCoroutine = StartCoroutine(HeatingProcess(5f));
         PlayerInteraction.instance.FinishView();
     }
@@ -93,6 +107,12 @@ public class MicrowaveSystem : MonoBehaviour
         Debug.Log($"开始加热，预计时间: {heatingTime}秒");
 
         yield return new WaitForSeconds(heatingTime); // 等待加热完成
+
+        // 播放结束加热音效和开门音效
+        AudioManager.Instance.PlayMicrowaveHeatingEnd();
+        AudioManager.Instance.PlayMicrowaveOpen();
+        anim.SetTrigger("Open");
+        AudioManager.Instance.RemoveHeatingMicrowave();
 
         SetState(MicrowaveState.Ready); // 设置为可收获状态
         OnHeatingComplete?.Invoke(cookingResult, currentDish); // 触发加热完成事件
@@ -204,6 +224,12 @@ public class MicrowaveSystem : MonoBehaviour
         {
             StopCoroutine(_heatingCoroutine);
             _heatingCoroutine = null;
+
+            // 如果正在加热，移除加热计数
+            if (currentState == MicrowaveState.Heating)
+            {
+                AudioManager.Instance.RemoveHeatingMicrowave();
+            }
         }
 
         // 清空当前菜品

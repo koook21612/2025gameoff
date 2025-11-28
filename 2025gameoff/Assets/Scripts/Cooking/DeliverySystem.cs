@@ -255,8 +255,11 @@ public class DeliverySystem : MonoBehaviour
             orderButtons[i].interactable = false;
         }
         // 恢复玩家交互
+        PlayerInteraction.instance.canFinish = false;
+        PlayerInteraction.instance.isViewing = false;
         PlayerInteraction.instance.canInteract = true;
         UIManager.instance.SetAim(true);
+        PlayerInteraction.instance.onFinishView.Invoke();
 
         // 开始交互冷却
         PlayerInteraction.instance.StartCoroutine(PlayerInteraction.instance.InteractionCooldown());

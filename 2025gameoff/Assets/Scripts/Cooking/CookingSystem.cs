@@ -119,6 +119,9 @@ public class CookingSystem : MonoBehaviour
         isStop = true;
         CookingResult result = GetCookingResult();
 
+        // 播放QTE结果音效
+        PlayQTEResultSound(result);
+
         // 将结果传递给微波炉
         if (_targetMicrowave != null)
         {
@@ -130,6 +133,23 @@ public class CookingSystem : MonoBehaviour
 
         // 延迟隐藏
         StartCoroutine(HidePanelAfterDelay(1f));
+    }
+
+    /// <summary>
+    /// 播放QTE结果音效
+    /// </summary>
+    private void PlayQTEResultSound(CookingResult result)
+    {
+        switch (result)
+        {
+            case CookingResult.Perfect:
+                AudioManager.Instance.PlayMicrowaveHeatingPerfect();
+                break;
+            case CookingResult.Undercooked:
+            case CookingResult.Overcooked:
+                AudioManager.Instance.PlayMicrowaveHeatingFail();
+                break;
+        }
     }
 
     /// <summary>
@@ -231,7 +251,7 @@ public class CookingSystem : MonoBehaviour
         }
         Debug.Log(perfectZoneMultiplier + " " + globalPerfectZonePercent);
         float totalPerfectZoneBonus = perfectZoneMultiplier + globalPerfectZonePercent;
-        
+
 
         // 处理每个原始完美区间
         foreach (var originalRange in _currentDish.perfectHeatRanges)

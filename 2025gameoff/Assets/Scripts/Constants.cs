@@ -13,8 +13,9 @@ public class Constants
     public static string MUSIC_PATH = "audio/bgm/";
     public static string EFFECT_PATH = "audio/effect/";
     public static string UI_EFFECT_PATH = "audio/effect/ui/";
+    public static string MICROWAVE = "audio/effect/microwave oven/";
+    public static string OPERAT = "audio/effect/operating/";
     public static string AUDIO_LOAD_FAILED = "Dailed to load audio√ªƒ‹≤•∑≈“Ù∆µ: ";
-
 
     public static string MENU_MUSIC_FILE_NAME = "BGM_menu";
     public static string MUSIC_OPERATING_EXTREME = "music_operating_extreme";
