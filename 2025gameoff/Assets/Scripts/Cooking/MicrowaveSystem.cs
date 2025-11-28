@@ -185,4 +185,50 @@ public class MicrowaveSystem : MonoBehaviour
         //Debug.Log(newState);
         //OnStateChanged?.Invoke(newState); // 触发状态改变事件
     }
+
+    /// <summary>
+    /// 检查是否有正在运行的加热协程
+    /// </summary>
+    public bool IsHeatingCoroutineRunning()
+    {
+        return _heatingCoroutine != null;
+    }
+
+    /// <summary>
+    /// 重置微波炉到待机状态
+    /// </summary>
+    public void ResetToIdle()
+    {
+        // 停止所有协程
+        if (_heatingCoroutine != null)
+        {
+            StopCoroutine(_heatingCoroutine);
+            _heatingCoroutine = null;
+        }
+
+        // 清空当前菜品
+        currentDish = null;
+
+        // 重置烹饪结果
+        cookingResult = CookingResult.Undercooked;
+
+        // 设置状态为待机
+        SetState(MicrowaveState.Idle);
+
+        Debug.Log($"微波炉已重置为待机状态");
+    }
+
+    /// <summary>
+    /// 强制停止当前烹饪过程
+    /// </summary>
+    public void ForceStopCooking()
+    {
+        if (currentState == MicrowaveState.Cooking ||
+            currentState == MicrowaveState.Heating ||
+            currentState == MicrowaveState.Ready)
+        {
+            ResetToIdle();
+            Debug.Log($"强制停止微波炉烹饪过程");
+        }
+    }
 }

@@ -91,12 +91,13 @@ public class InnerGameManager : MonoBehaviour
     // 游戏结束
     private void GameOver()
     {
-
+        
     }
 
     // 进入商店
     public void EnterStore()
     {
+
         if (days == 7)
         {
             GameOver();
@@ -108,6 +109,7 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
+        MainCookingSystem.instance.ClearAllActiveMicrowaves();
         UnlockDishesAndIngredientsByDay();
         UIManager.instance.UpdateMenuDisplay();
         UpdateUI();
@@ -131,7 +133,7 @@ public class InnerGameManager : MonoBehaviour
     //更新解锁
     private void UnlockDishesAndIngredientsByDay()
     {
-        if (days > 3)
+        if (days > 4)
         {
             return;
         }

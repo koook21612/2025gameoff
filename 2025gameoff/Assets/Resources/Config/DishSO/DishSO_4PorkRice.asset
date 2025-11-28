@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
-  m_Name: DishSO_PorkChop
+  m_Name: DishSO_4PorkRice
   m_EditorClassIdentifier: 
-  dishName: "\u732A\u8089\u6392"
+  dishName: "\u732A\u6392\u996D"
   recipe:
+  - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
   - {fileID: 11400000, guid: 432d35e1c1119fc4285dc54b4965eb4f, type: 2}
-  DishPrice: 20
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  DishPrice: 36
   perfectHeatRanges:
-  - {x: 0.66, y: 1}
-  sliderSpeed: 0.15
-  heatTime: 15
-  model: {fileID: 6122336513326100359, guid: 3b838aec6bc200e4a813caf3a5b1f809, type: 3}
+  - {x: 0.3, y: 0.5}
+  sliderSpeed: 0.2
+  heatTime: 12
+  model: {fileID: 7153355826936279108, guid: 06e5381d83b7eef44af1162c5e27f0fa, type: 3}

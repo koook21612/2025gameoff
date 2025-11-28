@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "IngredientSO_", menuName = "Scriptable Objects/原料配置")]
+[CreateAssetMenu(fileName = "IngrSO_", menuName = "Scriptable Objects/原料配置")]
 public class IngredientScriptObjs : ScriptableObject
 {
     [Tooltip("原料名称")]

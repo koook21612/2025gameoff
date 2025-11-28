@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class MainCookingSystem : MonoBehaviour
 {
@@ -86,6 +87,11 @@ public class MainCookingSystem : MonoBehaviour
         // 根据beforeInteraction判断功能类型
         if (beforeInteraction != null)
         {
+            if (!InnerGameManager.Instance.isPlaying)
+            {
+                PlayerInteraction.instance.FinishView();
+                return;
+            }
             // 选择烹饪的微波炉
             Debug.Log("进入烹饪");
             HandleCookingSelection(buttonIndex);
@@ -212,4 +218,65 @@ public class MainCookingSystem : MonoBehaviour
             }
         }
     }
+
+
+    /// <summary>
+    /// 清空所有状态不为未解锁的微波炉
+    /// 如果微波炉正在烹饪或烹饪完成，立即停止烹饪并清空菜品，回到待机状态
+    /// </summary>
+    public void ClearAllActiveMicrowaves()
+    {
+        StartCoroutine(ClearAllActiveMicrowavesCoroutine());
+    }
+
+    /// <summary>
+    /// 协程方式清空所有活跃微波炉
+    /// </summary>
+    private IEnumerator ClearAllActiveMicrowavesCoroutine()
+    {
+        Debug.Log("开始清空所有活跃微波炉...");
+
+        int clearedCount = 0;
+
+        for (int i = 0; i < microwave.Length; i++)
+        {
+            if (microwave[i] != null && microwave[i].currentState != MicrowaveState.unlock)
+            {
+                ClearSingleMicrowave(microwave[i]);
+                clearedCount++;
+
+                // 每清空一个微波炉等待一帧，避免性能峰值
+                yield return null;
+            }
+        }
+
+        Debug.Log($"清空微波炉完成，共处理了 {clearedCount} 个微波炉");
+
+        // 更新UI显示
+        UpdateSelectionButtons();
+    }
+
+    /// <summary>
+    /// 清空单个微波炉
+    /// </summary>
+    /// <param name="microwave">要清空的微波炉</param>
+    private void ClearSingleMicrowave(MicrowaveSystem microwave)
+    {
+        if (microwave == null) return;
+
+        Debug.Log($"清空微波炉 {System.Array.IndexOf(this.microwave, microwave)}，原状态: {microwave.currentState}");
+
+        // 停止所有正在运行的协程
+        if (microwave.IsHeatingCoroutineRunning())
+        {
+            microwave.StopAllCoroutines();
+            Debug.Log($"停止微波炉 {System.Array.IndexOf(this.microwave, microwave)} 的加热协程");
+        }
+
+        // 重置微波炉状态
+        microwave.ResetToIdle();
+
+        Debug.Log($"微波炉 {System.Array.IndexOf(this.microwave, microwave)} 已重置为待机状态");
+    }
+
 }

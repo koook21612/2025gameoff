@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
+using System.Collections;
 
 [System.Serializable]
 public class OrderItem
@@ -84,6 +85,11 @@ public class CustomerManager : MonoBehaviour
     private float _gameTime = 0f; // 游戏运行时间
     private bool _isGameRunning = false; // 游戏是否正在进行
 
+    // 新增：天结束检测相关变量
+    private bool _isDayEnding = false; // 是否正在结束当天
+    private int _totalCustomersToday = 0; // 当天总顾客数
+    private int _processedCustomers = 0; // 已处理顾客数（包括成功和失败）
+
     public static CustomerManager Instance;
     private void Awake()
     {
@@ -102,7 +108,9 @@ public class CustomerManager : MonoBehaviour
     public void StartGame()
     {
         _isGameRunning = true;
+        _isDayEnding = false;
         _gameTime = 0f;
+        _processedCustomers = 0; // 重置已处理顾客数
         PendingOrderUISlots[0].waiting.text = "前方滞留";
         for (int i = 0; i < StartOrderCount; i++)
         {
@@ -119,10 +127,12 @@ public class CustomerManager : MonoBehaviour
         _dailyDishesRequirement.Clear();
         _dailyIncome = 0;
         _dailyServedOrders = 0;
+        _isDayEnding = false;
         AllDishes = InnerGameManager.Instance.dishPool;
         int day = InnerGameManager.Instance.days;
         // 计算当天总顾客数 y = n + ln(n) + e^(n-7) + 10
         int totalCustomers = CalculateDailyCustomerCount(day);
+        _totalCustomersToday = totalCustomers; // 记录当天总顾客数
 
         // 分波次计算顾客数
         int wave1Count = Mathf.FloorToInt(totalCustomers * 0.3f);
@@ -147,7 +157,7 @@ public class CustomerManager : MonoBehaviour
                 CountDishesRequirement(customer);
             }
         }
-        Debug.Log("成功生成所有顾客");
+        Debug.Log($"成功生成所有顾客，总数: {_totalCustomersToday}");
     }
 
     //计算菜数
@@ -233,12 +243,17 @@ public class CustomerManager : MonoBehaviour
             _isGameRunning = false;
             return;
         }
+
+        // 如果正在结束当天，不执行其他逻辑
+        if (_isDayEnding) return;
+
         //UpdateTimeDisplay();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             AcceptOrderFromPending();
         }
+
         //每过countdownTime秒生成generateQuantity个订单
         _timer += Time.deltaTime;
         if (_timer >= OrderGenerationInterval)
@@ -259,8 +274,11 @@ public class CustomerManager : MonoBehaviour
             _receivedOrders[i].PatiencePoints -= Time.deltaTime;
             if (_receivedOrders[i].PatiencePoints <= 0)
             {
+                // 订单超时，计入已处理顾客
+                _processedCustomers++;
                 InnerGameManager.Instance.LoseReputation();
                 _receivedOrders[i] = null;
+                CheckDayCompletion(); // 检查是否完成当天
             }
         }
 
@@ -271,14 +289,59 @@ public class CustomerManager : MonoBehaviour
             _pendingOrders[i].PatiencePoints -= Time.deltaTime * pendingDrainMultiplier;
             if (_pendingOrders[i].PatiencePoints <= 0)
             {
+                // 订单超时，计入已处理顾客
+                _processedCustomers++;
                 InnerGameManager.Instance.LoseReputation();
                 _pendingOrders.Remove(_pendingOrders[i]);
+                CheckDayCompletion(); // 检查是否完成当天
             }
         }
 
         //UI更新逻辑
         UpdateReceivedOrdersUI();
         UpdatePendingOrdersUI();
+
+        // 检查是否所有顾客都已生成且处理完毕
+        CheckDayCompletion();
+    }
+
+    // 新增：检查当天是否完成
+    private void CheckDayCompletion()
+    {
+        // 如果所有顾客都已生成（包括已处理和未处理的）
+        // 并且没有未处理的订单（已接收和滞留订单都为空）
+        if (_currentCustomerIndex >= _dailyCustomers.Count &&
+            _pendingOrders.Count == 0 &&
+            AreAllReceivedOrdersNull())
+        {
+            // 延迟1秒后进入下一天
+            if (!_isDayEnding)
+            {
+                _isDayEnding = true;
+                StartCoroutine(EndDayAfterDelay(1f));
+            }
+        }
+    }
+
+    // 新增：检查所有已接收订单是否都为null
+    private bool AreAllReceivedOrdersNull()
+    {
+        foreach (var order in _receivedOrders)
+        {
+            if (order != null) return false;
+        }
+        return true;
+    }
+
+    // 新增：延迟结束当天
+    private System.Collections.IEnumerator EndDayAfterDelay(float delay)
+    {
+        Debug.Log("当天所有顾客已处理完毕，准备进入下一天");
+        yield return new WaitForSeconds(delay);
+
+        // 进入商店开始新的一天
+        ResetForNewDay();
+        InnerGameManager.Instance.EnterStore();
     }
 
     //// 更新时间显示
@@ -474,6 +537,8 @@ public class CustomerManager : MonoBehaviour
         _timer = 0f;
         _gameTime = 0f; // 重置游戏时间
         _isGameRunning = false; // 停止计时
+        _isDayEnding = false; // 重置结束状态
+        _processedCustomers = 0; // 重置已处理顾客数
         DisableAllUIPanels();
     }
 
@@ -513,6 +578,10 @@ public class CustomerManager : MonoBehaviour
                             InnerGameManager.Instance.AddGold(currentOrder.TotalPrice);
                             InnerGameManager.Instance.CompleteCustomer();
                             _receivedOrders[orderSlotIndex] = null;
+
+                            // 订单完成，计入已处理顾客
+                            _processedCustomers++;
+                            CheckDayCompletion(); // 检查是否完成当天
                         }
                     }
                 }
@@ -520,6 +589,9 @@ public class CustomerManager : MonoBehaviour
                 {
                     Debug.Log("提交了失败料理，扣除声望");
                     InnerGameManager.Instance.LoseReputation();
+                    // 订单失败，也计入已处理顾客
+                    _processedCustomers++;
+                    CheckDayCompletion(); // 检查是否完成当天
                 }
                 return;
             }
@@ -527,6 +599,9 @@ public class CustomerManager : MonoBehaviour
 
         Debug.Log("上错菜，扣除声望");
         InnerGameManager.Instance.LoseReputation();
+        // 上错菜，也计入已处理顾客
+        _processedCustomers++;
+        CheckDayCompletion(); // 检查是否完成当天
     }
 
     private void CheckAndUpdateMusicState()

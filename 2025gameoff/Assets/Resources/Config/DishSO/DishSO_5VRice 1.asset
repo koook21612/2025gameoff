@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
-  m_Name: DishSO_Rice
+  m_Name: DishSO_5VRice 1
   m_EditorClassIdentifier: 
-  dishName: "\u7C73\u996D"
+  dishName: "\u83DC\u996D"
   recipe:
   - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
-  DishPrice: 6
-  perfectHeatRanges:
-  - {x: 0.3, y: 0.6}
-  sliderSpeed: 0.15
-  heatTime: 10
-  model: {fileID: 8713342670864423627, guid: 29afd28acc8ca8047b9c77b430cdb32d, type: 3}
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  DishPrice: 26
+  perfectHeatRanges: []
+  sliderSpeed: 0.2
+  heatTime: 1
+  model: {fileID: 9005290401692122359, guid: cfe399910e130bc4b8990dc4b628b1c3, type: 3}
