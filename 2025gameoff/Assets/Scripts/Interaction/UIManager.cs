@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro;
+using TMPro; // æ·»åŠ è¿™ä¸ªå‘½åç©ºé—´
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -20,9 +20,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject SettingPanel;
 
     [Header("HUD Elements")]
-    [SerializeField] private TextMeshProUGUI dayText; // ÌìÊıÏÔÊ¾ÎÄ±¾
-    [SerializeField] private Image[] reputationImages = new Image[3];  // ÉùÍûÏÔÊ¾
-    [SerializeField] private TextMeshProUGUI moneyText; // ½ğÇ®ÏÔÊ¾ÎÄ±¾
+    [SerializeField] private TextMeshProUGUI dayText; // å¤©æ•°æ˜¾ç¤ºæ–‡æœ¬
+    [SerializeField] private Image[] reputationImages = new Image[3];  // å£°æœ›æ˜¾ç¤º
+    [SerializeField] private TextMeshProUGUI moneyText; // é‡‘é’±æ˜¾ç¤ºæ–‡æœ¬
 
     [Header("Menu")]
     [SerializeField] private TextMeshProUGUI[] Menu = new TextMeshProUGUI[6];
@@ -114,12 +114,12 @@ public class UIManager : MonoBehaviour
                 break;
 
             default:
-                Debug.LogWarning($"Î´ÖªµÄÃæ°åÃû³Æ: {panelName}");
+                Debug.LogWarning($"æœªçŸ¥çš„é¢æ¿åç§°: {panelName}");
                 break;
         }
     }
 
-    // ¸üĞÂÌìÊıºÍÉùÍûÏÔÊ¾
+    // æ›´æ–°å¤©æ•°å’Œå£°æœ›æ˜¾ç¤º
     public void UpdateDayAndReputationDisplay()
     {
         if (InnerGameManager.Instance != null)
@@ -130,16 +130,16 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("InnerGameManagerÊµÀıÎ´ÕÒµ½");
+            Debug.LogWarning("InnerGameManagerå®ä¾‹æœªæ‰¾åˆ°");
         }
     }
 
-    // ¸üĞÂÌìÊıÎÄ±¾
+    // æ›´æ–°å¤©æ•°æ–‡æœ¬
     public void UpdateDayText(int currentDay)
     {
         if (dayText != null)
         {
-            dayText.text = $"µÚ{currentDay}Ìì";
+            dayText.text = $"ç¬¬{currentDay}å¤©";
         }
     }
 
@@ -164,7 +164,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // ¸üĞÂÉùÍûÎÄ±¾
+    // æ›´æ–°å£°æœ›æ–‡æœ¬
     public void UpdateReputationText(int currentReputation, int maxReputation)
     {
         UpdateReputationImages(currentReputation);
@@ -175,22 +175,22 @@ public class UIManager : MonoBehaviour
     }
 
 
-    //Åä·½ÉèÖÃ
+    //é…æ–¹è®¾ç½®
     public void UpdateMenuDisplay()
     {
         if (InnerGameManager.Instance == null) return;
 
-        // »ñÈ¡µ±Ç°½âËøµÄ²ËÆ·
+        // è·å–å½“å‰è§£é”çš„èœå“
         currentDisplayedDishes = new List<DishScriptObjs>(InnerGameManager.Instance.dishPool);
 
-        // ¸üĞÂÃ¿¸ö²Ëµ¥ÏîµÄÏÔÊ¾
+        // æ›´æ–°æ¯ä¸ªèœå•é¡¹çš„æ˜¾ç¤º
         for (int i = 0; i < Menu.Length; i++)
         {
             if (Menu[i] != null)
             {
                 if (i < currentDisplayedDishes.Count)
                 {
-                    // ÏÔÊ¾²ËÆ·ĞÅÏ¢
+                    // æ˜¾ç¤ºèœå“ä¿¡æ¯
                     DishScriptObjs dish = currentDisplayedDishes[i];
                     string formattedText = FormatDishInfo(dish);
                     Menu[i].text = formattedText;
@@ -198,22 +198,22 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    // Òş²Ø¶àÓàµÄ²Ëµ¥Ïî
+                    // éšè—å¤šä½™çš„èœå•é¡¹
                     Menu[i].gameObject.SetActive(false);
                 }
             }
         }
     }
 
-    // ¸ñÊ½»¯²ËÆ·ĞÅÏ¢
+    // æ ¼å¼åŒ–èœå“ä¿¡æ¯
     private string FormatDishInfo(DishScriptObjs dish)
     {
-        if (dish == null) return "Î´Öª²ËÆ·";
+        if (dish == null) return "æœªçŸ¥èœå“";
 
         string dishName = dish.dishName;
-        string recipeText = "Åä·½£º";
+        string recipeText = "é…æ–¹ï¼š";
 
-        // Í³¼ÆÅäÁÏµÄÊıÁ¿
+        // ç»Ÿè®¡é…æ–™çš„æ•°é‡
         Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
         foreach (var ingredient in dish.recipe)
         {
@@ -231,7 +231,7 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // ¹¹½¨Åä·½×Ö·û´®
+        // æ„å»ºé…æ–¹å­—ç¬¦ä¸²
         bool firstIngredient = true;
         foreach (var kvp in ingredientCounts)
         {
