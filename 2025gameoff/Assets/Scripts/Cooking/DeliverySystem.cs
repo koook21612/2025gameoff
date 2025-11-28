@@ -204,7 +204,11 @@ public class DeliverySystem : MonoBehaviour
     // 新增：播放交付动画
     private void PlayDeliveryAnimation()
     {
-        if (currentDishModel == null) return;
+        if (currentDishModel == null)
+        {
+            OnDeliveryAnimationComplete();
+            return;
+        }
 
         isAnimating = true;
 

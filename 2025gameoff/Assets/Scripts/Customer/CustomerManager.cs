@@ -61,7 +61,6 @@ public class CustomerManager : MonoBehaviour
     public ReceivedOrderUISlot[] ReceivedOrderUISlots;//已接收订单UI(3个
     public PendingOrderUISlot[] PendingOrderUISlots;//滞留订单UI(20个
 
-    [Header("策划配置")]
     public int StartOrderCount = 1;//开局生成数量
     public float OrderGenerationInterval = 20f;//生成间隔（秒）
     public int OrdersPerBatch = 1;//每次生成数量
@@ -448,7 +447,7 @@ public class CustomerManager : MonoBehaviour
         }
 
         //计算耐心值并赋值
-        newOrder.ReceivedPatienceMax = 45 + 20 * (dishesCount - 1);
+        newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
         newOrder.TotalPrice = totalPrice; // 修改点5：设置总价
@@ -621,9 +620,8 @@ public class CustomerManager : MonoBehaviour
             // extreme 条件：滞留订单高于15 或 声望等于1
             AudioManager.Instance.SwitchToExtremeMusic();
         }
-        else if (pendingOrdersCount > 10)
+        else if (_currentWave == 1)
         {
-            // stress 条件：滞留订单高于10
             AudioManager.Instance.SwitchToStressMusic();
         }
         else

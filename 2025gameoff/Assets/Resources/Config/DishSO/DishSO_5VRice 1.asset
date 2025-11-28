@@ -19,6 +19,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
   DishPrice: 26
   perfectHeatRanges: []
-  sliderSpeed: 0.2
+  sliderSpeed: 0.35
   heatTime: 1
   model: {fileID: 9005290401692122359, guid: cfe399910e130bc4b8990dc4b628b1c3, type: 3}

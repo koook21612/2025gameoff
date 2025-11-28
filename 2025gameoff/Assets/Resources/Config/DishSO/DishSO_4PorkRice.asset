@@ -20,6 +20,6 @@ MonoBehaviour:
   DishPrice: 36
   perfectHeatRanges:
   - {x: 0.3, y: 0.5}
-  sliderSpeed: 0.2
+  sliderSpeed: 0.35
   heatTime: 12
   model: {fileID: 7153355826936279108, guid: 06e5381d83b7eef44af1162c5e27f0fa, type: 3}
