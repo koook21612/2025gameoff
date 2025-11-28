@@ -13,7 +13,7 @@ public class MovingObjectController : MonoBehaviour
 
     [Header("移动控制设置")]
     [SerializeField] private float moveDuration = 5f;  // 移动持续时间
-    [SerializeField] private float cycleInterval = 40f;  // 循环间隔时间
+    [SerializeField] private float cycleInterval = 20f;  // 循环间隔时间
 
     private Vector3 currentStartPoint;  // 当前周期的起点
     private bool isMoving = false;
@@ -46,12 +46,10 @@ public class MovingObjectController : MonoBehaviour
         // 如果游戏状态改变，相应地启动或停止移动
         if (InnerGameManager.Instance != null  && !isMoving && InnerGameManager.Instance.isPlaying)
         {
-            //&& InnerGameManager.Instance.isPlaying
             StartMovementCycle();
         }
         else if ((InnerGameManager.Instance == null || !InnerGameManager.Instance.isPlaying) && isMoving)
         {
-            //|| !InnerGameManager.Instance.isPlaying
             StopMovementCycle();
         }
     }
@@ -100,11 +98,8 @@ public class MovingObjectController : MonoBehaviour
         while (isMoving && targetObject != null &&
                InnerGameManager.Instance != null && InnerGameManager.Instance.isPlaying)
         {
-            //&& InnerGameManager.Instance.isPlaying
             Debug.Log("开始等待");
             yield return new WaitForSeconds(cycleInterval);
-
-            // 检查游戏是否仍在进行
             if (InnerGameManager.Instance == null || !InnerGameManager.Instance.isPlaying)
             {
                  //|| !InnerGameManager.Instance.isPlaying
@@ -120,10 +115,9 @@ public class MovingObjectController : MonoBehaviour
 
             // 使用DOTween移动到终点
             targetObject.transform.DOMove(endPos, moveDuration)
-                .SetEase(Ease.Linear)  // 线性移动，也可以换成其他缓动函数
+                .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
-                    // 移动完成后隐藏目标物体
                     if (targetObject != null)
                         targetObject.SetActive(false);
                 });

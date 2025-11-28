@@ -22,6 +22,6 @@ MonoBehaviour:
   - {x: 0.4, y: 0.5}
   - {x: 0.6, y: 0.7}
   - {x: 0.9, y: 1}
-  sliderSpeed: 0.25
-  heatTime: 30
+  sliderSpeed: 0.4
+  heatTime: 20
   model: {fileID: 1138216619080793479, guid: 0a64eaca309f96e478e5be648ce207d0, type: 3}

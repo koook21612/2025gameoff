@@ -39,6 +39,7 @@ public class InnerGameManager : MonoBehaviour
     public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // 总菜品池（所有菜品）
     public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
     public static InnerGameManager Instance;
+    public Animator anim;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -52,6 +53,7 @@ public class InnerGameManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.currentScene = Constants.GAME_SCENE;
         InitializeMicrowaves();
         GameStart();
     }
@@ -93,6 +95,7 @@ public class InnerGameManager : MonoBehaviour
     {
         if (currentReputation <= 0)
         {
+
         }
         else
         {
@@ -103,7 +106,7 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
-
+        AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         if (days == 7)
         {
             GameOver();
@@ -115,6 +118,8 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
+        anim.SetTrigger("Open");
+        AudioManager.Instance.PlayFridgeOpen();
         MainCookingSystem.instance.ClearAllActiveMicrowaves();
         UnlockDishesAndIngredientsByDay();
         UIManager.instance.UpdateMenuDisplay();
@@ -131,6 +136,8 @@ public class InnerGameManager : MonoBehaviour
         {
             AudioManager.Instance.SwitchToNormalMusic();
         }
+        anim.SetTrigger("Close");
+        AudioManager.Instance.PlayFridgeClose();
         CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//购买原料

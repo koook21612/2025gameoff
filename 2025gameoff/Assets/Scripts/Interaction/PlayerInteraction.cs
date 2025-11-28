@@ -8,31 +8,31 @@ public class PlayerInteraction : MonoBehaviour
 {
     private Camera myCam;
 
-    // µ±Ç°ÕıÔÚ½»»¥µÄ¿É½»»¥ÎïÌåÒıÓÃ
+    // å½“å‰æ­£åœ¨äº¤äº’çš„å¯äº¤äº’ç‰©ä½“å¼•ç”¨
     private Interactable currentInteractable;
 
     public UnityEvent onView;
     public UnityEvent onFinishView;
 
-    // µ±Ç°ÕıÔÚ½»»¥µÄÎïÆ·ÒıÓÃ
+    // å½“å‰æ­£åœ¨äº¤äº’çš„ç‰©å“å¼•ç”¨
     private Item currentItem;
 
-    // ´æ´¢Ïà»úÔ­Ê¼Î»ÖÃ
+    // å­˜å‚¨ç›¸æœºåŸå§‹ä½ç½®
     private Vector3 originPosition;
-    // ´æ´¢Ïà»úÔ­Ê¼Ğı×ª
+    // å­˜å‚¨ç›¸æœºåŸå§‹æ—‹è½¬
     private Quaternion originRotation;
     public bool isViewing;
     public bool canFinish = true;
     public Interactable MainCooking;
-    // Ïà»úÒÆ¶¯ËÙ¶È
+    // ç›¸æœºç§»åŠ¨é€Ÿåº¦
     public float cameraMoveSpeed = 1f;
 
-    // ÉäÏß¼ì²âµÄ×î´ó¾àÀë
+    // å°„çº¿æ£€æµ‹çš„æœ€å¤§è·ç¦»
     public float rayDistance = 5f;
 
-    // ¹Û²ìÀäÈ´Ê±¼ä¿ØÖÆ
+    // è§‚å¯Ÿå†·å´æ—¶é—´æ§åˆ¶
     public bool canInteract = true;
-    private float interactionCooldown = 1f; // 1ÃëÀäÈ´Ê±¼ä
+    private float interactionCooldown = 1f; // 1ç§’å†·å´æ—¶é—´
 
     private System.Action onViewComplete;
 
@@ -63,7 +63,7 @@ public class PlayerInteraction : MonoBehaviour
         CheckInteractables();
     }
 
-    // Ê¹ÓÃÉäÏß¼ì²â¼ì²é¿É½»»¥ÎïÌå²¢´¦Àí½»»¥Âß¼­
+    // ä½¿ç”¨å°„çº¿æ£€æµ‹æ£€æŸ¥å¯äº¤äº’ç‰©ä½“å¹¶å¤„ç†äº¤äº’é€»è¾‘
     void CheckInteractables()
     {
         if (isViewing)
@@ -93,7 +93,7 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // ¼ì²éÊÇ·ñÔÚÀäÈ´Ê±¼äÄÚ
+        // æ£€æŸ¥æ˜¯å¦åœ¨å†·å´æ—¶é—´å†…
         if (!canInteract)
         {
             UIManager.instance.SetHandCursor(false);
@@ -123,7 +123,7 @@ public class PlayerInteraction : MonoBehaviour
 
                             if (Input.GetMouseButtonDown(0))
                             {
-                                // Ö±½ÓÀ­Æğ½»²ËÏµÍ³£¬²»ÒÆ¶¯Ïà»ú
+                                // ç›´æ¥æ‹‰èµ·äº¤èœç³»ç»Ÿï¼Œä¸ç§»åŠ¨ç›¸æœº
                                 DeliverySystem.Instance.StartDelivery(microwave);
                                 canInteract = false;
                                 isViewing = true;
@@ -140,7 +140,7 @@ public class PlayerInteraction : MonoBehaviour
                     }
                 }
                 //Debug.Log(hit.collider);
-                // ¸Ä±ä¹â±êÏÔÊ¾ÎïÌå¿É½»»¥
+                // æ”¹å˜å…‰æ ‡æ˜¾ç¤ºç‰©ä½“å¯äº¤äº’
                 UIManager.instance.SetHandCursor(true);
 
                 if (interactable.isInstantInteract)
@@ -171,7 +171,7 @@ public class PlayerInteraction : MonoBehaviour
                     {
                         if (!InnerGameManager.Instance.isPlaying)
                         {
-                            // Èç¹ûÊÇ¼´Ê±½»»¥£¨Âò×°±¸£©£¬Ö±½Ó´¥·¢ÊÂ¼ş
+                            // å¦‚æœæ˜¯å³æ—¶äº¤äº’ï¼ˆä¹°è£…å¤‡ï¼‰ï¼Œç›´æ¥è§¦å‘äº‹ä»¶
                             interactable.onInteract.Invoke();
                             interactable.TryBuyItem();
                         }
@@ -201,7 +201,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // ´¦ÀíÓëÎïÆ·µÄ½»»¥
+    // å¤„ç†ä¸ç‰©å“çš„äº¤äº’
     void Interact(Item item)
     {
         currentItem = item;
@@ -241,7 +241,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if(currentInteractable.item.state && InnerGameManager.Instance.isPlaying)
         {
-            // ÉèÖÃ²»ÄÜ½»»¥×´Ì¬
+            // è®¾ç½®ä¸èƒ½äº¤äº’çŠ¶æ€
             canInteract = false;
             isViewing = true;
             if(currentInteractable.item.Function == "Maincooking" || currentInteractable.item.Function == "cooking")
@@ -262,7 +262,7 @@ public class PlayerInteraction : MonoBehaviour
         }
         if (!currentInteractable.item.state && !InnerGameManager.Instance.isPlaying)
         {
-            // ÉèÖÃ²»ÄÜ½»»¥×´Ì¬
+            // è®¾ç½®ä¸èƒ½äº¤äº’çŠ¶æ€
             canInteract = false;
             isViewing = true;
             canFinish = true;
@@ -293,12 +293,12 @@ public class PlayerInteraction : MonoBehaviour
         StartCoroutine(MovingCamera(originPosition, originRotation, () => {
             UIManager.instance.SetAim(true);
             onFinishView.Invoke();
-            // ¿ªÊ¼ÀäÈ´¼ÆÊ±
+            // å¼€å§‹å†·å´è®¡æ—¶
             StartCoroutine(InteractionCooldown());
         }));
     }
 
-    // ½»»¥ÀäÈ´Ğ­³Ì
+    // äº¤äº’å†·å´åç¨‹
     public IEnumerator InteractionCooldown()
     {
         yield return new WaitForSeconds(interactionCooldown);
@@ -307,23 +307,23 @@ public class PlayerInteraction : MonoBehaviour
 
     IEnumerator MovingCamera(Vector3 targetPosition, Quaternion targetRotation, System.Action onComplete = null)
     {
-        // ¼ÆÊ±Æ÷±äÁ¿£¬¿ØÖÆÒÆ¶¯²åÖµ
+        // è®¡æ—¶å™¨å˜é‡ï¼Œæ§åˆ¶ç§»åŠ¨æ’å€¼
         float timer = 0;
 
-        // ÆğÊ¼Î»ÖÃºÍĞı×ª
+        // èµ·å§‹ä½ç½®å’Œæ—‹è½¬
         Vector3 startPosition = myCam.transform.position;
         Quaternion startRotation = myCam.transform.rotation;
 
-        // ËæÊ±¼äÖğ½¥½«Ïà»úÒÆ¶¯µ½Ä¿±êÎ»ÖÃºÍĞı×ª
+        // éšæ—¶é—´é€æ¸å°†ç›¸æœºç§»åŠ¨åˆ°ç›®æ ‡ä½ç½®å’Œæ—‹è½¬
         while (timer < 1)
         {
             timer += Time.deltaTime * cameraMoveSpeed;
 
-            // Ê¹ÓÃ Lerp ½øĞĞÎ»ÖÃ²åÖµ£¬Slerp ½øĞĞĞı×ª²åÖµ
+            // ä½¿ç”¨ Lerp è¿›è¡Œä½ç½®æ’å€¼ï¼ŒSlerp è¿›è¡Œæ—‹è½¬æ’å€¼
             myCam.transform.position = Vector3.Lerp(startPosition, targetPosition, timer);
             myCam.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, timer);
 
-            yield return null;  // µÈ´ıÏÂÒ»Ö¡
+            yield return null;  // ç­‰å¾…ä¸‹ä¸€å¸§
         }
 
         myCam.transform.position = targetPosition;

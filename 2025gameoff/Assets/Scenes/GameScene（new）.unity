@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: c5737d9e770239849b5c9a3f4298e941, type: 2}
+  m_LightingDataAsset: {fileID: 112000004, guid: e59975b1453071d458be5d3888ab6dc7, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -6913,6 +6913,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
   - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
   - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  anim: {fileID: 0}
 --- !u!1 &664319705
 GameObject:
   m_ObjectHideFlags: 0
@@ -36708,7 +36709,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d93bea63552139e46ae205052e214412, type: 2}
+  - {fileID: 2100000, guid: 5ad3cdc3efe0bdd4bae25f4dbd57304f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
