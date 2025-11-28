@@ -117,7 +117,9 @@ public class MicrowaveSystem : MonoBehaviour
         // 播放结束加热音效和开门音效
         AudioManager.Instance.PlayMicrowaveHeatingEnd();
         AudioManager.Instance.PlayMicrowaveOpen();
+
         ShowInternalDish();
+
         anim.SetTrigger("Open");
         AudioManager.Instance.RemoveHeatingMicrowave();
 
