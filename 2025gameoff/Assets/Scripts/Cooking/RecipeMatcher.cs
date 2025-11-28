@@ -24,8 +24,11 @@ public class RecipeMatcher : MonoBehaviour
         Debug.Log("成功尝试制作");
         bool matchWasFound = false;
 
-        foreach (var dish in InnerGameManager.Instance.dishPool)
+        // 从菜品池的开头到结尾顺序检测（从高到低）
+        for (int i = 0; i < InnerGameManager.Instance.dishPool.Count; i++)
         {
+            var dish = InnerGameManager.Instance.dishPool[i];
+
             if (currentIngredients.Count != dish.recipe.Count) continue;
 
             bool isAllMatch = true;
@@ -40,7 +43,7 @@ public class RecipeMatcher : MonoBehaviour
 
             if (isAllMatch)
             {
-                Debug.Log("开始制作");
+                Debug.Log($"开始制作菜品: {dish.dishName} (索引: {i})");
                 targetMicrowave.StartCookingProcess(dish);
                 matchWasFound = true;
                 break;
