@@ -232,7 +232,7 @@ public class SettingManager : MonoBehaviour
         SaveSetting();
         //返回主菜单或者游戏界面
         //SceneManager.LoadScene(GameManager.Instance.currentScene);
-        if (GameManager.Instance.hasStart)
+        if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
             PlayerInteraction.instance.FinishView();
             //PlayerInteraction.instance.canFinish = false;

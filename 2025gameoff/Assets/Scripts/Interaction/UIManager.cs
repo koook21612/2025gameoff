@@ -1,6 +1,5 @@
 using UnityEngine;
-using TMPro; // 添加这个命名空间
-using static UnityEditor.Progress;
+using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 

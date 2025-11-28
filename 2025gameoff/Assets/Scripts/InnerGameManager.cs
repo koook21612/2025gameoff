@@ -53,6 +53,7 @@ public class InnerGameManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.currentScene = Constants.GAME_SCENE;
         InitializeMicrowaves();
         GameStart();
     }
