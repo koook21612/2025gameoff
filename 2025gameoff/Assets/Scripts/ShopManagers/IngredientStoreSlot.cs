@@ -153,7 +153,7 @@ public class IngredientStoreSlot : MonoBehaviour
 
         // 更新名称和价格信息
         int price = StoreManager.Instance.GetIngredientPrice(currentIngredient);
-        ingredientNameText.text = $"{currentIngredient.ingredientName} - {price}金币";
+        ingredientNameText.text = $"{currentIngredient.GetName()} - {price}金币";
 
         //// 更新图标
         //if (ingredientIcon != null)

@@ -76,16 +76,16 @@ public class StoreDisplayManager : MonoBehaviour
 
         // 更新UI文本
         if (NameText != null)
-            NameText.text = shelf._data.equipmentName;
+            NameText.text = shelf._data.GetName();
 
         if (CostText != null)
             if (shelf._data.equipmentName == "refresh")
             {
-                NameText.text = "刷新";
+                NameText.text = shelf._data.GetName();
                 CostText.text = $"{StoreManager.Instance.GetRefreshCost()} G";
             }
             else if (shelf._data.equipmentName == "newMicrowave") {
-                NameText.text = "新微波炉";
+                NameText.text = shelf._data.GetName();
                 CostText.text = $"{shelf._data.equipmentPrice} G";
             }
             else
@@ -94,7 +94,7 @@ public class StoreDisplayManager : MonoBehaviour
             }
 
         if (DescriptionText != null)
-            DescriptionText.text = shelf._data.description;
+            DescriptionText.text = shelf._data.GetDescription();
     }
     public void HideItemInfo()
     {

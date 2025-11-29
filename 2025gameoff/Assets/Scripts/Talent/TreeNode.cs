@@ -11,8 +11,8 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     [Header("天赋内容")]
     public TalentDataSO talentData;
-    private string talentName => talentData?.displayName ?? string.Empty;
-    private string talentDescription => talentData?.description ?? string.Empty;
+    private string talentName => talentData?.GetName() ?? string.Empty;
+    private string talentDescription => talentData?.GetDescription() ?? string.Empty;
     [SerializeField] private Image talentIcon;
     private int talentCost => talentData?.cost ?? 0;
     [SerializeField] private string lockedColorHex = "#9F9797";
@@ -157,7 +157,7 @@ public class TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (talentData == null) return;
         if (talentIcon != null)
             talentIcon.sprite = talentData.icon;
-        gameObject.name = "TreeNode - " + talentData.displayName;
+        gameObject.name = "TreeNode - " + talentData.GetName();
 
         // 更新前置节点
         neededNodes = talentData.neededNodes;

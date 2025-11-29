@@ -210,7 +210,7 @@ public class UIManager : MonoBehaviour
     {
         if (dish == null) return "未知菜品";
 
-        string dishName = dish.dishName;
+        string dishName = dish.GetName();
         string recipeText = "配方：";
 
         // 统计配料的数量
@@ -219,7 +219,7 @@ public class UIManager : MonoBehaviour
         {
             if (ingredient != null)
             {
-                string ingredientName = ingredient.ingredientName;
+                string ingredientName = ingredient.GetName();
                 if (ingredientCounts.ContainsKey(ingredientName))
                 {
                     ingredientCounts[ingredientName]++;
