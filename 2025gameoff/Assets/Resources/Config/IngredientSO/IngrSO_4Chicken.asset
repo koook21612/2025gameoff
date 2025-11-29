@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd43bbe128b702f4eb8ab9d471c74690, type: 3}
   m_Name: IngrSO_4Chicken
   m_EditorClassIdentifier: 
-  ingredientName: "\u9E21\u8089"
+  ingredientName: ing_chicken
   ingredientModel: {fileID: 0}
   icon: {fileID: 0}
   ingredientPrice: 8

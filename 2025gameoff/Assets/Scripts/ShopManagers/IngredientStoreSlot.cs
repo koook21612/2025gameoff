@@ -153,7 +153,9 @@ public class IngredientStoreSlot : MonoBehaviour
 
         // 更新名称和价格信息
         int price = StoreManager.Instance.GetIngredientPrice(currentIngredient);
-        ingredientNameText.text = $"{currentIngredient.GetName()} - {price}金币";
+        string currency = LocalizationManager.Instance.GetText("currency_suffix");
+        string name = currentIngredient.GetName();
+        ingredientNameText.text = $"{name} - {price}{currency}";
 
         //// 更新图标
         //if (ingredientIcon != null)

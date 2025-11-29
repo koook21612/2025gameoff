@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
-  m_Name: DishSO_5VRice 1
+  m_Name: DishSO_Hamburger
   m_EditorClassIdentifier: 
-  dishName: "\u83DC\u996D"
+  dishName: dish_hamburger
   recipe:
-  - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
+  - {fileID: 11400000, guid: 432d35e1c1119fc4285dc54b4965eb4f, type: 2}
   - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
-  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
-  DishPrice: 26
+  - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
+  DishPrice: 45
   perfectHeatRanges:
-  - {x: 0.3, y: 0.5}
-  sliderSpeed: 0.45
-  heatTime: 12
-  model: {fileID: 9005290401692122359, guid: cfe399910e130bc4b8990dc4b628b1c3, type: 3}
+  - {x: 0.4, y: 0.5}
+  - {x: 0.6, y: 0.7}
+  - {x: 0.9, y: 1}
+  sliderSpeed: 0.5
+  heatTime: 20
+  model: {fileID: 1138216619080793479, guid: 0a64eaca309f96e478e5be648ce207d0, type: 3}

@@ -1291,6 +1291,7 @@ MonoBehaviour:
   dishes: {fileID: 0}
   maxSlots: 5
   predictionText: {fileID: 225174782}
+  startBusinessText: {fileID: 1770635000}
 --- !u!1 &135919082
 GameObject:
   m_ObjectHideFlags: 0
@@ -22431,6 +22432,8 @@ MonoBehaviour:
   - {fileID: 876960200}
   - {fileID: 459463225}
   closeButtons: {fileID: 209643629}
+  confirmButtonText: {fileID: 1627684139}
+  instructionText: {fileID: 252125335}
   ingredientModels:
   - {fileID: 1385080301}
   - {fileID: 262295395}
@@ -23761,6 +23764,7 @@ MonoBehaviour:
   resolutionDropdown: {fileID: 988683156}
   defaultButton: {fileID: 1956224824}
   closeButton: {fileID: 521831026}
+  mainMenuButton: {fileID: 628974995}
   masterVolumeSlider: {fileID: 1050115522}
   musicVolumeSlider: {fileID: 1782339726}
   effectVolumeSlider: {fileID: 472743004}

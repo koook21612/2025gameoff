@@ -16,5 +16,5 @@ MonoBehaviour:
   effects: []
   equipmentName: newMicrowave
   equipmentPrice: 200
-  description: "\u9A6C\u4E0A\u83B7\u5F97\u4E00\u4E2A\u65B0\u7684\u5FAE\u6CE2\u7089"
+  description: desc_new_microwave
   isGlobal: 1

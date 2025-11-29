@@ -139,7 +139,9 @@ public class UIManager : MonoBehaviour
     {
         if (dayText != null)
         {
-            dayText.text = $"第{currentDay}天";
+            //dayText.text = $"第{currentDay}天";
+            string format = LocalizationManager.Instance.GetText("day_format");
+            dayText.text = string.Format(format, currentDay);
         }
     }
 
@@ -208,10 +210,11 @@ public class UIManager : MonoBehaviour
     // 格式化菜品信息
     private string FormatDishInfo(DishScriptObjs dish)
     {
-        if (dish == null) return "未知菜品";
+        //if (dish == null) return "未知菜品";
+        if (dish == null) return LocalizationManager.Instance.GetText("unknown_dish");
 
         string dishName = dish.GetName();
-        string recipeText = "配方：";
+        string recipeText = LocalizationManager.Instance.GetText("recipe_prefix");
 
         // 统计配料的数量
         Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();

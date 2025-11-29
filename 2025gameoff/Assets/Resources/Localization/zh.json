@@ -2,6 +2,8 @@
   "items": [
     { "key": "language_name", "value": "中文" },
     { "key": "start_game", "value": "开始游戏" },
+    { "key": "return_game", "value": "返回游戏" },
+    { "key": "return_menu", "value": "返回主菜单" },
     { "key": "exit", "value": "退出" },
     { "key": "settings", "value": "设置" },
     { "key": "confirm", "value": "确认" },
@@ -15,6 +17,20 @@
     { "key": "default", "value": "恢复默认" },
     { "key": "display_mode", "value": "显示模式" },
     { "key": "language", "value": "语言" },
+
+    { "key": "day_format", "value": "第{0}天" },
+    { "key": "currency_suffix", "value": "金币" },
+    { "key": "order_prediction", "value": "订单预测" },
+    { "key": "none", "value": "无" },
+    { "key": "recipe_prefix", "value": "配方：" },
+    { "key": "unknown_dish", "value": "未知菜品" },
+    { "key": "waiting_text", "value": "前方滞留" },
+    { "key": "order_unit", "value": "单" },
+    { "key": "completed_prefix", "value": "已完成" },
+    { "key": "discard", "value": "丢弃" },
+    { "key": "start_business", "value": "开始营业" },
+    { "key": "confirm_selection", "value": "确认选择" },
+    { "key": "select_microwave_prompt", "value": "请选择微波炉" },
 
     { "key": "ing_vegetable", "value": "青菜" },
     { "key": "ing_pork", "value": "猪肉" },
@@ -31,6 +47,7 @@
     { "key": "dish_chicken_leg_rice", "value": "鸡腿饭" },
     { "key": "dish_bread", "value": "面包" },
     { "key": "dish_hamburger", "value": "汉堡" },
+    { "key": "dish_wrong", "value": "这是什么？" },
 
     { "key": "talent_efficient_microwave", "value": "高效微波" },
     { "key": "desc_talent_efficient_microwave", "value": "微波炉的加热速度增加2%，完美加热区增大2%。消耗：1个天赋点" },
@@ -131,6 +148,8 @@
     { "key": "desc_equip_planetary_engine_e", "value": "？？？" },
 
     { "key": "refresh", "value": "刷新" },
-`   { "key": "newMicrowave", "value": "购买新微波炉" }
+    { "key": "desc_refresh", "value": "刷新商店里的升级模块。" },
+    { "key": "newMicrowave", "value": "购买新微波炉" },
+    { "key": "desc_new_microwave", "value": "购买一台全新的微波炉，增加产能。" }
   ]
 }

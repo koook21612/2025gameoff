@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd43bbe128b702f4eb8ab9d471c74690, type: 3}
   m_Name: IngredientSO_Rice
   m_EditorClassIdentifier: 
-  ingredientName: "\u5927\u7C73"
+  ingredientName: ing_rice
+  ingredientModel: {fileID: 0}
+  icon: {fileID: 0}
   ingredientPrice: 3

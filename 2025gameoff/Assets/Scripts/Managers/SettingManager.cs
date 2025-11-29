@@ -17,6 +17,7 @@ public class SettingManager : MonoBehaviour
 
     public Button defaultButton; // 恢复默认设置按钮
     public Button closeButton; // 关闭设置界面按钮
+    public Button mainMenuButton; // 返回主菜单按钮
 
     public Slider masterVolumeSlider; // 主音量滑块
     public Slider musicVolumeSlider; // 背景音乐音量滑块
@@ -311,7 +312,14 @@ public class SettingManager : MonoBehaviour
         {
             TextMeshProUGUI closeBtnText = closeButton.GetComponentInChildren<TextMeshProUGUI>();
             if (closeBtnText != null)
-                closeBtnText.text = LocalizationManager.Instance.GetText("exit");
+                closeBtnText.text = LocalizationManager.Instance.GetText("return_game");
+        }
+
+        if (mainMenuButton != null)
+        {
+            TextMeshProUGUI menuBtnText = mainMenuButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (menuBtnText != null)
+                menuBtnText.text = LocalizationManager.Instance.GetText("return_menu");
         }
     }
 }
