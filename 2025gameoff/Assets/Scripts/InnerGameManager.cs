@@ -168,6 +168,7 @@ public class InnerGameManager : MonoBehaviour
         CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//π∫¬Ú‘≠¡œ
+        AudioManager.Instance.StopTelephoneRing();
     }
 
     private IEnumerator AddBonusGoldAfterDelay(float delay, int goldAmount)
