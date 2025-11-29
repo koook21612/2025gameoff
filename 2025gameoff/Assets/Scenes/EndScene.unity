@@ -1637,7 +1637,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 
-  end: 1
+  end: 0
   currentGold: 150
   currentReputation: 3
   maxReputation: 3

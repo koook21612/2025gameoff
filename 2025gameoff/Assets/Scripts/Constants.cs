@@ -6,9 +6,9 @@ public class Constants
     public static string MENU_SCENE = "MenuScene";
     public static string SETTING_SCENE = "SettingScene";
     public static string GAME_SCENE = "GameScene";
-    public static string End_SCENE = "GameScene";
+    public static string End_SCENE = "EndScene";
     public static string TALENT_SCENE = "TalentTree";
-    public static string PRODUCTER_SCENE = "EndScene";
+    public static string END_SCENE = "EndScene";
 
     //“Ù∆µƒ⁄»›≥£¡ø
     public static string MUSIC_PATH = "audio/bgm/";

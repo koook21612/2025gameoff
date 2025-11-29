@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class InnerGameManager : MonoBehaviour
 {
@@ -44,6 +45,7 @@ public class InnerGameManager : MonoBehaviour
     public static InnerGameManager Instance;
     public Animator anim;
     public int count = 1;
+    public Image fadeImage;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -107,6 +109,7 @@ public class InnerGameManager : MonoBehaviour
     // 游戏结束
     private void GameOver()
     {
+        isPlaying = false;
         AudioManager.Instance.StopAllBGM();
         GameManager.Instance.totalPlayTime = totalPlayTime;
         GameManager.Instance.totalIncome = totalIncome;
@@ -120,7 +123,34 @@ public class InnerGameManager : MonoBehaviour
             GameManager.Instance.end = 1;
 
         }
-        SceneManager.LoadScene(Constants.SETTING_SCENE);
+        StartCoroutine(FadeTransition());
+    }
+
+    private IEnumerator FadeTransition()
+    {
+
+        if (fadeImage != null)
+        {
+            // 激活图像
+            fadeImage.gameObject.SetActive(true);
+
+            // 设置初始透明度为0
+            fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0f);
+
+            // 使用 DOTween 进行渐变
+            DG.Tweening.DOTween.To(
+                () => fadeImage.color.a,
+                alpha => fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, alpha),
+                1f, // 目标透明度
+                2f // 持续时间
+            );
+
+            // 等待渐变完成
+            yield return new WaitForSeconds(2.1f);
+        }
+
+        // 切换场景
+        SceneManager.LoadScene(Constants.End_SCENE);
     }
 
     // 进入商店
