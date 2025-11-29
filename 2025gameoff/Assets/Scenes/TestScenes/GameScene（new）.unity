@@ -6897,6 +6897,7 @@ MonoBehaviour:
   - {fileID: 0}
   totalIncome: 0
   totalServedOrders: 0
+  totalPlayTime: 0
   totalDishPool:
   - {fileID: 11400000, guid: 03497963e6079ee40b29a552cfcd296b, type: 2}
   - {fileID: 11400000, guid: e3f085698712bd14a8009d5dbd72d0d5, type: 2}
@@ -6914,6 +6915,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
   - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
   anim: {fileID: 0}
+  count: 1
+  fadeImage: {fileID: 0}
 --- !u!1 &664319705
 GameObject:
   m_ObjectHideFlags: 0
@@ -8089,11 +8092,11 @@ RectTransform:
   - {fileID: 1033306608}
   m_Father: {fileID: 77091850}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -558, y: 440}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 261, y: -38}
   m_SizeDelta: {x: 300, y: 120}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &743285621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14411,10 +14414,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 
+  end: 0
   currentGold: 50
   currentReputation: 3
   maxReputation: 3
   hasStart: 1
+  totalPlayTime: 0
+  totalIncome: 0
+  totalServedOrders: 0
   pendingData:
     unlockedTalents: []
     talentPoints: 3
@@ -14457,7 +14464,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -783, y: 328}
+  m_AnchoredPosition: {x: -783, y: 401}
   m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1299231943
@@ -15536,6 +15543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typewriter: {fileID: 1378998220}
+  dialoguePanel: {fileID: 0}
 --- !u!4 &1396957560
 Transform:
   m_ObjectHideFlags: 0
@@ -37183,6 +37191,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
+  dishHolder: {fileID: 0}
 --- !u!65 &5552451650816478600
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -38202,6 +38211,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
+  dishHolder: {fileID: 0}
 --- !u!114 &5844708096119612283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40748,6 +40758,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
+  dishHolder: {fileID: 0}
 --- !u!114 &6787717984972603947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42524,6 +42535,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
+  dishHolder: {fileID: 0}
 --- !u!114 &7387865169774401438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43109,6 +43121,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   installedEquipments: []
   heatingTimeMultiplier: 1
+  dishHolder: {fileID: 0}
 --- !u!65 &7623022248891177056
 BoxCollider:
   m_ObjectHideFlags: 0

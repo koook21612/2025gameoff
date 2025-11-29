@@ -37625,7 +37625,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d46b553a47f79c48adbb8cae3db0056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
+  currentState: 5
   currentDish: {fileID: 0}
   cookingResult: 0
   wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
@@ -40956,7 +40956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d46b553a47f79c48adbb8cae3db0056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
+  currentState: 5
   currentDish: {fileID: 0}
   cookingResult: 0
   wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
@@ -42685,7 +42685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d46b553a47f79c48adbb8cae3db0056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
+  currentState: 5
   currentDish: {fileID: 0}
   cookingResult: 0
   wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}
@@ -43289,7 +43289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d46b553a47f79c48adbb8cae3db0056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
+  currentState: 5
   currentDish: {fileID: 0}
   cookingResult: 0
   wrongDish: {fileID: 11400000, guid: 7aef25c53fc2fd44ba5991504680b4b4, type: 2}

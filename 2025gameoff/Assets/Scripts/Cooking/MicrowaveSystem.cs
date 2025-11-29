@@ -277,18 +277,4 @@ public class MicrowaveSystem : MonoBehaviour
 
         Debug.Log($"微波炉已重置为待机状态");
     }
-
-    /// <summary>
-    /// 强制停止当前烹饪过程
-    /// </summary>
-    public void ForceStopCooking()
-    {
-        if (currentState == MicrowaveState.Cooking ||
-            currentState == MicrowaveState.Heating ||
-            currentState == MicrowaveState.Ready)
-        {
-            ResetToIdle();
-            Debug.Log($"强制停止微波炉烹饪过程");
-        }
-    }
 }

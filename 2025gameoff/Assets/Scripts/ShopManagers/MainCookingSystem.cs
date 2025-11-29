@@ -148,6 +148,7 @@ public class MainCookingSystem : MonoBehaviour
             // 尝试烹饪
             PlayerInteraction.instance.SwitchToInteractable(interactables[buttonIndex], () => {
                 RecipeMatcher.instance.TryToCook(targetMicrowave);
+                //Debug.Log(buttonIndex);
             });
         }
         else
@@ -242,7 +243,6 @@ public class MainCookingSystem : MonoBehaviour
     /// </summary>
     private IEnumerator ClearAllActiveMicrowavesCoroutine()
     {
-        Debug.Log("开始清空所有活跃微波炉...");
 
         int clearedCount = 0;
 
@@ -253,7 +253,7 @@ public class MainCookingSystem : MonoBehaviour
                 ClearSingleMicrowave(microwave[i]);
                 clearedCount++;
 
-                // 每清空一个微波炉等待一帧，避免性能峰值
+                // 每清空一个微波炉等待一帧
                 yield return null;
             }
         }
@@ -278,13 +278,13 @@ public class MainCookingSystem : MonoBehaviour
         if (microwave.IsHeatingCoroutineRunning())
         {
             microwave.StopAllCoroutines();
+            microwave.CollectDish();
+            microwave.anim.SetTrigger("Open");
             Debug.Log($"停止微波炉 {System.Array.IndexOf(this.microwave, microwave)} 的加热协程");
         }
 
         // 重置微波炉状态
         microwave.ResetToIdle();
-
-        Debug.Log($"微波炉 {System.Array.IndexOf(this.microwave, microwave)} 已重置为待机状态");
     }
 
 }
