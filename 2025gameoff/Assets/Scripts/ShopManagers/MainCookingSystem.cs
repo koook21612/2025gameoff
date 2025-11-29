@@ -11,6 +11,7 @@ public class MainCookingSystem : MonoBehaviour
     public EquipmentDataSO equipment;
     public static MainCookingSystem instance { get; private set; }
 
+
     private void Awake()
     {
         if (instance == null)
@@ -120,7 +121,7 @@ public class MainCookingSystem : MonoBehaviour
 
 
         RecipeMatcher.instance.currentIngredients.Clear();
-
+        int count = 0;
         foreach (var kvp in SelectionSystem.Instance.currentSelections)
         {
             if (kvp.Value > 0)
@@ -128,18 +129,33 @@ public class MainCookingSystem : MonoBehaviour
                 // 根据数量添加对应次数的食材
                 for (int i = 0; i < kvp.Value; i++)
                 {
+                    count++;
                     RecipeMatcher.instance.currentIngredients.Add(kvp.Key);
                 }
             }
         }
         //结算食材
         SelectionSystem.Instance.Cost();
-        // 尝试烹饪
-        PlayerInteraction.instance.SwitchToInteractable(interactables[buttonIndex], () => {
+
+        if(count == 0)
+        {
+            PlayerInteraction.instance.FinishView();
+            return;
+        }
+
+        if (RecipeMatcher.instance.CanCook())
+        {
+            // 尝试烹饪
+            PlayerInteraction.instance.SwitchToInteractable(interactables[buttonIndex], () => {
+                RecipeMatcher.instance.TryToCook(targetMicrowave);
+            });
+        }
+        else
+        {
             RecipeMatcher.instance.TryToCook(targetMicrowave);
-        });
-        // 重置选择
-        beforeInteraction = null;
+        }
+            // 重置选择
+            beforeInteraction = null;
         Debug.Log($"开始在微波炉 {System.Array.IndexOf(microwave, targetMicrowave)} 进行烹饪");
     }
 
@@ -169,18 +185,6 @@ public class MainCookingSystem : MonoBehaviour
         UpdateMicrowaveUI(targetMicrowave);
         // 重置选择
         beforeInteraction = null;
-    }
-
-    private void CloseSelectionInterface()
-    {
-        // 关闭选择界面，返回主烹饪界面
-        if (PlayerInteraction.instance != null)
-        {
-            PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
-        }
-
-        // 隐藏选择按钮界面
-        gameObject.SetActive(false);
     }
 
     private void UpdateMicrowaveUI(MicrowaveSystem microwave)

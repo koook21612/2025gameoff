@@ -249,7 +249,7 @@ public class CookingSystem : MonoBehaviour
         {
             globalPerfectZonePercent = GameManager.Instance.pendingData.perfectZoneBonus;
         }
-        Debug.Log(perfectZoneMultiplier + " " + globalPerfectZonePercent);
+        //Debug.Log(perfectZoneMultiplier + " " + globalPerfectZonePercent);
         float totalPerfectZoneBonus = perfectZoneMultiplier + globalPerfectZonePercent;
 
 

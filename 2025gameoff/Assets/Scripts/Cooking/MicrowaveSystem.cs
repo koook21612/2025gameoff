@@ -98,13 +98,12 @@ public class MicrowaveSystem : MonoBehaviour
         currentDish = wrongDish;
 
         anim.SetTrigger("Close");
-
+        cookingResult = CookingResult.Overcooked;
         // 播放开始加热音效
         AudioManager.Instance.PlayMicrowaveHeatingStart();
         AudioManager.Instance.AddHeatingMicrowave();
 
         _heatingCoroutine = StartCoroutine(HeatingProcess(5f));
-        PlayerInteraction.instance.FinishView();
     }
 
     // 加热协程

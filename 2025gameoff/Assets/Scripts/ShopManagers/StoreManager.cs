@@ -167,6 +167,7 @@ public class StoreManager : MonoBehaviour
         if (InnerGameManager.Instance.SpendGold(newMicrowavePrice))
         {
             InnerGameManager.Instance.MicrowavesCount++;
+            InnerGameManager.Instance.UpdateMicrowaveDisplay();
 
             Debug.Log($"购买成功！当前微波炉数量: {InnerGameManager.Instance.MicrowavesCount}");
         }

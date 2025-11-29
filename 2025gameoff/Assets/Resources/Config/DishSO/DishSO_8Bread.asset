@@ -21,6 +21,6 @@ MonoBehaviour:
   perfectHeatRanges:
   - {x: 0.6, y: 0.7}
   - {x: 0.8, y: 0.9}
-  sliderSpeed: 0.25
+  sliderSpeed: 0.35
   heatTime: 18
   model: {fileID: 8834008521810557276, guid: de91e0431ddb8744ab975ead3269242a, type: 3}

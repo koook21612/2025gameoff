@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class RecipeMatcher : MonoBehaviour
 {
@@ -19,34 +20,33 @@ public class RecipeMatcher : MonoBehaviour
         }
     }
 
-    public void TryToCook(MicrowaveSystem targetMicrowave)
+    public bool CanCook()
     {
-        Debug.Log("成功尝试制作");
-        bool matchWasFound = false;
-
-        // 从菜品池的开头到结尾顺序检测（从高到低）
-        for (int i = 0; i < InnerGameManager.Instance.dishPool.Count; i++)
+        for (int i = InnerGameManager.Instance.dishPool.Count - 1; i >= 0; i--)
         {
             var dish = InnerGameManager.Instance.dishPool[i];
 
-            if (currentIngredients.Count != dish.recipe.Count) continue;
-
-            bool isAllMatch = true;
-            foreach (var ingredient in currentIngredients)
+            if (IsRecipeMatch(currentIngredients, dish.recipe))
             {
-                if (dish.recipe.Contains(ingredient) == false)
-                {
-                    isAllMatch = false;
-                    break;
-                }
+                return true;
             }
+        }
+        return false;
+    }
 
-            if (isAllMatch)
+    public bool TryToCook(MicrowaveSystem targetMicrowave)
+    {
+        bool matchWasFound = false;
+        for (int i = InnerGameManager.Instance.dishPool.Count - 1; i >= 0; i--)
+        {
+            var dish = InnerGameManager.Instance.dishPool[i];
+
+            if (IsRecipeMatch(currentIngredients, dish.recipe))
             {
                 Debug.Log($"开始制作菜品: {dish.dishName} (索引: {i})");
                 targetMicrowave.StartCookingProcess(dish);
                 matchWasFound = true;
-                break;
+                break; // 找到第一个匹配的就退出
             }
         }
 
@@ -59,5 +59,34 @@ public class RecipeMatcher : MonoBehaviour
         }
 
         currentIngredients.Clear();
+        return matchWasFound;
+    }
+
+    /// <summary>
+    /// 精确匹配食谱，检查食材种类和数量是否完全一致
+    /// </summary>
+    private bool IsRecipeMatch(List<IngredientScriptObjs> ingredients, List<IngredientScriptObjs> recipe)
+    {
+        // 如果数量不同，直接不匹配
+        if (ingredients.Count != recipe.Count) return false;
+
+        // 创建食材计数字典
+        var ingredientCounts = ingredients.GroupBy(x => x)
+                                         .ToDictionary(g => g.Key, g => g.Count());
+        var recipeCounts = recipe.GroupBy(x => x)
+                                .ToDictionary(g => g.Key, g => g.Count());
+
+        // 检查食材种类和数量是否完全匹配
+        if (ingredientCounts.Count != recipeCounts.Count) return false;
+
+        foreach (var kvp in recipeCounts)
+        {
+            if (!ingredientCounts.ContainsKey(kvp.Key) || ingredientCounts[kvp.Key] != kvp.Value)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

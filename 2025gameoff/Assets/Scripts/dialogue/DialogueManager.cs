@@ -9,22 +9,13 @@ using System.IO;
 public class DialogueData
 {
     public List<string> teaching;
-    public List<string> day1;
-    //public List<string> day2;
-    //public List<string> day3;
-    //public List<string> day4;
-    //public List<string> day5;
-    //public List<string> day6;
-    //public List<string> day7;
+    public List<string> randomPool;
 }
 
 public class DialogueManager : MonoBehaviour
 {
-
     public TypewriterEffect typewriter;
-
-
-    public event Action OnDialogueFinished;
+    public GameObject dialoguePanel; // 引用对话面板
 
     // 内部
     private DialogueData data;
@@ -35,34 +26,47 @@ public class DialogueManager : MonoBehaviour
 
     // 用于调试/显示
     private int currentLineIndex;
+    public static DialogueManager Instance { get; private set; }
 
     void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
         LoadJson();
-    }
 
-    private void Start()
-    {
-        PlayDialogue(0);
+        // 确保开始时对话面板是隐藏的
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (isPlaying && Input.GetMouseButtonDown(0))
         {
             userClickedThisFrame = true;
         }
     }
 
-    //获得对话数据
+    // 获得对话数据
     private void LoadJson()
     {
-        TextAsset ta = Resources.Load<TextAsset>(Constants.STORY_PATH);
+        string languageSuffix = LocalizationManager.Instance.currentLanguage;
+        string localizedPath = $"{Constants.STORY_PATH}_{languageSuffix}";
+
+        TextAsset ta = Resources.Load<TextAsset>(localizedPath);
         if (ta == null)
         {
-            Debug.LogError($"DialogueManager: 在 Resources 找不到 JSON：{Constants.STORY_PATH}.json");
-            data = new DialogueData();
-            return;
+            Debug.LogError($"DialogueManager: 在 Resources 找不到本地化 JSON：{localizedPath}");
+            // 尝试加载默认的中文版本
+            ta = Resources.Load<TextAsset>(Constants.STORY_PATH);
+            if (ta == null)
+            {
+                Debug.LogError($"DialogueManager: 在 Resources 找不到默认 JSON：{Constants.STORY_PATH}");
+                data = new DialogueData();
+                return;
+            }
         }
 
         try
@@ -81,20 +85,57 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    //播放对话
-    public void PlayDialogue(int days)
+    public void OnPickUpPhone()
     {
-        if (days < 0) days = 0;
-        if (days > 7) days = 7;
+        // 停止响铃
+        AudioManager.Instance.StopTelephoneRing();
+        // 播放拿起电话音效
+        AudioManager.Instance.PlayTelephonePickUp();
+        PlayRandomDialogue();
+    }
 
+    // 播放新手教程对话
+    public void PlayTutorialDialogue()
+    {
+        if (data?.teaching == null || data.teaching.Count == 0)
+        {
+            Debug.LogWarning("DialogueManager: 没有找到新手教程对话。");
+            return;
+        }
 
-        currentLines = GetLinesForDay(days);
+        currentLines = data.teaching;
+        StartDialogue();
+    }
 
+    // 播放随机对话
+    public void PlayRandomDialogue()
+    {
+        if (data?.randomPool == null || data.randomPool.Count == 0)
+        {
+            Debug.LogWarning("DialogueManager: 没有找到随机对话池。");
+            return;
+        }
+
+        // 从随机池中随机选择一条对话
+        int randomIndex = UnityEngine.Random.Range(0, data.randomPool.Count);
+        currentLines = new List<string> { data.randomPool[randomIndex] };
+
+        StartDialogue();
+    }
+
+    // 开始对话
+    private void StartDialogue()
+    {
         if (currentLines == null || currentLines.Count == 0)
         {
-            Debug.LogWarning($"DialogueManager: day {days} 没有对话行。");
-            OnDialogueFinished?.Invoke();
+            Debug.LogWarning("DialogueManager: 没有可播放的对话行。");
             return;
+        }
+
+        // 显示对话面板
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(true);
         }
 
         if (playCoroutine != null)
@@ -104,34 +145,6 @@ public class DialogueManager : MonoBehaviour
         }
 
         playCoroutine = StartCoroutine(PlayLinesCoroutine());
-    }
-
-
-    //停止对话
-    public void StopDialogue()
-    {
-        if (playCoroutine != null)
-        {
-            StopCoroutine(playCoroutine);
-            playCoroutine = null;
-        }
-        isPlaying = false;
-    }
-
-    private List<string> GetLinesForDay(int days)
-    {
-        switch (days)
-        {
-            case 0: return data?.teaching ?? new List<string>();
-            case 1: return data?.day1 ?? new List<string>();
-            //case 2: return data?.day2 ?? new List<string>();
-            //case 3: return data?.day3 ?? new List<string>();
-            //case 4: return data?.day4 ?? new List<string>();
-            //case 5: return data?.day5 ?? new List<string>();
-            //case 6: return data?.day6 ?? new List<string>();
-            //case 7: return data?.day7 ?? new List<string>();
-            default: return new List<string>();
-        }
     }
 
     private IEnumerator PlayLinesCoroutine()
@@ -159,8 +172,6 @@ public class DialogueManager : MonoBehaviour
                 // 用户在打字中点击 —— 立刻完成当前行
                 typewriter.CompleteLine();
             }
-
-            // 清除点击标志，准备等待下一次点击
             userClickedThisFrame = false;
 
             bool advanced = false;
@@ -174,8 +185,6 @@ public class DialogueManager : MonoBehaviour
 
                 yield return null;
             }
-
-            // 准备进入下一行
             userClickedThisFrame = false;
             currentLineIndex++;
             yield return null;
@@ -184,11 +193,16 @@ public class DialogueManager : MonoBehaviour
         // 对话全部结束
         isPlaying = false;
         playCoroutine = null;
-        OnDialogueFinished?.Invoke();
+        AudioManager.Instance.PlayTelephoneDrop();
+        // 隐藏对话面板
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
     }
-
-    public bool IsPlaying()
+  
+    public void OnLanguageChanged()
     {
-        return isPlaying;
+        LoadJson();
     }
 }

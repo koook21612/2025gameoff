@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InnerGameManager : MonoBehaviour
 {
@@ -34,12 +36,14 @@ public class InnerGameManager : MonoBehaviour
     [Header("统计信息")]
     public int totalIncome = 0; // 总收入
     public int totalServedOrders = 0; // 总出餐数
+    public float totalPlayTime = 0f; // 总游戏时间（秒）
 
     [Header("总菜品池和原料池")]
     public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // 总菜品池（所有菜品）
     public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
     public static InnerGameManager Instance;
     public Animator anim;
+    public int count = 1;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -48,7 +52,7 @@ public class InnerGameManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
@@ -57,6 +61,13 @@ public class InnerGameManager : MonoBehaviour
         InitializeMicrowaves();
         GameStart();
     }
+
+
+    private void Update()
+    {
+        totalPlayTime += Time.deltaTime;
+    }
+
     // 初始化微波炉显示
     private void InitializeMicrowaves()
     {
@@ -72,6 +83,9 @@ public class InnerGameManager : MonoBehaviour
     //游戏开始
     public void GameStart()
     {
+        totalIncome = 0;
+        totalServedOrders = 0;
+
         currentGold = GameManager.Instance.currentGold;
         currentReputation = GameManager.Instance.currentReputation;
         maxReputation = GameManager.Instance.maxReputation;
@@ -85,7 +99,7 @@ public class InnerGameManager : MonoBehaviour
         {
             StoreManager.Instance.refreshCount = 0;
         }
-        days = 0;
+        days = 1;
         UpdateUI();
         EnterStore();
     }
@@ -93,14 +107,20 @@ public class InnerGameManager : MonoBehaviour
     // 游戏结束
     private void GameOver()
     {
+        AudioManager.Instance.StopAllBGM();
+        GameManager.Instance.totalPlayTime = totalPlayTime;
+        GameManager.Instance.totalIncome = totalIncome;
+        GameManager.Instance.totalServedOrders = totalServedOrders;
         if (currentReputation <= 0)
         {
-
+            GameManager.Instance.end = 0;
         }
         else
         {
+            GameManager.Instance.end = 1;
 
         }
+        SceneManager.LoadScene(Constants.SETTING_SCENE);
     }
 
     // 进入商店
@@ -118,6 +138,13 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
+        if (days > 1)
+        {
+            StartCoroutine(AddBonusGoldAfterDelay(1f, 50));
+            //AudioManager.Instance.StartTelephoneRing();
+            StartCoroutine(Phone(2f));
+        }
+
         anim.SetTrigger("Open");
         AudioManager.Instance.PlayFridgeOpen();
         MainCookingSystem.instance.ClearAllActiveMicrowaves();
@@ -141,6 +168,21 @@ public class InnerGameManager : MonoBehaviour
         CustomerManager.Instance.StartGame();
         isPlaying = true;
         StoreManager.Instance.DeliverPurchasedIngredients();//购买原料
+    }
+
+    private IEnumerator AddBonusGoldAfterDelay(float delay, int goldAmount)
+    {
+        yield return new WaitForSeconds(delay);
+
+        AddGold(goldAmount);
+    }
+
+    private IEnumerator Phone(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        count = 0;
+        AudioManager.Instance.StartTelephoneRing();
     }
 
     //更新解锁
@@ -181,7 +223,7 @@ public class InnerGameManager : MonoBehaviour
     }
 
     // 更新微波炉显示
-    private void UpdateMicrowaveDisplay()
+    public void UpdateMicrowaveDisplay()
     {
         int targetCount = Mathf.Min(MicrowavesCount, microwaveModels.Length);
         if (currentActiveMicrowaves == targetCount) return;

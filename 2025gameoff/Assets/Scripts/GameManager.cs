@@ -5,13 +5,18 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     public string currentScene; // 当前场景名称
-
+    public int end;
 
     [Header("游戏状态数据")]
-    public int currentGold = 50;// 初始金币
+    public int currentGold = 150;// 初始金币
     public int currentReputation = 3;// 初始声望
     public int maxReputation = 3;// 声望上限
     public bool hasStart = false;
+
+    [Header("游戏统计信息")]
+    public float totalPlayTime = 0f; // 总游戏时间（秒）
+    public int totalIncome = 0; // 总收入
+    public int totalServedOrders = 0; // 总出餐数
 
     [System.Serializable]
     public class SaveData

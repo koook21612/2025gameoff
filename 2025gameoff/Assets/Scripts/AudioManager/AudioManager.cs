@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -14,10 +13,18 @@ public class AudioManager : MonoBehaviour
     private AudioSource musicSource2; // 第二个音源用于交叉淡入淡出
     private AudioSource voiceSource;
     private AudioSource microwaveHeatingSource; // 专门用于微波炉加热音效
+    private AudioSource cgMusicSource; // 专门用于CG背景音乐
+    private AudioSource telephoneRingSource; // 专门用于电话铃声
 
     // 微波炉加热状态管理
     private int activeHeatingCount = 0; // 正在加热的微波炉数量
     private bool isHeatingLoopPlaying = false; // 加热循环音效是否正在播放
+
+    // 电话状态管理
+    private bool isTelephoneRinging = false; // 电话是否正在响铃
+
+    // 老板说话音效数组
+    private AudioClip[] talkingClips;
 
     private bool isFirstSourceActive = true;
     private Coroutine fadeCoroutine;
@@ -57,8 +64,19 @@ public class AudioManager : MonoBehaviour
             microwaveHeatingSource.outputAudioMixerGroup = effectGroup;
             microwaveHeatingSource.loop = true;
 
-            // 预加载撕订单音效
+            // 创建CG背景音乐专用音源
+            cgMusicSource = gameObject.AddComponent<AudioSource>();
+            cgMusicSource.outputAudioMixerGroup = musicGroup;
+            cgMusicSource.loop = false; // CG音乐不循环
+
+            // 创建电话铃声专用音源
+            telephoneRingSource = gameObject.AddComponent<AudioSource>();
+            telephoneRingSource.outputAudioMixerGroup = effectGroup;
+            telephoneRingSource.loop = true; // 电话铃声循环播放
+
+            // 预加载撕订单音效和说话音效
             LoadTearOrderClips();
+            LoadTalkingClips();
 
             LoadVolumeSettings();
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -67,6 +85,170 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    // ========== 电话系统音效 ==========
+
+    /// <summary>
+    /// 预加载老板说话音效
+    /// </summary>
+    private void LoadTalkingClips()
+    {
+        talkingClips = new AudioClip[3];
+        for (int i = 0; i < 3; i++)
+        {
+            string clipName = Constants.PROECDURE + $"game_procedure_talking_{i + 1}";
+            talkingClips[i] = Resources.Load<AudioClip>(clipName);
+            if (talkingClips[i] == null)
+            {
+                Debug.LogError(Constants.AUDIO_LOAD_FAILED + clipName);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 开始电话响铃（循环播放）
+    /// </summary>
+    public void StartTelephoneRing()
+    {
+        if (isTelephoneRinging) return;
+
+        AudioClip clip = Resources.Load<AudioClip>(Constants.PROECDURE + "game_procedure_telephone_ring");
+        if (clip == null)
+        {
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + "game_procedure_telephone_ring");
+            return;
+        }
+
+        telephoneRingSource.clip = clip;
+        telephoneRingSource.Play();
+        isTelephoneRinging = true;
+    }
+
+    /// <summary>
+    /// 停止电话响铃
+    /// </summary>
+    public void StopTelephoneRing()
+    {
+        if (!isTelephoneRinging) return;
+
+        telephoneRingSource.Stop();
+        isTelephoneRinging = false;
+    }
+
+    /// <summary>
+    /// 播放拿起电话音效
+    /// </summary>
+    public void PlayTelephonePickUp()
+    {
+        PlayEffect(Constants.PROECDURE + "game_procedure_telephone_pick_up");
+    }
+
+    /// <summary>
+    /// 播放挂电话音效
+    /// </summary>
+    public void PlayTelephoneDrop()
+    {
+        PlayEffect(Constants.PROECDURE + "game_procedure_telephone_drop");
+    }
+
+    /// <summary>
+    /// 播放老板说话音效（随机三个音效之一）
+    /// </summary>
+    public void PlayTalking()
+    {
+        if (talkingClips == null || talkingClips.Length == 0)
+        {
+            Debug.LogError("老板说话音效未加载!");
+            return;
+        }
+
+        // 随机选择一个音效
+        int randomIndex = Random.Range(0, talkingClips.Length);
+        AudioClip clip = talkingClips[randomIndex];
+
+        if (clip != null)
+        {
+            voiceSource.PlayOneShot(clip);
+        }
+        else
+        {
+            Debug.LogError($"老板说话音效 {randomIndex + 1} 加载失败!");
+        }
+    }
+
+    // ========== CG背景音乐控制 ==========
+
+    /// <summary>
+    /// 播放胜利CG背景音乐
+    /// </summary>
+    public void PlayWinCGBGM()
+    {
+        PlayCGBGM("music_end_fly");
+    }
+
+    /// <summary>
+    /// 播放失败CG背景音乐
+    /// </summary>
+    public void PlayLoseCGBGM()
+    {
+        PlayCGBGM("game_procedure_fail");
+    }
+
+    /// <summary>
+    /// 播放CG背景音乐
+    /// </summary>
+    private void PlayCGBGM(string musicFileName)
+    {
+        if (string.IsNullOrEmpty(musicFileName))
+        {
+            Debug.LogError("CG背景音乐文件名为空!");
+            return;
+        }
+
+        // 停止所有当前音乐
+        StopAllBGM();
+
+        AudioClip clip = Resources.Load<AudioClip>(Constants.MUSIC_PATH + musicFileName);
+        if (clip == null)
+        {
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + musicFileName);
+            return;
+        }
+
+        cgMusicSource.clip = clip;
+        cgMusicSource.Play();
+        Debug.Log($"开始播放CG背景音乐: {musicFileName}");
+    }
+
+    /// <summary>
+    /// 停止所有BGM播放（包括普通BGM和CG BGM）
+    /// </summary>
+    public void StopAllBGM()
+    {
+        // 停止普通背景音乐
+        musicSource.Stop();
+        musicSource2.Stop();
+
+        // 停止CG背景音乐
+        cgMusicSource.Stop();
+
+        // 重置音量
+        musicSource.volume = 0f;
+        musicSource2.volume = 0f;
+
+        // 重置当前音乐状态
+        currentMusicState = "";
+
+        Debug.Log("已停止所有背景音乐");
+    }
+
+    /// <summary>
+    /// 检查是否有BGM正在播放
+    /// </summary>
+    public bool IsAnyBGMPlaying()
+    {
+        return musicSource.isPlaying || musicSource2.isPlaying || cgMusicSource.isPlaying;
     }
 
     /// <summary>
@@ -321,7 +503,7 @@ public class AudioManager : MonoBehaviour
         }
         else if (scene.name == Constants.GAME_SCENE)
         {
-            // 游戏场景的音乐将在 StartNewDay() 中开始
+
         }
     }
 

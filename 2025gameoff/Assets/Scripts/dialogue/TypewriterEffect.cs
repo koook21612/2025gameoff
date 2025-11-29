@@ -31,6 +31,7 @@ public class TypewriterEffect : MonoBehaviour
         for (int i = 0; i <= text.Length; i++)
         {
             textDisplay.maxVisibleCharacters = i;
+            AudioManager.Instance.PlayTalking();
             yield return new WaitForSeconds(typingSpeed);
         }
         isTyping = false;
