@@ -84,20 +84,31 @@ public class VideoManager : MonoBehaviour
 
     void StartFadeOut()
     {
-        Debug.Log("开始播放视频");
-        // 先设置视频为播放状态（但已经预加载好了）
         videoPlayer.Play();
-        if (GameManager.Instance.end == 0)
-        {
-            AudioManager.Instance.PlayLoseCGBGM();
-        }
-        else if (GameManager.Instance.end == 1)
-        {
-            AudioManager.Instance.PlayWinCGBGM();
-        }
+
+        StartCoroutine(DelayedBGMCoroutine());
 
         // 使用DOTween将透明度从1降到0，持续0.5秒
         uiOverlay.DOFade(0f, 0.5f);
+    }
+
+    IEnumerator DelayedBGMCoroutine()
+    {
+
+        // 根据结局播放对应的BGM
+        if (GameManager.Instance.end == 0)
+        {
+            yield return new WaitForSeconds(0.3f);
+
+            AudioManager.Instance.PlayLoseCGBGM();
+
+        }
+        else if (GameManager.Instance.end == 1)
+        {
+            yield return null;
+
+            AudioManager.Instance.PlayWinCGBGM();
+        }
     }
 
     void OnVideoEnd(VideoPlayer vp)
