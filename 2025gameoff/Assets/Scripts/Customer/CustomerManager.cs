@@ -203,8 +203,29 @@ public class CustomerManager : MonoBehaviour
             _currentCustomerIndex++;
             _pendingOrders.Add(newOrder);
         }
+        UpdateCurrentWave();
     }
+    private void UpdateCurrentWave()
+    {
+        if (_dailyCustomers.Count == 0) return;
 
+        float progress = (float)_currentCustomerIndex / _dailyCustomers.Count;
+
+        if (progress < 0.3f)
+        {
+            _currentWave = 0; // 第一波次 (0-30%)
+        }
+        else if (progress < 0.8f)
+        {
+            _currentWave = 1; // 第二波次 (30-80%)
+        }
+        else
+        {
+            _currentWave = 2; // 第三波次 (80-100%)
+        }
+
+        Debug.Log($"当前波次: {_currentWave + 1}, 进度: {progress:P0}");
+    }
     private void DisableAllUIPanels()
     {
         // 禁用已接收订单UI
@@ -344,20 +365,6 @@ public class CustomerManager : MonoBehaviour
         InnerGameManager.Instance.EnterStore();
     }
 
-    //// 更新时间显示
-    //private void UpdateTimeDisplay()
-    //{
-    //    if (_isGameRunning && time != null)
-    //    {
-    //        _gameTime += Time.deltaTime;
-
-    //        // 将秒数转换为分钟和秒
-    //        int minutes = Mathf.FloorToInt(_gameTime / 60f);
-    //        int seconds = Mathf.FloorToInt(_gameTime % 60f);
-
-    //        time.text = $"{minutes:00}:{seconds:00}";
-    //    }
-    //}
 
     // 获取当前游戏时间
     public float GetCurrentGameTime()
@@ -365,13 +372,6 @@ public class CustomerManager : MonoBehaviour
         return _gameTime;
     }
 
-    //// 获取格式化时间字符串
-    //public string GetFormattedGameTime()
-    //{
-    //    int minutes = Mathf.FloorToInt(_gameTime / 60f);
-    //    int seconds = Mathf.FloorToInt(_gameTime % 60f);
-    //    return $"{minutes:00}:{seconds:00}";
-    //}
 
     // 手动扯单方法
     public void AcceptOrderFromPending()
@@ -630,4 +630,5 @@ public class CustomerManager : MonoBehaviour
             AudioManager.Instance.SwitchToNormalMusic();
         }
     }
+
 }
