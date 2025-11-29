@@ -2,9 +2,23 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+[System.Serializable]
+public class LocalizationItem
+{
+    public string key;
+    public string value;
+}
+
+[System.Serializable]
+public class LocalizationDataWrapper
+{
+    public List<LocalizationItem> items;
+}
+
 public class LocalizationManager : MonoBehaviour
 {
-    public Dictionary<string, string> localizedText;
+    public Dictionary<string, string> localizedText = new Dictionary<string, string>();
+
     public string currentLanguage = "zh";
 
     public delegate void OnLanguageChanged();
@@ -14,14 +28,8 @@ public class LocalizationManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        else { Destroy(gameObject); }
     }
 
     private void Start()
@@ -29,20 +37,37 @@ public class LocalizationManager : MonoBehaviour
         LoadLanguage(currentLanguage);
     }
 
+    // 从JSON文件加载
     public void LoadLanguage(string language)
     {
         currentLanguage = language;
-        string filePath = Path.Combine();
 
-        localizedText = LocalizationData.GetLanguage(language);
+        string path = $"Localization/{language}";
 
-        if (localizedText != null)
+        TextAsset jsonFile = Resources.Load<TextAsset>(path);
+
+        if (jsonFile != null)
         {
+            LocalizationDataWrapper wrapper = JsonUtility.FromJson<LocalizationDataWrapper>(jsonFile.text);
+
+            localizedText.Clear();
+            if (wrapper != null && wrapper.items != null)
+            {
+                foreach (var item in wrapper.items)
+                {
+                    if (!localizedText.ContainsKey(item.key))
+                    {
+                        localizedText.Add(item.key, item.value);
+                    }
+                }
+            }
+
+            Debug.Log($"成功加载语言:{language},共{localizedText.Count}条数据");
             LanguageChanged?.Invoke();
         }
         else
         {
-            Debug.LogError($"没找到: {language}");
+            Debug.LogError($"未找到语言文件: Resources/{path}");
         }
     }
 
@@ -50,18 +75,7 @@ public class LocalizationManager : MonoBehaviour
     {
         if (localizedText != null && localizedText.TryGetValue(key, out string value))
             return value;
-        else
-            return $"#{key}#";
+
+        return key;
     }
-
-    //调用方法
-
-    //void Start(){ LocalizationManager.Instance.LanguageChanged += UpdateText; }
-    //private void UpdateText()
-    //{
-    //    if (textComponent != null)
-    //    {
-    //        textComponent.text = LocalizationManager.Instance.GetText();
-    //    }
-    //}
 }
