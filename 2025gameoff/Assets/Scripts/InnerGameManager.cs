@@ -99,7 +99,7 @@ public class InnerGameManager : MonoBehaviour
         {
             StoreManager.Instance.refreshCount = 0;
         }
-        days = 1;
+        days = 0;
         UpdateUI();
         EnterStore();
     }

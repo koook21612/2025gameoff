@@ -87,6 +87,7 @@ public class SettingManager : MonoBehaviour
         musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
         effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
         LanguageButton.onClick.AddListener(UpdateLanguage);
+        mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
 
     // 新增：移除所有监听器
