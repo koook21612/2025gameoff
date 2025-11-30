@@ -28,15 +28,39 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         GameManager.Instance.currentScene = Constants.MENU_SCENE;
         isStart = false;
         MenuButtonAddListener();
+
+        CheckSaveAndToggleButton();
+
         if (LocalizationManager.Instance != null)
         {
             LocalizationManager.Instance.LanguageChanged += UpdateMenuLanguage;
             UpdateMenuLanguage();
         }
+    }
+
+    // 检查存档并更新按钮状态
+    void CheckSaveAndToggleButton()
+    {
+        if (continueButton == null) return;
+
+        bool hasSave = false;
+
+        string savePath = GameManager.Instance.GenerateDataPath();
+        if (File.Exists(savePath))
+        {
+            if (GameManager.Instance.pendingData != null && GameManager.Instance.pendingData.hasRunData)
+            {
+                hasSave = true;
+            }
+        }
+
+        continueButton.gameObject.SetActive(hasSave);
     }
 
     void OnDestroy()
@@ -54,6 +78,23 @@ public class MenuManager : MonoBehaviour
                 isStart = true;
             }
         }
+
+        //// 测试用:按下 F12 删除存档
+        //if (Input.GetKeyDown(KeyCode.F12))
+        //{
+        //    string path = GameManager.Instance.GenerateDataPath();
+        //    if (File.Exists(path))
+        //    {
+        //        File.Delete(path);
+        //        Debug.LogWarning("存档已删除,请重新运行游戏或点击开始");
+
+        //        CheckSaveAndToggleButton();
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("当前没有存档文件，无需删除");
+        //    }
+        //}
     }
 
     void MenuButtonAddListener()
@@ -70,6 +111,7 @@ public class MenuManager : MonoBehaviour
     public void StartGame()
     {
         //TODO:初始化设置
+        GameManager.Instance.hasStart = false;
         SceneManager.LoadScene(Constants.GAME_SCENE);
     }
 
@@ -80,8 +122,13 @@ public class MenuManager : MonoBehaviour
 
         if (File.Exists(savePath))
         {
-            //GameManager.Instance.Load();
+            GameManager.Instance.hasStart = true;
             SceneManager.LoadScene(Constants.GAME_SCENE);
+        }
+        else
+        {
+            Debug.LogError("没有存档文件");
+            CheckSaveAndToggleButton();
         }
     }
 

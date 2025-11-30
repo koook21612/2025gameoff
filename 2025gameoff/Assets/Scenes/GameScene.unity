@@ -15525,6 +15525,16 @@ MonoBehaviour:
     heatingTimeMultiplier: 1
     perfectZoneBonus: 0
     currentLanguage: 
+    hasRunData: 0
+    runGold: 0
+    runReputation: 0
+    runDay: 0
+    runMicrowavesCount: 0
+    inventoryData: []
+    cartData: []
+    runPlayTime: 0
+    runTotalIncome: 0
+    runTotalServed: 0
 --- !u!1 &1299231941
 GameObject:
   m_ObjectHideFlags: 0

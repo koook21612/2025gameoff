@@ -68,11 +68,16 @@ public class SelectionSystem : MonoBehaviour
 
     private void InitializeSelectionSystem()
     {
+        if (currentSelections == null) currentSelections = new Dictionary<IngredientScriptObjs, int>();
         currentSelections.Clear();
+
+        if (InnerGameManager.Instance == null || InnerGameManager.Instance.totalIngredientPool == null)
+            return;
 
         foreach (var ingredient in InnerGameManager.Instance.totalIngredientPool)
         {
-            currentSelections[ingredient] = 0;
+            if (ingredient != null)
+                currentSelections[ingredient] = 0;
         }
     }
 
@@ -214,6 +219,18 @@ public class SelectionSystem : MonoBehaviour
 
     public void RefreshUI()
     {
+        if (currentSelections == null || currentSelections.Count == 0)
+        {
+            if (InnerGameManager.Instance != null && InnerGameManager.Instance.totalIngredientPool != null)
+            {
+                InitializeSelectionSystem();
+            }
+            else
+            {
+                return;
+            }
+        }
+
         UpdateUI();
     }
 

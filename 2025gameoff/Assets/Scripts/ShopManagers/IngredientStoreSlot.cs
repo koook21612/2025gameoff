@@ -23,7 +23,7 @@ public class IngredientStoreSlot : MonoBehaviour
     public void Initialize(IngredientScriptObjs ingredient)
     {
         currentIngredient = ingredient;
-        currentQuantity = 0;
+        currentQuantity = StoreManager.Instance.GetPendingQuantity(ingredient);
 
         UpdateDisplay();
 
@@ -189,7 +189,7 @@ public class IngredientStoreSlot : MonoBehaviour
     public void UpdateLocale()
     {
         UpdateDisplay();
-        Debug.LogError("Slot刷新了语言");
+        Debug.LogWarning("Slot刷新了语言");
     }
 
     private void OnEnable()

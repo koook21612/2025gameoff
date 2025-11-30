@@ -144,6 +144,19 @@ public class CustomerManager : MonoBehaviour
     // 修改点1：初始化当天顾客列表
     public void InitializeDailyCustomers()
     {
+        AllDishes = InnerGameManager.Instance.dishPool;
+
+        if (AllDishes == null || AllDishes.Count == 0)
+        {
+            Debug.LogError($"CustomerManager发现AllDishes为空。" +
+                           $"InnerGameManager的totalDishPool数量是:{InnerGameManager.Instance.totalDishPool.Count}。" +
+                           $"请检查Inspector配置");
+
+            _isDayEnding = true;
+            return;
+        }
+
+
         _dailyCustomers.Clear();
         _currentCustomerIndex = 0;
         _currentWave = 0;
@@ -153,6 +166,8 @@ public class CustomerManager : MonoBehaviour
         _isDayEnding = false;
         AllDishes = InnerGameManager.Instance.dishPool;
         int day = InnerGameManager.Instance.days;
+        // 防止坏存档导致的 Log(0) 崩溃
+        if (day <= 0) day = 1;
         // 计算当天总顾客数 y = n + ln(n) + e^(n-7) + 10
         int totalCustomers = CalculateDailyCustomerCount(day);
         _totalCustomersToday = totalCustomers; // 记录当天总顾客数
@@ -186,6 +201,7 @@ public class CustomerManager : MonoBehaviour
     //计算菜数
     private void CountDishesRequirement(Order order)
     {
+        if (order == null || order.Dishes == null) return;
         foreach (OrderItem item in order.Dishes)
         {
             if (_dailyDishesRequirement.ContainsKey(item.DishName))
@@ -421,6 +437,22 @@ public class CustomerManager : MonoBehaviour
     //订单生成
     public Order GenerateNewOrder(float p1, float p2, float p3)
     {
+        // 测试用
+        if (AllDishes == null)
+        {
+            Debug.LogError("AllDishes列表是null");
+            return null;
+        }
+
+
+        if (AllDishes.Count == 0)
+        {
+            Debug.LogError("AllDishes列表虽然不为null，但是数量为 0，无法随机抽取");
+            return null;
+        }
+
+
+
         //顾客点几道菜
         int dishesCount = 0;
         float randomValue = UnityEngine.Random.Range(0f, p1 + p2 + p3);

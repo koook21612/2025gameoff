@@ -157,16 +157,27 @@ public class SettingManager : MonoBehaviour
         if (defaultButton != null)
             defaultButton.onClick.AddListener(ResetSetting);
 
-        if (masterVolumeSlider != null)
-            masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
-        if (musicVolumeSlider != null)
-            musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
-        if (effectVolumeSlider != null)
-            effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
-        if (LanguageButton != null)
-            LanguageButton.onClick.AddListener(UpdateLanguage);
+        masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+        musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
+        effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
+        LanguageButton.onClick.AddListener(UpdateLanguage);
+        //mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
         if (mainMenuButton != null)
-            mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
+        {
+            mainMenuButton.onClick.AddListener(() =>
+            {
+                SaveSetting();
+
+
+                if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
+                {
+                    if (PlayerInteraction.instance != null)
+                        PlayerInteraction.instance.FinishView();
+                }
+
+                SceneManager.LoadScene(Constants.MENU_SCENE);
+            });
+        }
     }
     void RemoveListener()
     {
@@ -406,7 +417,7 @@ public class SettingManager : MonoBehaviour
         }
     }
 
-    void SaveSetting()
+    public void SaveSetting()
     {
         // 把当前 UI 的分辨率 index 写入 Settings
         if (resolutionDropdown != null && resolutionDropdown.options.Count > 0)
