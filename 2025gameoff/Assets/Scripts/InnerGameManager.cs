@@ -15,8 +15,8 @@ public class InnerGameManager : MonoBehaviour
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
     public int completedCustomers = 0; // 完成的顾客数量
-
     private object goldLock = new object();//线程锁，防止并发冲突
+
     // 微波炉升级相关
     [Header("微波炉升级")]
     public int MicrowavesCount = 1; // 微波炉数量

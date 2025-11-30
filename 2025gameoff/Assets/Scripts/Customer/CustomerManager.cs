@@ -48,6 +48,7 @@ public class PendingOrderUISlot
 
 public class CustomerManager : MonoBehaviour
 {
+
     public bool isSlowPatienceEnabled = false;
 
     [Header("菜品池")]
@@ -66,6 +67,7 @@ public class CustomerManager : MonoBehaviour
     public int PenaltyThreshold;//每满几个订单加快消耗耐心
     public float PenaltyRate;//加快百分之几
 
+
     private float _timer;//当前累积时间
     public TextMeshProUGUI time;
 
@@ -80,6 +82,7 @@ public class CustomerManager : MonoBehaviour
     private int _dailyServedOrders = 0; // 当天出餐总数
 
     // 游戏时间相关变量
+
     private bool _isGameRunning = false; // 游戏是否正在进行
 
     // 新增：天结束检测相关变量
@@ -87,7 +90,9 @@ public class CustomerManager : MonoBehaviour
     private int _totalCustomersToday = 0; // 当天总顾客数
     private int _processedCustomers = 0; // 已处理顾客数（包括成功和失败）
 
+
     public int _maxOrderSlots = 3;
+
 
     public static CustomerManager Instance;
     private void Awake()
@@ -124,6 +129,7 @@ public class CustomerManager : MonoBehaviour
     {
         _isGameRunning = true;
         _isDayEnding = false;
+
 
         //_maxOrderSlots = 3;
         _processedCustomers = 0; // 重置已处理顾客数
@@ -248,6 +254,7 @@ public class CustomerManager : MonoBehaviour
     {
         _maxOrderSlots = 3;
         isSlowPatienceEnabled = false;
+
         // 禁用已接收订单UI
         if (ReceivedOrderUISlots != null)
         {
@@ -307,6 +314,7 @@ public class CustomerManager : MonoBehaviour
         }
 
         CheckAndUpdateMusicState();
+
         
         //已接收订单倒计时
         float patienceReductionMultiplier = 1f;
@@ -314,6 +322,7 @@ public class CustomerManager : MonoBehaviour
         {
             patienceReductionMultiplier = Mathf.Max(0.01f, 1f - 0.01f * _pendingOrders.Count);
         }
+
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
             if (_receivedOrders[i] == null) continue;
@@ -558,7 +567,6 @@ public class CustomerManager : MonoBehaviour
         _receivedOrders = new Order[5];
         _pendingOrders.Clear();
         _timer = 0f;
-
         _isGameRunning = false; // 停止计时
         _isDayEnding = false; // 重置结束状态
         _processedCustomers = 0; // 重置已处理顾客数

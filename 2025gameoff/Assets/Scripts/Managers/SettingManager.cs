@@ -6,12 +6,7 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// SettingManager 使用 GameManager.Instance.Settings 作为 single source of truth
-/// 打开设置界面（OnEnable）时从 Settings 读取并填充 UI
-/// 用户交互同步写回 Settings 并应用到系统
-/// 关闭时调用 GameManager.Instance.SaveSettings()
-/// </summary>
+
 public class SettingManager : MonoBehaviour
 {
     public Toggle fullscreenToggle;// 全屏切换开关
@@ -65,7 +60,6 @@ public class SettingManager : MonoBehaviour
     {
         AddListener();
     }
-
     void OnEnable()
     {
         if (GameManager.Instance == null)
@@ -79,7 +73,7 @@ public class SettingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 将 GameManager.Instance.Settings 的值应用到 UI（只读）
+    /// 将 GameManager.Instance.Settings 的值应用到 UI
     /// </summary>
     void ApplySettingsToUI()
     {
@@ -174,8 +168,6 @@ public class SettingManager : MonoBehaviour
         if (mainMenuButton != null)
             mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
-
-    // 移除所有监听器
     void RemoveListener()
     {
         if (fullscreenToggle != null)
@@ -205,15 +197,12 @@ public class SettingManager : MonoBehaviour
         InitializeResolutions();
         InitializeVolume();
     }
-
-    //初始化全屏（保留备用）
     void InitializeDisplayMode()
     {
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
     }
 
-    //初始化分辨率（填充下拉）
     void InitializeResolutions()
     {
         if (resolutionDropdown == null) return;
@@ -249,7 +238,6 @@ public class SettingManager : MonoBehaviour
             {
                 resolutionMap[option] = res;
                 resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(option));
-
                 int currentOptionIndex = resolutionDropdown.options.Count - 1;
 
                 // 设置当前分辨率索引
@@ -318,6 +306,7 @@ public class SettingManager : MonoBehaviour
         // 写入 Settings 并加载语言
         GameManager.Instance.Settings.language = currentLanguage;
         if (LocalizationManager.Instance != null && currentLanguage != LocalizationManager.Instance.currentLanguage)
+
         {
             LocalizationManager.Instance.LoadLanguage(currentLanguage);
         }
@@ -405,8 +394,6 @@ public class SettingManager : MonoBehaviour
     public void CloseSetting()
     {
         SaveSetting();
-
-        //返回主菜单或者游戏界面
         if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
             // 假设 PlayerInteraction.instance 可能为空（防护）
@@ -491,7 +478,7 @@ public class SettingManager : MonoBehaviour
         {
             languageButtonText.text = LocalizationManager.Instance.GetText("language_name");
         }
-        // 语言按钮文本（名字）
+
         if (LanguageButton != null)
         {
             TextMeshProUGUI langBtnText = LanguageButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -521,7 +508,8 @@ public class SettingManager : MonoBehaviour
                 menuBtnText.text = LocalizationManager.Instance.GetText("return_menu");
         }
 
-        if (settingsTitleText != null)
+
+        if (settingsTitleText != null) 
             settingsTitleText.text = LocalizationManager.Instance.GetText("settings");
     }
 }

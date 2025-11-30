@@ -147,12 +147,10 @@ public class UIManager : MonoBehaviour
             Debug.LogWarning("InnerGameManager实例未找到");
         }
     }
-
     public void Updatehint()
     {
         hint.text = LocalizationManager.Instance.GetText("hint");
     }
-
     // 更新天数文本
     public void UpdateDayText(int currentDay)
     {
@@ -286,5 +284,6 @@ public class UIManager : MonoBehaviour
         }
         UpdateMenuDisplay();
         Updatehint();
+
     }
 }
