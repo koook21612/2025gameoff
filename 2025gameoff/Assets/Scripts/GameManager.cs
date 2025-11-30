@@ -44,6 +44,28 @@ public class GameManager : MonoBehaviour
         public float heatingTimeMultiplier = 0f;
         public float perfectZoneBonus = 0f;
         public string currentLanguage;
+
+        // 局内数据
+        public bool hasRunData = false; // 标记是否存在未完成的对局
+        public int runGold;
+        public int runReputation;
+        public int runDay;
+        public int runMicrowavesCount; // 存储微波炉数量
+
+        // 库存和购物车数据
+        [System.Serializable]
+        public struct IngredientRecord
+        {
+            public string ingredientKey;
+            public int count;
+        }
+        public List<IngredientRecord> inventoryData = new List<IngredientRecord>(); // 仓库里的
+        public List<IngredientRecord> cartData = new List<IngredientRecord>();  // 购物车里的
+
+        // 统计数据
+        public float runPlayTime;
+        public int runTotalIncome;
+        public int runTotalServed;
     }
 
     public SaveData pendingData;
@@ -61,7 +83,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         pendingData = new SaveData();
-        //LoadSettings();
+
+        LoadGameData();
     }
 
     //public void LoadSettings()

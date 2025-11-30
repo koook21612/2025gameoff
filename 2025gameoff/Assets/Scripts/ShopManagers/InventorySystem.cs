@@ -23,6 +23,33 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
+    // 保存数据
+    public List<GameManager.SaveData.IngredientRecord> GetSaveData()
+    {
+        var list = new List<GameManager.SaveData.IngredientRecord>();
+        foreach (var kvp in ingredients)
+        {
+            list.Add(new GameManager.SaveData.IngredientRecord { ingredientKey = kvp.Key.ingredientName, count = kvp.Value });
+        }
+        return list;
+    }
+
+    // 加载数据
+    public void LoadSaveData(List<GameManager.SaveData.IngredientRecord> data)
+    {
+        ingredients.Clear();
+        if (data == null) return;
+
+        foreach (var record in data)
+        {
+            var so = InnerGameManager.Instance.totalIngredientPool.Find(i => i.ingredientName == record.ingredientKey);
+            if (so != null)
+            {
+                ingredients[so] = record.count;
+            }
+        }
+    }
+
     // 添加原料
     public void AddIngredient(IngredientScriptObjs ingredientType, int quantity = 1)
     {

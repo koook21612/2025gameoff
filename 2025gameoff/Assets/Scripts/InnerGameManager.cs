@@ -15,8 +15,8 @@ public class InnerGameManager : MonoBehaviour
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
     public int completedCustomers = 0; // 完成的顾客数量
-
     private object goldLock = new object();//线程锁，防止并发冲突
+
     // 微波炉升级相关
     [Header("微波炉升级")]
     public int MicrowavesCount = 1; // 微波炉数量
@@ -88,25 +88,100 @@ public class InnerGameManager : MonoBehaviour
     //游戏开始
     public void GameStart()
     {
-        totalIncome = 0;
-        totalServedOrders = 0;
+        InitializeMicrowaves();
 
-        currentGold = GameManager.Instance.currentGold;
-        currentReputation = GameManager.Instance.currentReputation;
-        maxReputation = GameManager.Instance.maxReputation;
-        completedCustomers = 0;
-
-        heatingTimeMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
-        perfectZoneBonus = GameManager.Instance.pendingData.perfectZoneBonus;
-
-        //refreshCount = 0;
-        if (StoreManager.Instance != null)
+        if (GameManager.Instance.hasStart)
         {
-            StoreManager.Instance.refreshCount = 0;
+            var data = GameManager.Instance.pendingData;
+
+            currentGold = data.runGold;
+            currentReputation = data.runReputation;
+            days = data.runDay;
+            MicrowavesCount = data.runMicrowavesCount;
+
+            if (InventorySystem.Instance != null)
+                InventorySystem.Instance.LoadSaveData(data.inventoryData);
+            if (StoreManager.Instance != null)
+                StoreManager.Instance.LoadCartSaveData(data.cartData);
+
+            UnlockDishesAndIngredientsByDay();
+
+            if (CustomerManager.Instance != null)
+            {
+                CustomerManager.Instance.InitializeDailyCustomers();
+            }
+            else
+            {
+            }
+
+            UpdateMicrowaveDisplay();
+            UpdateUI();
+            InitializeStoreContent();
+
+            isPlaying = false;
+            anim.SetTrigger("Open");
+            if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
+
         }
-        days = 0;
-        UpdateUI();
-        EnterStore();
+        else
+        {
+            // 新游戏
+            currentGold = 50; // 初始值
+            currentReputation = 3;
+            days = 0; // 第一天 (Day 0 -> EnterStore -> Day 1)
+
+            MicrowavesCount = 1;
+            LatterMicrowavesCount = 0;
+
+            totalIncome = 0;
+            totalServedOrders = 0;
+            totalPlayTime = 0f;
+            completedCustomers = 0;
+
+            var data = GameManager.Instance.pendingData;
+            heatingTimeMultiplier = data.heatingTimeMultiplier;
+            perfectZoneBonus = data.perfectZoneBonus;
+
+            data.hasRunData = false;
+            GameManager.Instance.SaveGameData();
+
+            if (InventorySystem.Instance != null) InventorySystem.Instance.ingredients.Clear();
+            if (StoreManager.Instance != null) StoreManager.Instance.ClearCart();
+
+            SaveCheckpoint();
+            UnlockDishesAndIngredientsByDay();
+            UpdateMicrowaveDisplay();
+            UpdateUI();
+            EnterStore();
+        }
+    }
+
+    // 保存检查点
+    private void SaveCheckpoint()
+    {
+        if (GameManager.Instance == null) return;
+
+        Debug.Log("正在保存新的一天 (检查点)...");
+        var data = GameManager.Instance.pendingData;
+
+        data.hasRunData = true;
+
+        data.runGold = currentGold;
+        data.runReputation = currentReputation;
+        data.runDay = days;
+        data.runMicrowavesCount = MicrowavesCount;
+
+        data.runPlayTime = totalPlayTime;
+        data.runTotalIncome = totalIncome;
+        data.runTotalServed = totalServedOrders;
+
+        if (InventorySystem.Instance != null)
+            data.inventoryData = InventorySystem.Instance.GetSaveData();
+
+        if (StoreManager.Instance != null)
+            data.cartData = StoreManager.Instance.GetCartSaveData();
+
+        GameManager.Instance.SaveGameData();
     }
 
     // 游戏结束
@@ -163,6 +238,7 @@ public class InnerGameManager : MonoBehaviour
         if (days == 7)
         {
             GameOver();
+            return;
         }
         days++;
         if (LatterMicrowavesCount > 0)
@@ -173,9 +249,14 @@ public class InnerGameManager : MonoBehaviour
         }
         if (days > 1)
         {
-            StartCoroutine(AddBonusGoldAfterDelay(1f, 50));
+            StartCoroutine(AddBonusGoldAndSave(1f, 50));
             //AudioManager.Instance.StartTelephoneRing();
             StartCoroutine(Phone(2f));
+        }
+        else
+        {
+            InitializeStoreContent();
+            SaveCheckpoint();
         }
 
         anim.SetTrigger("Open");
@@ -187,6 +268,8 @@ public class InnerGameManager : MonoBehaviour
         isPlaying = false;
         CustomerManager.Instance.InitializeDailyCustomers();
         InitializeStoreContent();//初始化商店
+
+        //SaveCheckpoint();
     }
 
     // 新的一天开始
@@ -204,11 +287,15 @@ public class InnerGameManager : MonoBehaviour
         AudioManager.Instance.StopTelephoneRing();
     }
 
-    private IEnumerator AddBonusGoldAfterDelay(float delay, int goldAmount)
+    private IEnumerator AddBonusGoldAndSave(float delay, int goldAmount)
     {
         yield return new WaitForSeconds(delay);
 
         AddGold(goldAmount);
+
+        InitializeStoreContent();
+
+        SaveCheckpoint();
     }
 
     private IEnumerator Phone(float delay)
@@ -222,7 +309,9 @@ public class InnerGameManager : MonoBehaviour
     //更新解锁
     private void UnlockDishesAndIngredientsByDay()
     {
-        if (days > 4)
+        int effectiveDay = (days <= 0) ? 1 : days;
+
+        if (effectiveDay > 4)
         {
             return;
         }
@@ -232,10 +321,10 @@ public class InnerGameManager : MonoBehaviour
 
         // 根据天数解锁菜品
         int dishesToUnlock = 0;
-        if (days == 1) dishesToUnlock = 3;
-        else if (days == 2) dishesToUnlock = 5;
-        else if (days == 3) dishesToUnlock = 7;
-        else if (days >= 4) dishesToUnlock = Mathf.Min(9, totalDishPool.Count);
+        if (effectiveDay == 1) dishesToUnlock = 3;
+        else if (effectiveDay == 2) dishesToUnlock = 5;
+        else if (effectiveDay == 3) dishesToUnlock = 7;
+        else if (effectiveDay >= 4) dishesToUnlock = Mathf.Min(9, totalDishPool.Count);
 
         for (int i = 0; i < dishesToUnlock && i < totalDishPool.Count; i++)
         {
@@ -244,9 +333,9 @@ public class InnerGameManager : MonoBehaviour
 
         // 根据天数解锁原料
         int ingredientsToUnlock = 0;
-        if (days == 1 || days == 2) ingredientsToUnlock = 3;
-        else if (days == 3) ingredientsToUnlock = 4;
-        else if (days >= 4) ingredientsToUnlock = Mathf.Min(5, totalIngredientPool.Count);
+        if (effectiveDay == 1 || effectiveDay == 2) ingredientsToUnlock = 3;
+        else if (effectiveDay == 3) ingredientsToUnlock = 4;
+        else if (effectiveDay >= 4) ingredientsToUnlock = Mathf.Min(5, totalIngredientPool.Count);
 
         for (int i = 0; i < ingredientsToUnlock && i < totalIngredientPool.Count; i++)
         {

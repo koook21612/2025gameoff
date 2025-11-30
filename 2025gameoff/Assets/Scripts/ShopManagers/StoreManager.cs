@@ -39,7 +39,12 @@ public class StoreManager : MonoBehaviour
         availableIngredients = ingredients;
         //InitializePrices();
         GenerateShelfItems();
-        IngredientStoreSlotManager.Instance.InitializeStore();
+        if (IngredientStoreSlotManager.Instance != null)
+        {
+            IngredientStoreSlotManager.Instance.InitializeStore();
+
+            IngredientStoreSlotManager.Instance.RefreshAllSlotsUI();
+        }
     }
 
     // 只设置商店装备
@@ -47,6 +52,34 @@ public class StoreManager : MonoBehaviour
     {
         currentShelfEquipments = equipments;
         //InitializeEquipmentPrices();
+    }
+
+    // 保存购物车
+    public List<GameManager.SaveData.IngredientRecord> GetCartSaveData()
+    {
+        var list = new List<GameManager.SaveData.IngredientRecord>();
+        foreach (var kvp in pendingIngredientPurchases)
+        {
+            list.Add(new GameManager.SaveData.IngredientRecord { ingredientKey = kvp.Key.ingredientName, count = kvp.Value });
+        }
+        return list;
+    }
+
+    // 加载购物车
+    public void LoadCartSaveData(List<GameManager.SaveData.IngredientRecord> data)
+    {
+        pendingIngredientPurchases.Clear();
+        if (data == null) return;
+
+        foreach (var record in data)
+        {
+            var so = InnerGameManager.Instance.totalIngredientPool.Find(i => i.ingredientName == record.ingredientKey);
+            if (so != null)
+            {
+                pendingIngredientPurchases[so] = record.count;
+            }
+        }
+        SelectionSystem.Instance.RefreshUI();
     }
 
     // ========== 原料商店相关方法 ==========
@@ -269,5 +302,15 @@ public class StoreManager : MonoBehaviour
             }
         }
         StoreDisplayManager.Instance.RefreshShelves();
+    }
+
+    // 获取购物车里原料的数量
+    public int GetPendingQuantity(IngredientScriptObjs ingredient)
+    {
+        if (pendingIngredientPurchases.ContainsKey(ingredient))
+        {
+            return pendingIngredientPurchases[ingredient];
+        }
+        return 0;
     }
 }

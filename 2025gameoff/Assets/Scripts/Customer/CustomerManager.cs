@@ -48,6 +48,7 @@ public class PendingOrderUISlot
 
 public class CustomerManager : MonoBehaviour
 {
+
     public bool isSlowPatienceEnabled = false;
 
     [Header("菜品池")]
@@ -66,6 +67,7 @@ public class CustomerManager : MonoBehaviour
     public int PenaltyThreshold;//每满几个订单加快消耗耐心
     public float PenaltyRate;//加快百分之几
 
+
     private float _timer;//当前累积时间
     public TextMeshProUGUI time;
 
@@ -80,6 +82,7 @@ public class CustomerManager : MonoBehaviour
     private int _dailyServedOrders = 0; // 当天出餐总数
 
     // 游戏时间相关变量
+
     private bool _isGameRunning = false; // 游戏是否正在进行
 
     // 新增：天结束检测相关变量
@@ -87,7 +90,9 @@ public class CustomerManager : MonoBehaviour
     private int _totalCustomersToday = 0; // 当天总顾客数
     private int _processedCustomers = 0; // 已处理顾客数（包括成功和失败）
 
+
     public int _maxOrderSlots = 3;
+
 
     public static CustomerManager Instance;
     private void Awake()
@@ -125,6 +130,7 @@ public class CustomerManager : MonoBehaviour
         _isGameRunning = true;
         _isDayEnding = false;
 
+
         //_maxOrderSlots = 3;
         _processedCustomers = 0; // 重置已处理顾客数
 
@@ -138,6 +144,19 @@ public class CustomerManager : MonoBehaviour
     // 修改点1：初始化当天顾客列表
     public void InitializeDailyCustomers()
     {
+        AllDishes = InnerGameManager.Instance.dishPool;
+
+        if (AllDishes == null || AllDishes.Count == 0)
+        {
+            Debug.LogError($"CustomerManager发现AllDishes为空。" +
+                           $"InnerGameManager的totalDishPool数量是:{InnerGameManager.Instance.totalDishPool.Count}。" +
+                           $"请检查Inspector配置");
+
+            _isDayEnding = true;
+            return;
+        }
+
+
         _dailyCustomers.Clear();
         _currentCustomerIndex = 0;
         _currentWave = 0;
@@ -147,6 +166,8 @@ public class CustomerManager : MonoBehaviour
         _isDayEnding = false;
         AllDishes = InnerGameManager.Instance.dishPool;
         int day = InnerGameManager.Instance.days;
+        // 防止坏存档导致的 Log(0) 崩溃
+        if (day <= 0) day = 1;
         // 计算当天总顾客数 y = n + ln(n) + e^(n-7) + 10
         int totalCustomers = CalculateDailyCustomerCount(day);
         _totalCustomersToday = totalCustomers; // 记录当天总顾客数
@@ -180,6 +201,7 @@ public class CustomerManager : MonoBehaviour
     //计算菜数
     private void CountDishesRequirement(Order order)
     {
+        if (order == null || order.Dishes == null) return;
         foreach (OrderItem item in order.Dishes)
         {
             if (_dailyDishesRequirement.ContainsKey(item.DishName))
@@ -248,6 +270,7 @@ public class CustomerManager : MonoBehaviour
     {
         _maxOrderSlots = 3;
         isSlowPatienceEnabled = false;
+
         // 禁用已接收订单UI
         if (ReceivedOrderUISlots != null)
         {
@@ -307,6 +330,7 @@ public class CustomerManager : MonoBehaviour
         }
 
         CheckAndUpdateMusicState();
+
         
         //已接收订单倒计时
         float patienceReductionMultiplier = 1f;
@@ -314,6 +338,7 @@ public class CustomerManager : MonoBehaviour
         {
             patienceReductionMultiplier = Mathf.Max(0.01f, 1f - 0.01f * _pendingOrders.Count);
         }
+
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
             if (_receivedOrders[i] == null) continue;
@@ -412,6 +437,22 @@ public class CustomerManager : MonoBehaviour
     //订单生成
     public Order GenerateNewOrder(float p1, float p2, float p3)
     {
+        // 测试用
+        if (AllDishes == null)
+        {
+            Debug.LogError("AllDishes列表是null");
+            return null;
+        }
+
+
+        if (AllDishes.Count == 0)
+        {
+            Debug.LogError("AllDishes列表虽然不为null，但是数量为 0，无法随机抽取");
+            return null;
+        }
+
+
+
         //顾客点几道菜
         int dishesCount = 0;
         float randomValue = UnityEngine.Random.Range(0f, p1 + p2 + p3);
@@ -558,7 +599,6 @@ public class CustomerManager : MonoBehaviour
         _receivedOrders = new Order[5];
         _pendingOrders.Clear();
         _timer = 0f;
-
         _isGameRunning = false; // 停止计时
         _isDayEnding = false; // 重置结束状态
         _processedCustomers = 0; // 重置已处理顾客数
