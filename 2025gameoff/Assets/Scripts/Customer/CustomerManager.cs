@@ -48,17 +48,18 @@ public class PendingOrderUISlot
 
 public class CustomerManager : MonoBehaviour
 {
-    public MicrowaveSystem MicrowaveSystem;//微波炉系统
+    [Header("耐心值减慢设置")]
+    public bool isSlowPatienceEnabled = false;
 
     [Header("菜品池")]
     public List<DishScriptObjs> AllDishes = new List<DishScriptObjs>();//所有可点菜品
 
-    private Order[] _receivedOrders = new Order[3];//已接收订单
+    private Order[] _receivedOrders = new Order[5];//已接收订单
     private List<Order> _pendingOrders = new List<Order>();//滞留订单
     private int _orderNumber = 0;//订单计数
 
     [Header("订单UI")]
-    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//已接收订单UI(3个
+    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//已接收订单UI
     public PendingOrderUISlot[] PendingOrderUISlots;//滞留订单UI(20个
 
     public int StartOrderCount = 1;//开局生成数量
@@ -80,14 +81,15 @@ public class CustomerManager : MonoBehaviour
     private int _dailyIncome = 0; // 当天总收入
     private int _dailyServedOrders = 0; // 当天出餐总数
 
-    // 新增：游戏时间相关变量
-    private float _gameTime = 0f; // 游戏运行时间
+    // 游戏时间相关变量
     private bool _isGameRunning = false; // 游戏是否正在进行
 
     // 新增：天结束检测相关变量
     private bool _isDayEnding = false; // 是否正在结束当天
     private int _totalCustomersToday = 0; // 当天总顾客数
     private int _processedCustomers = 0; // 已处理顾客数（包括成功和失败）
+
+    public int _maxOrderSlots = 3;
 
     public static CustomerManager Instance;
     private void Awake()
@@ -108,8 +110,8 @@ public class CustomerManager : MonoBehaviour
     {
         _isGameRunning = true;
         _isDayEnding = false;
-        _gameTime = 0f;
         _processedCustomers = 0; // 重置已处理顾客数
+        //_maxOrderSlots = 3;
         PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
         for (int i = 0; i < StartOrderCount; i++)
         {
@@ -228,6 +230,8 @@ public class CustomerManager : MonoBehaviour
     }
     private void DisableAllUIPanels()
     {
+        _maxOrderSlots = 3;
+        isSlowPatienceEnabled = false;
         // 禁用已接收订单UI
         if (ReceivedOrderUISlots != null)
         {
@@ -288,11 +292,19 @@ public class CustomerManager : MonoBehaviour
 
         CheckAndUpdateMusicState();
 
+        // 计算耐心值减少速度系数
+        float patienceReductionMultiplier = 1f;
+        if (isSlowPatienceEnabled)
+        {
+            // 每个滞留订单减慢1%，所以减少速度为原本的 (1 - 0.01 * 滞留订单数)
+            patienceReductionMultiplier = Mathf.Max(0.01f, 1f - 0.01f * _pendingOrders.Count);
+        }
+
         //已接收订单倒计时
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
             if (_receivedOrders[i] == null) continue;
-            _receivedOrders[i].PatiencePoints -= Time.deltaTime;
+            _receivedOrders[i].PatiencePoints -= Time.deltaTime * patienceReductionMultiplier;
             if (_receivedOrders[i].PatiencePoints <= 0)
             {
                 // 订单超时，计入已处理顾客
@@ -305,9 +317,10 @@ public class CustomerManager : MonoBehaviour
 
         //滞留订单倒计时
         float pendingDrainMultiplier = 1f + Mathf.FloorToInt(_pendingOrders.Count / 5) * 0.1f;
+        float finalPendingMultiplier = pendingDrainMultiplier * patienceReductionMultiplier;
         for (int i = _pendingOrders.Count - 1; i >= 0; i--)
         {
-            _pendingOrders[i].PatiencePoints -= Time.deltaTime * pendingDrainMultiplier;
+            _pendingOrders[i].PatiencePoints -= Time.deltaTime * finalPendingMultiplier;
             if (_pendingOrders[i].PatiencePoints <= 0)
             {
                 // 订单超时，计入已处理顾客
@@ -366,17 +379,10 @@ public class CustomerManager : MonoBehaviour
     }
 
 
-    // 获取当前游戏时间
-    public float GetCurrentGameTime()
-    {
-        return _gameTime;
-    }
-
-
     // 手动扯单方法
     public void AcceptOrderFromPending()
     {
-        for (int i = 0; i < _receivedOrders.Length; i++)
+        for (int i = 0; i < _maxOrderSlots; i++)
         {
             if (_receivedOrders[i] == null && _pendingOrders.Count > 0)
             {
@@ -536,10 +542,9 @@ public class CustomerManager : MonoBehaviour
             InnerGameManager.Instance.AddDailyIncome(_dailyIncome);
             InnerGameManager.Instance.AddDailyServedOrders(_dailyServedOrders);
         }
-        _receivedOrders = new Order[3];
+        _receivedOrders = new Order[5];
         _pendingOrders.Clear();
         _timer = 0f;
-        _gameTime = 0f; // 重置游戏时间
         _isGameRunning = false; // 停止计时
         _isDayEnding = false; // 重置结束状态
         _processedCustomers = 0; // 重置已处理顾客数
@@ -627,7 +632,6 @@ public class CustomerManager : MonoBehaviour
         }
         else
         {
-            // normal 条件：订单不多的情况
             AudioManager.Instance.SwitchToNormalMusic();
         }
     }

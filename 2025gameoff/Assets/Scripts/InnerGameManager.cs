@@ -16,7 +16,6 @@ public class InnerGameManager : MonoBehaviour
     public int maxReputation = 3; // 声望上限
     public int completedCustomers = 0; // 完成的顾客数量
 
-
     private object goldLock = new object();//线程锁，防止并发冲突
 
     // 微波炉升级相关
@@ -46,6 +45,9 @@ public class InnerGameManager : MonoBehaviour
     public Animator anim;
     public int count = 1;
     public Image fadeImage;
+
+    private int muiscEffect = 0;
+    public bool Supplier = false;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -62,6 +64,8 @@ public class InnerGameManager : MonoBehaviour
         GameManager.Instance.currentScene = Constants.GAME_SCENE;
         InitializeMicrowaves();
         GameStart();
+        muiscEffect = 0;
+        Supplier = false;
     }
 
 
@@ -362,6 +366,10 @@ public class InnerGameManager : MonoBehaviour
             else
             {
                 int tipReward = Mathf.RoundToInt(currentGold * 0.05f);
+                if(muiscEffect != 0)
+                {
+                    tipReward += muiscEffect * 10;
+                }
                 AddGold(tipReward);
                 GameManager.Instance.AddTalentPoint(1);
                 Debug.Log($"声望已满，获得小费: {tipReward}和1天赋点");
@@ -394,6 +402,18 @@ public class InnerGameManager : MonoBehaviour
                     break;
                 case EffectType.ThreeDPrinter:
                     LatterMicrowavesCount++;
+                    break;
+                case EffectType.Clip:
+                    CustomerManager.Instance._maxOrderSlots = 5;
+                    break;
+                case EffectType.Music:
+                    muiscEffect++;
+                    break;
+                case EffectType.Hoarding:
+                    CustomerManager.Instance.isSlowPatienceEnabled = true;
+                    break;
+                case EffectType.Supplier:
+                    Supplier = true;
                     break;
                 //TODO:其他全局效果
             }

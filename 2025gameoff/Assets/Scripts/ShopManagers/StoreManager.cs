@@ -12,13 +12,12 @@ public class StoreManager : MonoBehaviour
     private Dictionary<IngredientScriptObjs, int> pendingIngredientPurchases = new Dictionary<IngredientScriptObjs, int>(); // 待入库的原料
     [Header("装备池配置")]
     public List<EquipmentDataSO> commonEquipmentPool; // 普通装备池
-    public List<EquipmentDataSO> rareEquipmentPool;   // 稀有装备池
 
     [Header("装备商店状态")]
-    public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的5个装备
+    public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的4个装备
     public int refreshCount = 0; // 刷新次数(k)
     public int newMicrowavePrice = 200; // 微波炉价格
-
+    public GameObject buyMicrowave;
 
     public static StoreManager Instance { get; private set; }
 
@@ -170,6 +169,10 @@ public class StoreManager : MonoBehaviour
             InnerGameManager.Instance.UpdateMicrowaveDisplay();
             AudioManager.Instance.PlayStoreBuyGoods();
             Debug.Log($"购买成功！当前微波炉数量: {InnerGameManager.Instance.MicrowavesCount}");
+            if(InnerGameManager.Instance.MicrowavesCount == 5)
+            {
+                buyMicrowave.SetActive(false);
+            }
         }
         else
         {
@@ -183,18 +186,16 @@ public class StoreManager : MonoBehaviour
         if (equipment == null) return false;
 
         int cost = equipment.equipmentPrice;
+        if (InnerGameManager.Instance.Supplier)
+        {
+            cost = CalculateDiscountedPrice(equipment.equipmentPrice);
+        }
 
         // 检查金币是否足够
         if (InnerGameManager.Instance.SpendGold(cost))
         {
-            if (equipment.isGlobal)
-            {
-                InventorySystem.Instance.AddEquipment(equipment);
-            }
-            else
-            {
-                PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
-            }
+            AudioManager.Instance.PlayStoreBuyGoods();
+            InventorySystem.Instance.AddEquipment(equipment);
 
             return true;
         }
@@ -202,6 +203,11 @@ public class StoreManager : MonoBehaviour
         {
             return false;
         }
+    }
+    private int CalculateDiscountedPrice(int originalPrice)
+    {
+        float discountedPrice = originalPrice * 0.9f;
+        return Mathf.CeilToInt(discountedPrice);
     }
 
     // 获取原料价格
@@ -247,13 +253,6 @@ public class StoreManager : MonoBehaviour
     public void GenerateShelfItems()
     {
         currentShelfEquipments.Clear();
-
-        //抽取稀有装备1个
-        if (rareEquipmentPool != null && rareEquipmentPool.Count > 0)
-        {
-            int rareIndex = UnityEngine.Random.Range(0, rareEquipmentPool.Count);
-            currentShelfEquipments.Add(rareEquipmentPool[rareIndex]);
-        }
 
         //抽取普通装备3个
         if (commonEquipmentPool != null && commonEquipmentPool.Count > 0)

@@ -92,12 +92,24 @@ public class StoreDisplayManager : MonoBehaviour
             }
             else
             {
-                CostText.text = $"{shelf._data.equipmentPrice} G";
+                int displayPrice = shelf._data.equipmentPrice;
+                if (InnerGameManager.Instance.Supplier)
+                {
+                    displayPrice = CalculateDiscountedPrice(shelf._data.equipmentPrice);
+                }
+                CostText.text = $"{displayPrice} G";
             }
 
         if (DescriptionText != null)
             DescriptionText.text = shelf._data.GetDescription();
     }
+
+    private int CalculateDiscountedPrice(int originalPrice)
+    {
+        float discountedPrice = originalPrice * 0.9f;
+        return Mathf.CeilToInt(discountedPrice);
+    }
+
     public void HideItemInfo()
     {
         if (itemInfoPanel != null)
@@ -116,7 +128,6 @@ public class StoreDisplayManager : MonoBehaviour
     //UI°´Å¥µã»÷Âß¼­
     public void OnRefreshClicked()
     {
-        Debug.Log("refresh");
         StoreManager.Instance.TryRefreshShelf();
         RefreshShelves();
     }
