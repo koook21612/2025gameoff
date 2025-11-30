@@ -50,7 +50,7 @@ public class MenuManager : MonoBehaviour
         continueButton.onClick.AddListener(ContinueGame);
         settingButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.SETTING_SCENE));
         talentButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.TALENT_SCENE));
-        //ProducterButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.PRODUCTER_SCENE));
+        ProducterButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.PRODUCTER_SCENE));
         quitButton.onClick.AddListener(QuitGame);
         Debug.Log("³É¹¦¼ÓÔØ¼àÌıÆ÷");
     }

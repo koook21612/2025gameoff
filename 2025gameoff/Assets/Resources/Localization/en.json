@@ -147,9 +147,12 @@
     { "key": "equip_planetary_engine_e", "value": "Planetary Engine Module E" },
     { "key": "desc_equip_planetary_engine_e", "value": "???" },
 
+    { "key": "cant_buy", "value": "It cannot be purchased now." },
+
     { "key": "refresh", "value": "Refresh" },
     { "key": "desc_refresh", "value": "Refresh upgrade modules in the store." },
     { "key": "newMicrowave", "value": "Buy Microwave" },
     { "key": "desc_new_microwave", "value": "Buy a brand new microwave to increase capacity." }
+
   ]
 }

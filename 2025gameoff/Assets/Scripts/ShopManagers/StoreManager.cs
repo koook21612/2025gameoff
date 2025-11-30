@@ -168,7 +168,7 @@ public class StoreManager : MonoBehaviour
         {
             InnerGameManager.Instance.MicrowavesCount++;
             InnerGameManager.Instance.UpdateMicrowaveDisplay();
-
+            AudioManager.Instance.PlayStoreBuyGoods();
             Debug.Log($"购买成功！当前微波炉数量: {InnerGameManager.Instance.MicrowavesCount}");
         }
         else
@@ -224,7 +224,7 @@ public class StoreManager : MonoBehaviour
             refreshCount++;
             GenerateShelfItems();
             Debug.Log("商店刷新成功！");
-            //这里可能需要调用一个事件或UI刷新方法来更新界面显示？
+            AudioManager.Instance.PlayStoreRefresh();
         }
         else
         {

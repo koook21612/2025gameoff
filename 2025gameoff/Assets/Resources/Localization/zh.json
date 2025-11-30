@@ -147,6 +147,8 @@
     { "key": "equip_planetary_engine_e", "value": "行星发动机模块E" },
     { "key": "desc_equip_planetary_engine_e", "value": "？？？" },
 
+        { "key": "cant_buy", "value": "现在无法购买。" },
+
     { "key": "refresh", "value": "刷新" },
     { "key": "desc_refresh", "value": "刷新商店里的升级模块。" },
     { "key": "newMicrowave", "value": "购买新微波炉" },

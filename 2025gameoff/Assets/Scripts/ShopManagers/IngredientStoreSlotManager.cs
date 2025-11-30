@@ -50,10 +50,6 @@ public class IngredientStoreSlotManager : MonoBehaviour
         for (int i = 0; i < availableIngredients.Count; i++)
         {
             IngredientScriptObjs ingredient = availableIngredients[i];
-
-            // 输出原料的基本信息
-            string ingredientInfo = $"原料 {i + 1}: ";
-            ingredientInfo += $"名称: {ingredient.ingredientName}";
         }
         // 初始化槽位
         InitializeSlots();

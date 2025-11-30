@@ -35,7 +35,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
     - line: '|   companyName: DefaultCompany'
-    - line: '|   productName: ghost kitchen'
+    - line: '|   productName: super microwave'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -320,7 +320,7 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: '
     - line: '|     m_Icons:'
     - line: '|     - serializedVersion: 2'
-    - line: '|       m_Icon: {fileID: 2800000, guid: c19d00fa665118644ad364097d40407d,
+    - line: '|       m_Icon: {fileID: 2800000, guid: cb010790f5fec3548b6db9e87b103c44,
         type: 3}'
     - line: '|       m_Width: 128'
     - line: '|       m_Height: 128'
