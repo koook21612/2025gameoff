@@ -17,6 +17,6 @@ MonoBehaviour:
   - effectType: 28
     value: 1
   equipmentName: equip_supplier
-  equipmentPrice: 0
+  equipmentPrice: 80
   description: desc_equip_supplier
   isGlobal: 1

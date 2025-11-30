@@ -64,6 +64,7 @@ public class LocalizationManager : MonoBehaviour
             
             Debug.Log($"成功加载语言:{language},共{localizedText.Count}条数据");
             LanguageChanged?.Invoke();
+            DialogueManager.Instance.OnLanguageChanged();
         }
         else
         {

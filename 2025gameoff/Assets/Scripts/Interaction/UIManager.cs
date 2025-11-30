@@ -30,6 +30,8 @@ public class UIManager : MonoBehaviour
     private List<DishScriptObjs> currentDisplayedDishes = new List<DishScriptObjs>();
     [SerializeField] private Button ContinueGame;
 
+    [SerializeField] private TextMeshProUGUI hint;
+
     private void Awake()
     {
         if (instance == null)
@@ -144,6 +146,11 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogWarning("InnerGameManager实例未找到");
         }
+    }
+
+    public void Updatehint()
+    {
+        hint.text = LocalizationManager.Instance.GetText("hint");
     }
 
     // 更新天数文本
@@ -278,5 +285,6 @@ public class UIManager : MonoBehaviour
             UpdateDayText(InnerGameManager.Instance.days);
         }
         UpdateMenuDisplay();
+        Updatehint();
     }
 }

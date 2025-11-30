@@ -2,8 +2,20 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 
+[System.Serializable]
+public class SettingsData
+{
+    public int resolutionIndex = 0;
+    public bool fullscreen = true;
+    public float masterVolume = 0.8f;
+    public float musicVolume = 0.8f;
+    public float effectVolume = 0.8f;
+    public string language = "zh";
+}
+
 public class GameManager : MonoBehaviour
 {
+
     public string currentScene; // 当前场景名称
     public int end;
 
@@ -17,6 +29,10 @@ public class GameManager : MonoBehaviour
     public float totalPlayTime = 0f; // 总游戏时间（秒）
     public int totalIncome = 0; // 总收入
     public int totalServedOrders = 0; // 总出餐数
+
+    public SettingsData Settings = new SettingsData();
+
+    private const string SETTINGS_KEY = "GameSettings_v1";
 
     [System.Serializable]
     public class SaveData
@@ -45,7 +61,28 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         pendingData = new SaveData();
+        //LoadSettings();
     }
+
+    //public void LoadSettings()
+    //{
+    //    if (PlayerPrefs.HasKey(SETTINGS_KEY))
+    //    {
+    //        string json = PlayerPrefs.GetString(SETTINGS_KEY);
+    //        Settings = JsonUtility.FromJson<SettingsData>(json);
+    //    }
+    //    else
+    //    {
+    //        SaveSettings();
+    //    }
+    //}
+
+    //public void SaveSettings()
+    //{
+    //    string json = JsonUtility.ToJson(Settings);
+    //    PlayerPrefs.SetString(SETTINGS_KEY, json);
+    //    PlayerPrefs.Save();
+    //}
 
     void Start()
     {
@@ -77,16 +114,6 @@ public class GameManager : MonoBehaviour
     public string GenerateDataPath()
     {
         return Path.Combine(Application.persistentDataPath, "gameSave.json");
-    }
-
-  
-    public void LoadLanguage()
-    {
-        string filePath = Path.Combine();
-        if (File.Exists(filePath))
-        {
-            string dataJson = File.ReadAllText(filePath);
-        }
     }
 
     // 天赋点操作

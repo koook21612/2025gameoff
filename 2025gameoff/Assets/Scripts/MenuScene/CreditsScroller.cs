@@ -29,11 +29,11 @@ public class CreditsScroller : MonoBehaviour
 
         if (creditFile != null)
         {
-            creditsText.GetComponent<TextMeshProUGUI>().text = creditFile.text;
+            creditsText.GetComponentInChildren<TextMeshProUGUI>().text = creditFile.text;
         }
         else
         {
-            creditsText.GetComponent<TextMeshProUGUI>().text = "找不到制作人员名单文件";
+            creditsText.GetComponentInChildren<TextMeshProUGUI>().text = "找不到制作人员名单文件";
             Debug.LogError("无法加载Resources/credits/credit.txt文件，请检查文件路径和名称");
         }
     }
