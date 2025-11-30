@@ -83,6 +83,7 @@ public class InventorySystem : MonoBehaviour
             {
                 equipments.Add(equipment);
                 InnerGameManager.Instance.ApplyEffects(equipment);
+                Debug.Log("加入全局装备");
             }
             else
             {

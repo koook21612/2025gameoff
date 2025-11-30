@@ -135,7 +135,7 @@
     { "key": "equip_virus", "value": "Virus Module" },
     { "key": "desc_equip_virus", "value": "Breakdown rate +5%. Gain 10 gold when any microwave is repaired. Spreads to adjacent microwaves at end of day." },
     { "key": "equip_supplier", "value": "Supplier Module" },
-    { "key": "desc_equip_supplier", "value": "Store upgrade module prices -10%, ingredient prices -5%." },
+    { "key": "desc_equip_supplier", "value": "Store upgrade module prices -10%." },
     { "key": "equip_planetary_engine_a", "value": "Planetary Engine Module A" },
     { "key": "desc_equip_planetary_engine_a", "value": "???" },
     { "key": "equip_planetary_engine_b", "value": "Planetary Engine Module B" },
