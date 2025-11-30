@@ -31,6 +31,6 @@ public class Constants
     public static float DEFAULT_TYPING_SPEED = 0.5f;
     public static float PLAYING_TIME = 0.2f;
 
-    public static float CREDITS_SCROLL_END_Y = 1400f;
+    public static float CREDITS_SCROLL_END_Y = 2300f;
 
 }

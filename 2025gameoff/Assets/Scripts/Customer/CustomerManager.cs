@@ -52,12 +52,12 @@ public class CustomerManager : MonoBehaviour
 
     [Header("菜品池")]
     public List<DishScriptObjs> AllDishes = new List<DishScriptObjs>();//所有可点菜品
-    private Order[] _receivedOrders = new Order[3];//已接收订单
+    private Order[] _receivedOrders = new Order[5];//已接收订单
     private List<Order> _pendingOrders = new List<Order>();//滞留订单
     private int _orderNumber = 0;//订单计数
 
     [Header("订单UI")]
-    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//已接收订单UI(3个
+    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//已接收订单UI(5个
     public PendingOrderUISlot[] PendingOrderUISlots;//滞留订单UI(20个
 
     public int StartOrderCount = 1;//开局生成数量

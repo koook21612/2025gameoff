@@ -6,6 +6,12 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// SettingManager 使用 GameManager.Instance.Settings 作为 single source of truth
+/// 打开设置界面（OnEnable）时从 Settings 读取并填充 UI
+/// 用户交互同步写回 Settings 并应用到系统
+/// 关闭时调用 GameManager.Instance.SaveSettings()
+/// </summary>
 public class SettingManager : MonoBehaviour
 {
     public Toggle fullscreenToggle;// 全屏切换开关
@@ -41,6 +47,9 @@ public class SettingManager : MonoBehaviour
     private string windowed = "窗口";
     public static SettingManager Instance { get; private set; }
 
+    // 在初始化 UI 时避免把 UI 回写到 Settings
+    private bool isInitializing = false;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -55,10 +64,89 @@ public class SettingManager : MonoBehaviour
     void Start()
     {
         AddListener();
-        Initialization();
     }
 
-    // 新增：OnDestroy时移除监听器
+    void OnEnable()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("SettingManager: GameManager.Instance is null on OnEnable()");
+            return;
+        }
+
+        ApplySettingsToUI();
+        ApplySettingsToSystem();
+    }
+
+    /// <summary>
+    /// 将 GameManager.Instance.Settings 的值应用到 UI（只读）
+    /// </summary>
+    void ApplySettingsToUI()
+    {
+        isInitializing = true;
+
+        var s = GameManager.Instance.Settings;
+
+        // full screen
+        if (fullscreenToggle != null)
+        {
+            fullscreenToggle.isOn = s.fullscreen;
+            UpdateToggleLabel(s.fullscreen);
+        }
+
+        // resolution index
+        InitializeResolutions(); // 填充 resolutionDropdown.options
+        if (resolutionDropdown != null && resolutionDropdown.options.Count > 0)
+        {
+            resolutionDropdown.value = Mathf.Clamp(s.resolutionIndex, 0, resolutionDropdown.options.Count - 1);
+            resolutionDropdown.RefreshShownValue();
+        }
+
+        // volumes
+        if (masterVolumeSlider != null) masterVolumeSlider.value = s.masterVolume;
+        if (musicVolumeSlider != null) musicVolumeSlider.value = s.musicVolume;
+        if (effectVolumeSlider != null) effectVolumeSlider.value = s.effectVolume;
+
+        // language
+        currentLanguage = s.language;
+
+        isInitializing = false;
+    }
+
+    /// <summary>
+    /// 将 Settings 的值应用到实际系统（屏幕模式、分辨率、音量、语言）
+    /// 在 UI 填充完后调用
+    /// </summary>
+    void ApplySettingsToSystem()
+    {
+        var s = GameManager.Instance.Settings;
+
+        // 全屏模式
+        Screen.fullScreenMode = s.fullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+        UpdateToggleLabel(s.fullscreen);
+
+        // 分辨率
+        if (resolutionDropdown != null && resolutionDropdown.options.Count > 0)
+        {
+            int idx = Mathf.Clamp(s.resolutionIndex, 0, resolutionDropdown.options.Count - 1);
+            // 解析并设置
+            SetResolution(idx);
+        }
+
+        // 音量
+        ApplyVolumeToMixer(s.masterVolume, s.musicVolume, s.effectVolume);
+
+        // 语言
+        if (LocalizationManager.Instance != null && !string.IsNullOrEmpty(s.language))
+        {
+            if (LocalizationManager.Instance.currentLanguage != s.language)
+            {
+                LocalizationManager.Instance.LoadLanguage(s.language);
+            }
+        }
+    }
+
+    // OnDestroy时移除监听器
     void OnDestroy()
     {
         RemoveListener();
@@ -66,36 +154,49 @@ public class SettingManager : MonoBehaviour
 
     void AddListener()
     {
-        fullscreenToggle.onValueChanged.AddListener(SetDisplayMode);
-        resolutionDropdown.onValueChanged.AddListener(SetResolution);
-        if(closeButton != null)
-        {
+        if (fullscreenToggle != null)
+            fullscreenToggle.onValueChanged.AddListener(SetDisplayMode);
+        if (resolutionDropdown != null)
+            resolutionDropdown.onValueChanged.AddListener(SetResolution);
+        if (closeButton != null)
             closeButton.onClick.AddListener(CloseSetting);
-        }
-        defaultButton.onClick.AddListener(ResetSetting);
+        if (defaultButton != null)
+            defaultButton.onClick.AddListener(ResetSetting);
 
-        masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
-        musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
-        effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
-        LanguageButton.onClick.AddListener(UpdateLanguage);
-        mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
+        if (masterVolumeSlider != null)
+            masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+        if (musicVolumeSlider != null)
+            musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
+        if (effectVolumeSlider != null)
+            effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
+        if (LanguageButton != null)
+            LanguageButton.onClick.AddListener(UpdateLanguage);
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
 
-    // 新增：移除所有监听器
+    // 移除所有监听器
     void RemoveListener()
     {
-        fullscreenToggle.onValueChanged.RemoveListener(SetDisplayMode);
-        resolutionDropdown.onValueChanged.RemoveListener(SetResolution);
+        if (fullscreenToggle != null)
+            fullscreenToggle.onValueChanged.RemoveListener(SetDisplayMode);
+        if (resolutionDropdown != null)
+            resolutionDropdown.onValueChanged.RemoveListener(SetResolution);
         if (closeButton != null)
-        {
             closeButton.onClick.RemoveListener(CloseSetting);
-        }
-        defaultButton.onClick.RemoveListener(ResetSetting);
+        if (defaultButton != null)
+            defaultButton.onClick.RemoveListener(ResetSetting);
 
-        masterVolumeSlider.onValueChanged.RemoveListener(SetMasterVolume);
-        musicVolumeSlider.onValueChanged.RemoveListener(SetMusicVolume);
-        effectVolumeSlider.onValueChanged.RemoveListener(SetEffectVolume);
-        LanguageButton.onClick.RemoveListener(UpdateLanguage);
+        if (masterVolumeSlider != null)
+            masterVolumeSlider.onValueChanged.RemoveListener(SetMasterVolume);
+        if (musicVolumeSlider != null)
+            musicVolumeSlider.onValueChanged.RemoveListener(SetMusicVolume);
+        if (effectVolumeSlider != null)
+            effectVolumeSlider.onValueChanged.RemoveListener(SetEffectVolume);
+        if (LanguageButton != null)
+            LanguageButton.onClick.RemoveListener(UpdateLanguage);
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.RemoveListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
 
     void Initialization()
@@ -104,20 +205,26 @@ public class SettingManager : MonoBehaviour
         InitializeResolutions();
         InitializeVolume();
     }
-    //初始化全屏
+
+    //初始化全屏（保留备用）
     void InitializeDisplayMode()
     {
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
     }
-    //初始化分辨率
+
+    //初始化分辨率（填充下拉）
     void InitializeResolutions()
     {
+        if (resolutionDropdown == null) return;
+
         availableResolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
 
         var resolutionMap = new Dictionary<string, Resolution>();
         int currentResolutionIndex = 0;
+        int highestResolutionIndex = 0;
+        Resolution highestResolution = new Resolution();
 
         foreach (var res in availableResolutions)
         {
@@ -143,31 +250,50 @@ public class SettingManager : MonoBehaviour
                 resolutionMap[option] = res;
                 resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(option));
 
+                int currentOptionIndex = resolutionDropdown.options.Count - 1;
+
                 // 设置当前分辨率索引
                 if (res.width == Screen.currentResolution.width &&
                     res.height == Screen.currentResolution.height)
                 {
-                    currentResolutionIndex = resolutionDropdown.options.Count - 1;
-                    defaultResolution = res;
+                    currentResolutionIndex = currentOptionIndex;
+                }
+
+                // 记录最高分辨率
+                if (res.width * res.height > highestResolution.width * highestResolution.height)
+                {
+                    highestResolution = res;
+                    highestResolutionIndex = currentOptionIndex;
                 }
             }
         }
 
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
-    }
+        // 如果没有找到匹配的当前分辨率，使用最高分辨率
+        if (resolutionDropdown.options.Count > 0)
+        {
+            // 检查当前设置中是否已有分辨率索引
+            var settings = GameManager.Instance.Settings;
+            if (settings.resolutionIndex == 0)
+            {
+                // 使用最高分辨率
+                resolutionDropdown.value = highestResolutionIndex;
+                settings.resolutionIndex = highestResolutionIndex;
+                defaultResolution = highestResolution;
+            }
+            else
+            {
+                // 使用保存的设置
+                resolutionDropdown.value = Mathf.Clamp(settings.resolutionIndex, 0, resolutionDropdown.options.Count - 1);
+            }
 
+            resolutionDropdown.RefreshShownValue();
+        }
+    }
 
     //初始化声音
     void InitializeVolume()
     {
-        masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
-        musicVolumeSlider.value = PlayerPrefs.GetFloat("BGMVolume", 0.8f);
-        effectVolumeSlider.value = PlayerPrefs.GetFloat("EffectVolume", 0.8f);
-
-        SetMasterVolume(masterVolumeSlider.value);
-        SetMusicVolume(musicVolumeSlider.value);
-        SetEffectVolume(effectVolumeSlider.value);
+        
     }
 
     //设置画面模式
@@ -175,14 +301,23 @@ public class SettingManager : MonoBehaviour
     {
         Screen.fullScreenMode = isFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
         UpdateToggleLabel(isFullscreen);
+
+        if (!isInitializing)
+        {
+            GameManager.Instance.Settings.fullscreen = isFullscreen;
+        }
     }
 
     void UpdateLanguage()
     {
+        // 切换下一个语言
         currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
         currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
         Debug.Log("开始更新语言" + currentLanguage);
-        if (currentLanguage != LocalizationManager.Instance.currentLanguage)
+
+        // 写入 Settings 并加载语言
+        GameManager.Instance.Settings.language = currentLanguage;
+        if (LocalizationManager.Instance != null && currentLanguage != LocalizationManager.Instance.currentLanguage)
         {
             LocalizationManager.Instance.LoadLanguage(currentLanguage);
         }
@@ -192,46 +327,91 @@ public class SettingManager : MonoBehaviour
 
     void UpdateToggleLabel(bool isFullscreen)
     {
-        toggleLabel.text = isFullscreen ? fullscreen : windowed;
+        if (toggleLabel != null)
+            toggleLabel.text = isFullscreen ? fullscreen : windowed;
     }
 
+    // index 来自下拉（响应用户操作）
     void SetResolution(int index)
     {
-        string[] dimensions = resolutionDropdown.options[index].text.Split("x");
-        int width = int.Parse(dimensions[0].Trim());
-        int height = int.Parse(dimensions[1].Trim());
+        if (resolutionDropdown == null || resolutionDropdown.options.Count == 0) return;
+
+        // 解析尺寸
+        string optionText = resolutionDropdown.options[index].text;
+        string[] dimensions = optionText.Split('x');
+        if (dimensions.Length < 2) return;
+
+        if (!int.TryParse(dimensions[0].Trim(), out int width)) return;
+        if (!int.TryParse(dimensions[1].Trim(), out int height)) return;
+
+        // 应用到屏幕
         Screen.SetResolution(width, height, Screen.fullScreenMode);
+
+        // 只有在非初始化阶段才写入 Settings
+        if (!isInitializing)
+        {
+            GameManager.Instance.Settings.resolutionIndex = index;
+        }
     }
+
     private float SliderValueToDecibel(float value)
     {
         return value > 0.0001f ? Mathf.Log10(value) * 20f : -80f;
     }
 
+    void ApplyVolumeToMixer(float master, float music, float effect)
+    {
+        if (audioMixer == null) return;
+
+        audioMixer.SetFloat("MasterVolume", SliderValueToDecibel(master));
+        audioMixer.SetFloat("BGMVolume", SliderValueToDecibel(music));
+        audioMixer.SetFloat("EffectVolume", SliderValueToDecibel(effect));
+    }
+
     void SetMasterVolume(float value)
     {
-        audioMixer.SetFloat("MasterVolume", SliderValueToDecibel(value));
+        // 始终应用到混合器
+        if (audioMixer != null)
+            audioMixer.SetFloat("MasterVolume", SliderValueToDecibel(value));
+
+        if (!isInitializing)
+        {
+            GameManager.Instance.Settings.masterVolume = value;
+        }
     }
 
     void SetMusicVolume(float value)
     {
-        audioMixer.SetFloat("BGMVolume", SliderValueToDecibel(value));
+        if (audioMixer != null)
+            audioMixer.SetFloat("BGMVolume", SliderValueToDecibel(value));
 
+        if (!isInitializing)
+        {
+            GameManager.Instance.Settings.musicVolume = value;
+        }
     }
 
     void SetEffectVolume(float value)
     {
-        audioMixer.SetFloat("EffectVolume", SliderValueToDecibel(value));
+        if (audioMixer != null)
+            audioMixer.SetFloat("EffectVolume", SliderValueToDecibel(value));
 
+        if (!isInitializing)
+        {
+            GameManager.Instance.Settings.effectVolume = value;
+        }
     }
 
     public void CloseSetting()
     {
         SaveSetting();
+
         //返回主菜单或者游戏界面
-        //SceneManager.LoadScene(GameManager.Instance.currentScene);
         if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
-            PlayerInteraction.instance.FinishView();
+            // 假设 PlayerInteraction.instance 可能为空（防护）
+            if (PlayerInteraction.instance != null)
+                PlayerInteraction.instance.FinishView();
         }
         else
         {
@@ -241,35 +421,54 @@ public class SettingManager : MonoBehaviour
 
     void SaveSetting()
     {
-        PlayerPrefs.SetInt("Rseolution", resolutionDropdown.value);
-        PlayerPrefs.SetInt("Fullscreen", fullscreenToggle.isOn ? 1 : 0);
+        // 把当前 UI 的分辨率 index 写入 Settings
+        if (resolutionDropdown != null && resolutionDropdown.options.Count > 0)
+        {
+            GameManager.Instance.Settings.resolutionIndex = Mathf.Clamp(resolutionDropdown.value, 0, resolutionDropdown.options.Count - 1);
+        }
 
-        PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
-        PlayerPrefs.SetFloat("BGMVolume", musicVolumeSlider.value);
-        PlayerPrefs.SetFloat("EffectVolume", effectVolumeSlider.value);
+        // 全屏状态（以防未触发 SetDisplayMode）
+        if (fullscreenToggle != null)
+        {
+            GameManager.Instance.Settings.fullscreen = fullscreenToggle.isOn;
+        }
 
-        PlayerPrefs.Save();
+        // 音量（以防未触发滑块事件）
+        if (masterVolumeSlider != null) GameManager.Instance.Settings.masterVolume = masterVolumeSlider.value;
+        if (musicVolumeSlider != null) GameManager.Instance.Settings.musicVolume = musicVolumeSlider.value;
+        if (effectVolumeSlider != null) GameManager.Instance.Settings.effectVolume = effectVolumeSlider.value;
+
+        // 语言（已经在 UpdateLanguage 中写入，但再保证一次）
+        if (!string.IsNullOrEmpty(currentLanguage))
+            GameManager.Instance.Settings.language = currentLanguage;
+
+
+        //GameManager.Instance.SaveSettings();
     }
 
     void ResetSetting()
     {
-        resolutionDropdown.value = resolutionDropdown.options.FindIndex(
-            option => option.text == $"{defaultResolution.width}x{defaultResolution.height}"
-            );
-        fullscreenToggle.isOn = true;
+        // 重置为默认值（参考 GameManager.Settings 的默认值）
+        var defaults = new SettingsData(); // 使用 SettingsData 的默认初始值
+        // 填入到 GameManager.Settings
+        GameManager.Instance.Settings = defaults;
 
-        SetMasterVolume(0.8f);
-        SetMusicVolume(0.8f);
-        SetEffectVolume(0.8f);
+        // 重新应用到 UI 与系统
+        ApplySettingsToUI();
+        ApplySettingsToSystem();
+
+        // 可选择立即保存
+        //GameManager.Instance.SaveSettings();
     }
 
     void UpdateButtonLanguage()
     {
         fullscreen = LocalizationManager.Instance.GetText("fullscreen");
         windowed = LocalizationManager.Instance.GetText("windowed");
-        UpdateToggleLabel(fullscreenToggle.isOn);
+        UpdateToggleLabel(fullscreenToggle != null && fullscreenToggle.isOn);
 
-        languageText.text = LocalizationManager.Instance.GetText("language");
+        if (languageText != null)
+            languageText.text = LocalizationManager.Instance.GetText("language");
 
         if (fullscreenLabelText != null)
             fullscreenLabelText.text = LocalizationManager.Instance.GetText("display_mode");
@@ -288,12 +487,16 @@ public class SettingManager : MonoBehaviour
         if (effectVolumeLabelText != null)
             effectVolumeLabelText.text = LocalizationManager.Instance.GetText("effect_volume");
 
-        // 语言标签
+        if(languageButtonText != null)
+        {
+            languageButtonText.text = LocalizationManager.Instance.GetText("language_name");
+        }
+        // 语言按钮文本（名字）
         if (LanguageButton != null)
         {
-            TextMeshProUGUI closeBtnText = LanguageButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (closeBtnText != null)
-                closeBtnText.text = LocalizationManager.Instance.GetText("language_name");
+            TextMeshProUGUI langBtnText = LanguageButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (langBtnText != null)
+                langBtnText.text = LocalizationManager.Instance.GetText("language_name");
         }
 
         // 按钮文本
@@ -318,7 +521,7 @@ public class SettingManager : MonoBehaviour
                 menuBtnText.text = LocalizationManager.Instance.GetText("return_menu");
         }
 
-        if (settingsTitleText != null) 
+        if (settingsTitleText != null)
             settingsTitleText.text = LocalizationManager.Instance.GetText("settings");
     }
 }

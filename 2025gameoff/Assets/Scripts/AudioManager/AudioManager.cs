@@ -505,12 +505,45 @@ public class AudioManager : MonoBehaviour
         if (scene.name == Constants.MENU_SCENE)
         {
             PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
+            StopAllEffectsExceptBGM(); // 暂停除背景音乐外的所有音效
         }
         else if (scene.name == Constants.PRODUCTER_SCENE)
         {
             PlayWinCGBGM();
         }
     }
+    public void StopAllEffectsExceptBGM()
+    {
+        // 停止语音音效
+        if (voiceSource != null && voiceSource.isPlaying)
+        {
+            voiceSource.Stop();
+        }
+
+        // 停止微波炉加热音效
+        if (microwaveHeatingSource != null && microwaveHeatingSource.isPlaying)
+        {
+            microwaveHeatingSource.Stop();
+            isHeatingLoopPlaying = false;
+            activeHeatingCount = 0; // 重置加热计数
+        }
+
+        // 停止电话铃声
+        if (telephoneRingSource != null && telephoneRingSource.isPlaying)
+        {
+            telephoneRingSource.Stop();
+            isTelephoneRinging = false;
+        }
+
+        // 停止CG背景音乐（如果需要）
+        if (cgMusicSource != null && cgMusicSource.isPlaying)
+        {
+            cgMusicSource.Stop();
+        }
+
+        Debug.Log("已停止除背景音乐外的所有音效");
+    }
+
 
     public void PlayBackground(string musicFileName)
     {
