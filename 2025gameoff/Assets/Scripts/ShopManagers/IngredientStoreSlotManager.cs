@@ -1,10 +1,11 @@
-using UnityEngine;
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine;
+using static LocalizationManager;
 
-// Ô­ÁÏÉÌµê²ÛÎ»¹ÜÀíÆ÷
+// åŸæ–™å•†åº—æ§½ä½ç®¡ç†å™¨
 public class IngredientStoreSlotManager : MonoBehaviour
 {
     [Header("UI References")]
@@ -12,7 +13,7 @@ public class IngredientStoreSlotManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dishes;
 
     [Header("Store Settings")]
-    public int maxSlots = 5; // ×î´ó²ÛÎ»ÊıÁ¿
+    public int maxSlots = 5; // æœ€å¤§æ§½ä½æ•°é‡
 
     private List<IngredientScriptObjs> availableIngredients = new List<IngredientScriptObjs>();
 
@@ -36,26 +37,39 @@ public class IngredientStoreSlotManager : MonoBehaviour
     private void Start()
     {
         InitializeStore();
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+            OnLanguageChanged();
+        }
         if (startBusinessText != null)
         {
             startBusinessText.text = LocalizationManager.Instance.GetText("start_business");
         }
     }
 
-    // ³õÊ¼»¯ÉÌµê
+    private void OnDestroy()
+    {
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+        }
+    }
+
+    // åˆå§‹åŒ–å•†åº—
     public void InitializeStore()
     {
-        // ´ÓStoreManager»ñÈ¡¿ÉÓÃµÄÔ­ÁÏ
+        // ä»StoreManagerè·å–å¯ç”¨çš„åŸæ–™
         availableIngredients = StoreManager.Instance.availableIngredients;
         for (int i = 0; i < availableIngredients.Count; i++)
         {
             IngredientScriptObjs ingredient = availableIngredients[i];
         }
-        // ³õÊ¼»¯²ÛÎ»
+        // åˆå§‹åŒ–æ§½ä½
         InitializeSlots();
         UpdatePredictionDisplay();
 
-        Debug.Log($"Ô­ÁÏÉÌµê³õÊ¼»¯Íê³É");
+        Debug.Log($"åŸæ–™å•†åº—åˆå§‹åŒ–å®Œæˆ");
     }
     public void UpdatePredictionDisplay()
     {
@@ -75,7 +89,7 @@ public class IngredientStoreSlotManager : MonoBehaviour
         Dictionary<DishScriptObjs, int> dailyDishesRequirement = CustomerManager.Instance._dailyDishesRequirement;
         if (dailyDishesRequirement == null || dailyDishesRequirement.Count == 0)
         {
-            return $"{predictionLabel}£º{noneLabel}";
+            return $"{predictionLabel}ï¼š{noneLabel}";
         }
 
         List<string> dishStrings = new List<string>();
@@ -91,19 +105,19 @@ public class IngredientStoreSlotManager : MonoBehaviour
             }
         }
         string dishesList = string.Join(", ", dishStrings);
-        return $"{predictionLabel}£º{dishesList}";
+        return $"{predictionLabel}ï¼š{dishesList}";
     }
 
-    // ³õÊ¼»¯ËùÓĞ²ÛÎ»
+    // åˆå§‹åŒ–æ‰€æœ‰æ§½ä½
     private void InitializeSlots()
     {
         if (slots == null || slots.Count == 0)
         {
-            Debug.LogError("²ÛÎ»ÁĞ±íÎª¿Õ");
+            Debug.LogError("æ§½ä½åˆ—è¡¨ä¸ºç©º");
             return;
         }
 
-        // Ê×ÏÈ½ûÓÃËùÓĞ²ÛÎ»
+        // é¦–å…ˆç¦ç”¨æ‰€æœ‰æ§½ä½
         foreach (var slot in slots)
         {
             if (slot != null)
@@ -112,7 +126,7 @@ public class IngredientStoreSlotManager : MonoBehaviour
             }
         }
 
-        // ¸ù¾İ¿ÉÓÃÔ­ÁÏÊıÁ¿¼¤»îÏàÓ¦²ÛÎ»
+        // æ ¹æ®å¯ç”¨åŸæ–™æ•°é‡æ¿€æ´»ç›¸åº”æ§½ä½
         int slotsToActivate = Mathf.Min(availableIngredients.Count, slots.Count, maxSlots);
 
         for (int i = 0; i < slotsToActivate; i++)
@@ -125,14 +139,14 @@ public class IngredientStoreSlotManager : MonoBehaviour
         }
     }
 
-    // »ñÈ¡ËùÓĞ¼¤»îµÄ²ÛÎ»
+    // è·å–æ‰€æœ‰æ¿€æ´»çš„æ§½ä½
     public List<IngredientStoreSlot> GetAllSlots()
     {
         return slots.Where(slot => slot != null && slot.gameObject.activeInHierarchy).ToList();
     }
 
 
-    // ¸üĞÂËùÓĞ²ÛÎ»µÄ°´Å¥×´Ì¬ºÍÊıÁ¿ÏÔÊ¾
+    // æ›´æ–°æ‰€æœ‰æ§½ä½çš„æŒ‰é’®çŠ¶æ€å’Œæ•°é‡æ˜¾ç¤º
     public void RefreshAllSlotsUI()
     {
         foreach (var slot in GetAllSlots())
@@ -140,4 +154,21 @@ public class IngredientStoreSlotManager : MonoBehaviour
             slot.RefreshUI();
         }
     }
+
+    // æ›´æ–°æ–‡æœ¬
+    private void OnLanguageChanged()
+    {
+        if (startBusinessText != null)
+        {
+            startBusinessText.text = LocalizationManager.Instance.GetText("start_business");
+        }
+
+        UpdatePredictionDisplay();
+
+        foreach (var slot in GetAllSlots())
+        {
+            slot.UpdateLocale();
+        }
+    }
+
 }

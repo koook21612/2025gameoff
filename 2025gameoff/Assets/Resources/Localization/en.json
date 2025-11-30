@@ -1,4 +1,4 @@
-{
+﻿{
   "items": [
     { "key": "language_name", "value": "English" },
     { "key": "start_game", "value": "Start Game" },
@@ -152,7 +152,19 @@
     { "key": "refresh", "value": "Refresh" },
     { "key": "desc_refresh", "value": "Refresh upgrade modules in the store." },
     { "key": "newMicrowave", "value": "Buy Microwave" },
-    { "key": "desc_new_microwave", "value": "Buy a brand new microwave to increase capacity." }
+    { "key": "desc_new_microwave", "value": "Buy a brand new microwave to increase capacity." },
 
+    { "key": "continue_game", "value": "Continue" },
+    { "key": "talents", "value": "Talents" },
+    { "key": "credits", "value": "Credits" },
+
+    { "key": "total_served", "value": "Total Served" },
+    { "key": "total_income", "value": "Total Income" },
+    { "key": "play_time", "value": "Play Time" },
+    { "key": "you_lose", "value": "You Lose" },
+    { "key": "you_win", "value": "You Win!" },
+    { "key": "time_format", "value": "{0}h {1}m {2}s" },
+    { "key": "time_format_short", "value": "{0}m {1}s" },
+    { "key": "time_format_shortest", "value": "{0}s" }
   ]
 }

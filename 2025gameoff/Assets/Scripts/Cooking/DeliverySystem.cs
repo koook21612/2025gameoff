@@ -1,37 +1,39 @@
-using DG.Tweening;
+ï»¿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static LocalizationManager;
 
 public class DeliverySystem : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject deliveryPanel;
-    public Transform dishModelPosition; // ²ËÆ·Ä£ĞÍÏÔÊ¾Î»ÖÃ
-    public TextMeshProUGUI dishNameText; // ²ËÆ·Ãû³ÆÏÔÊ¾
-    public Button cancelButton; // È¡Ïû°´Å¥
+    public Transform dishModelPosition; // èœå“æ¨¡å‹æ˜¾ç¤ºä½ç½®
+    public TextMeshProUGUI dishNameText; // èœå“åç§°æ˜¾ç¤º
+    public Button cancelButton; // å–æ¶ˆæŒ‰é’®
+    public TextMeshProUGUI discardButtonText; // ä¸¢å¼ƒæŒ‰é’®çš„æ–‡æœ¬
 
-    [Header("½»²ËÏµÍ³ÅäÖÃ")]
-    public Vector3 dishModelScale = Vector3.one * 2f; // ²ËÆ·Ä£ĞÍËõ·Å
-    public float flyDuration = 1f; // ·ÉĞĞ³ÖĞøÊ±¼ä
-    public float flyHeight = 3f; // ·ÉĞĞ¸ß¶È
+    [Header("äº¤èœç³»ç»Ÿé…ç½®")]
+    public Vector3 dishModelScale = Vector3.one * 2f; // èœå“æ¨¡å‹ç¼©æ”¾
+    public float flyDuration = 1f; // é£è¡ŒæŒç»­æ—¶é—´
+    public float flyHeight = 3f; // é£è¡Œé«˜åº¦
 
-    [Header("²âÊÔÅäÖÃ")]
-    public GameObject testModel; // ĞÂÔö£º²âÊÔÓÃµÄÄ£ĞÍ
-    public bool enableTest = true; // ĞÂÔö£ºÊÇ·ñÆôÓÃ²âÊÔ
-    public Vector3 dishRotationOffset = new Vector3(-160f, 180f, 180f); // ²ËÆ·Ğı×ªÆ«ÒÆÁ¿
-    public bool lookAtCamera = true; // ÊÇ·ñÈÃÄ£ĞÍ³¯ÏòÏà»ú
+    [Header("æµ‹è¯•é…ç½®")]
+    public GameObject testModel; // æ–°å¢ï¼šæµ‹è¯•ç”¨çš„æ¨¡å‹
+    public bool enableTest = true; // æ–°å¢ï¼šæ˜¯å¦å¯ç”¨æµ‹è¯•
+    public Vector3 dishRotationOffset = new Vector3(-160f, 180f, 180f); // èœå“æ—‹è½¬åç§»é‡
+    public bool lookAtCamera = true; // æ˜¯å¦è®©æ¨¡å‹æœå‘ç›¸æœº
 
-    // ¶©µ¥°´Å¥ÒıÓÃ
+    // è®¢å•æŒ‰é’®å¼•ç”¨
     private List<Button> orderButtons = new List<Button>();
 
     private MicrowaveSystem currentMicrowave;
     private GameObject currentDishModel;
     private bool isDelivering = false;
-    private bool isAnimating = false; // ÊÇ·ñÕıÔÚ²¥·Å¶¯»­
-    private Vector3 originalModelPosition; // Ä£ĞÍÔ­Ê¼Î»ÖÃ
+    private bool isAnimating = false; // æ˜¯å¦æ­£åœ¨æ’­æ”¾åŠ¨ç”»
+    private Vector3 originalModelPosition; // æ¨¡å‹åŸå§‹ä½ç½®
     private Camera mainCamera;
 
     public static DeliverySystem Instance { get; private set; }
@@ -51,18 +53,31 @@ public class DeliverySystem : MonoBehaviour
     private void Start()
     {
         mainCamera = Camera.main;
-        // ³õÊ¼»¯UI
+        // åˆå§‹åŒ–UI
         deliveryPanel.SetActive(false);
 
-        // °ó¶¨È¡Ïû°´Å¥ÊÂ¼ş
+        // ç»‘å®šå–æ¶ˆæŒ‰é’®äº‹ä»¶
         if (cancelButton != null)
         {
             cancelButton.onClick.AddListener(CancelDelivery);
         }
 
-        // ³õÊ¼»¯¶©µ¥°´Å¥ÁĞ±í
+        // åˆå§‹åŒ–è®¢å•æŒ‰é’®åˆ—è¡¨
         InitializeOrderButtons();
 
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+            OnLanguageChanged();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+        }
     }
 
     private IEnumerator TestAnimation()
@@ -95,7 +110,7 @@ public class DeliverySystem : MonoBehaviour
         return rayOrigin + rayDirection * distance;
     }
 
-    // ³õÊ¼»¯¶©µ¥°´Å¥£¬Óë¹Ë¿ÍÏµÍ³µÄ¶©µ¥UI¶ÔÓ¦
+    // åˆå§‹åŒ–è®¢å•æŒ‰é’®ï¼Œä¸é¡¾å®¢ç³»ç»Ÿçš„è®¢å•UIå¯¹åº”
     private void InitializeOrderButtons()
     {
         if (CustomerManager.Instance == null) return;
@@ -111,11 +126,11 @@ public class DeliverySystem : MonoBehaviour
                 Button button = slot.VisualRoot.GetComponent<Button>();
                 if (button == null)
                 {
-                    Debug.LogError("Ã»ÓĞ°´Å¥×é¼ş");
+                    Debug.LogError("æ²¡æœ‰æŒ‰é’®ç»„ä»¶");
                 }
 
-                // ÉèÖÃ°´Å¥µã»÷ÊÂ¼ş
-                int slotIndex = i; // ±ÜÃâ±Õ°üÎÊÌâ
+                // è®¾ç½®æŒ‰é’®ç‚¹å‡»äº‹ä»¶
+                int slotIndex = i; // é¿å…é—­åŒ…é—®é¢˜
                 button.onClick.AddListener(() => DeliverToOrder(slotIndex));
                 orderButtons.Add(button);
                 button.interactable = false;
@@ -123,12 +138,12 @@ public class DeliverySystem : MonoBehaviour
         }
     }
 
-    // ¿ªÊ¼½»²ËÁ÷³Ì
+    // å¼€å§‹äº¤èœæµç¨‹
     public void StartDelivery(MicrowaveSystem microwave)
     {
         if (microwave.currentState != MicrowaveState.Ready || microwave.currentDish == null)
         {
-            Debug.Log("Ã»ÓĞ¿ÉÒÔ½»¸¶µÄ²ËÆ·");
+            Debug.Log("æ²¡æœ‰å¯ä»¥äº¤ä»˜çš„èœå“");
             return;
         }
 
@@ -141,17 +156,17 @@ public class DeliverySystem : MonoBehaviour
         isDelivering = true;
         isAnimating = false;
 
-        // ÏÔÊ¾½»²ËÃæ°å
+        // æ˜¾ç¤ºäº¤èœé¢æ¿
         deliveryPanel.SetActive(true);
 
-        // ÏÔÊ¾²ËÆ·Ä£ĞÍ
+        // æ˜¾ç¤ºèœå“æ¨¡å‹
         DisplayDishModel(microwave.currentDish);
     }
 
-    // ÏÔÊ¾²ËÆ·Ä£ĞÍ
+    // æ˜¾ç¤ºèœå“æ¨¡å‹
     private void DisplayDishModel(DishScriptObjs dish)
     {
-        // Çå³ıÖ®Ç°µÄÄ£ĞÍ
+        // æ¸…é™¤ä¹‹å‰çš„æ¨¡å‹
         if (currentDishModel != null)
         {
             Destroy(currentDishModel);
@@ -166,7 +181,7 @@ public class DeliverySystem : MonoBehaviour
 
             currentDishModel.transform.LookAt(mainCamera.transform);
             currentDishModel.transform.Rotate(dishRotationOffset);
-            // ½ûÓÃ¿ÉÄÜµÄÎïÀí×é¼ş
+            // ç¦ç”¨å¯èƒ½çš„ç‰©ç†ç»„ä»¶
             Rigidbody rb = currentDishModel.GetComponent<Rigidbody>();
             if (rb != null) rb.isKinematic = true;
 
@@ -174,7 +189,7 @@ public class DeliverySystem : MonoBehaviour
             if (collider != null) collider.enabled = false;
         }
 
-        // ¸üĞÂ²ËÆ·Ãû³Æ
+        // æ›´æ–°èœå“åç§°
         if (dishNameText != null)
         {
             string completedText = LocalizationManager.Instance.GetText("completed_prefix");
@@ -182,27 +197,27 @@ public class DeliverySystem : MonoBehaviour
         }
     }
 
-    // ½»¸¶²ËÆ·µ½Ö¸¶¨¶©µ¥
+    // äº¤ä»˜èœå“åˆ°æŒ‡å®šè®¢å•
     private void DeliverToOrder(int orderSlotIndex)
     {
         if (currentMicrowave == null || currentMicrowave.currentDish == null)
         {
-            Debug.LogError("Ã»ÓĞ¿É½»¸¶µÄ²ËÆ·");
+            Debug.LogError("æ²¡æœ‰å¯äº¤ä»˜çš„èœå“");
             return;
         }
 
-        // ±£´æ²ËÆ·ºÍ½á¹ûÒıÓÃ
+        // ä¿å­˜èœå“å’Œç»“æœå¼•ç”¨
         DishScriptObjs deliveredDish = currentMicrowave.currentDish;
         CookingResult result = currentMicrowave.cookingResult;
 
-        // µ÷ÓÃCustomerManagerµÄµ¥¸ö²ËÆ·½»¸¶·½·¨
+        // è°ƒç”¨CustomerManagerçš„å•ä¸ªèœå“äº¤ä»˜æ–¹æ³•
         CustomerManager.Instance.DeliverSingleDishToOrder(deliveredDish, result, orderSlotIndex);
         currentMicrowave.CollectDish();
 
         PlayDeliveryAnimation();
     }
 
-    // ĞÂÔö£º²¥·Å½»¸¶¶¯»­
+    // æ–°å¢ï¼šæ’­æ”¾äº¤ä»˜åŠ¨ç”»
     private void PlayDeliveryAnimation()
     {
         if (currentDishModel == null)
@@ -215,58 +230,58 @@ public class DeliverySystem : MonoBehaviour
 
         Vector3 targetPosition = currentDishModel.transform.position + Vector3.up * flyHeight;
 
-        // Ê¹ÓÃDOTween´´½¨·ÉĞĞ¶¯»­
+        // ä½¿ç”¨DOTweenåˆ›å»ºé£è¡ŒåŠ¨ç”»
         Sequence sequence = DOTween.Sequence();
 
-        // ÏòÕıÉÏ·½·ÉĞĞ
+        // å‘æ­£ä¸Šæ–¹é£è¡Œ
         sequence.Append(currentDishModel.transform.DOMove(targetPosition, flyDuration)
             .SetEase(Ease.OutCubic));
-        // ¶¯»­Íê³ÉºóµÄ»Øµ÷
+        // åŠ¨ç”»å®Œæˆåçš„å›è°ƒ
         sequence.OnComplete(() =>
         {
             OnDeliveryAnimationComplete();
         });
     }
 
-    // ½»¸¶¶¯»­Íê³É
+    // äº¤ä»˜åŠ¨ç”»å®Œæˆ
     private void OnDeliveryAnimationComplete()
     {
         isAnimating = false;
         FinishDelivery();
     }
-    // È¡Ïû½»²Ë
+    // å–æ¶ˆäº¤èœ
     public void CancelDelivery()
     {
         currentMicrowave.CollectDish();
         FinishDelivery();
     }
 
-    // Íê³É½»²ËÁ÷³Ì
+    // å®Œæˆäº¤èœæµç¨‹
     private void FinishDelivery()
     {
 
-        // Çå³ı²ËÆ·Ä£ĞÍ
+        // æ¸…é™¤èœå“æ¨¡å‹
         if (currentDishModel != null)
         {
             Destroy(currentDishModel);
             currentDishModel = null;
         }
 
-        // ¹Ø±ÕÃæ°å
+        // å…³é—­é¢æ¿
         deliveryPanel.SetActive(false);
         isDelivering = false;
         for (int i = 0; i < orderButtons.Count; i++)
         {
             orderButtons[i].interactable = false;
         }
-        // »Ö¸´Íæ¼Ò½»»¥
+        // æ¢å¤ç©å®¶äº¤äº’
         PlayerInteraction.instance.canFinish = false;
         PlayerInteraction.instance.isViewing = false;
         PlayerInteraction.instance.canInteract = true;
         UIManager.instance.SetAim(true);
         PlayerInteraction.instance.onFinishView.Invoke();
 
-        // ¿ªÊ¼½»»¥ÀäÈ´
+        // å¼€å§‹äº¤äº’å†·å´
         PlayerInteraction.instance.StartCoroutine(PlayerInteraction.instance.InteractionCooldown());
     }
 
@@ -283,10 +298,19 @@ public class DeliverySystem : MonoBehaviour
         //        StartCoroutine(TestAnimation());
         //    }
         //}
-        // ESC¼üÈ¡Ïû½»²Ë
+        // ESCé”®å–æ¶ˆäº¤èœ
         if (isDelivering && Input.GetKeyDown(KeyCode.Escape))
         {
             FinishDelivery();
+        }
+    }
+
+    // æ›´æ–°æ–‡æœ¬
+    private void OnLanguageChanged()
+    {
+        if (discardButtonText != null)
+        {
+            discardButtonText.text = LocalizationManager.Instance.GetText("discard");
         }
     }
 }

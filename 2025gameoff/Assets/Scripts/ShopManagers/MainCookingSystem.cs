@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -53,43 +53,43 @@ public class MainCookingSystem : MonoBehaviour
                     interactables[i] = InnerGameManager.Instance.microwaveModels[i].GetComponent<Interactable>();
                     if (microwave[i] == null)
                     {
-                        Debug.LogError($"Î¢²¨Â¯Ä£ĞÍ {i} ÉÏÃ»ÓĞÕÒµ½ MicrowaveSystem ×é¼ş£¡");
+                        Debug.LogError($"å¾®æ³¢ç‚‰æ¨¡å‹ {i} ä¸Šæ²¡æœ‰æ‰¾åˆ° MicrowaveSystem ç»„ä»¶ï¼");
                     }
                     if(interactables[i] == null)
                     {
-                        Debug.LogError($"Î¢²¨Â¯Ä£ĞÍ {i} ÉÏÃ»ÓĞÕÒµ½ Interactable ×é¼ş£¡");
+                        Debug.LogError($"å¾®æ³¢ç‚‰æ¨¡å‹ {i} ä¸Šæ²¡æœ‰æ‰¾åˆ° Interactable ç»„ä»¶ï¼");
                     }
                 }
             }
         }
         else
         {
-            Debug.LogError("InnerGameManager ÊµÀı»ò microwaveModels Î´ÕÒµ½£¡");
+            Debug.LogError("InnerGameManager å®ä¾‹æˆ– microwaveModels æœªæ‰¾åˆ°ï¼");
         }
     }
 
     private void OnButtonLeftClick(int buttonIndex)
     {
-        // ¼ì²éË÷ÒıÊÇ·ñÓĞĞ§
+        // æ£€æŸ¥ç´¢å¼•æ˜¯å¦æœ‰æ•ˆ
         if (buttonIndex < 0 || buttonIndex >= microwave.Length)
         {
-            Debug.LogError($"ÎŞĞ§µÄÎ¢²¨Â¯Ë÷Òı: {buttonIndex}");
+            Debug.LogError($"æ— æ•ˆçš„å¾®æ³¢ç‚‰ç´¢å¼•: {buttonIndex}");
             return;
         }
 
         MicrowaveSystem targetMicrowave = microwave[buttonIndex];
 
-        // ¼ì²éÎ¢²¨Â¯ÊÇ·ñ¿ÉÓÃ
+        // æ£€æŸ¥å¾®æ³¢ç‚‰æ˜¯å¦å¯ç”¨
         if (targetMicrowave == null)
         {
-            Debug.LogError($"Ë÷Òı {buttonIndex} µÄÎ¢²¨Â¯Î´ÉèÖÃ£¡");
+            Debug.LogError($"ç´¢å¼• {buttonIndex} çš„å¾®æ³¢ç‚‰æœªè®¾ç½®ï¼");
             return;
         }
         if(targetMicrowave.currentState != MicrowaveState.Idle)
         {
             return;
         }
-        // ¸ù¾İbeforeInteractionÅĞ¶Ï¹¦ÄÜÀàĞÍ
+        // æ ¹æ®beforeInteractionåˆ¤æ–­åŠŸèƒ½ç±»å‹
         if (beforeInteraction != null)
         {
             if (!InnerGameManager.Instance.isPlaying)
@@ -97,14 +97,14 @@ public class MainCookingSystem : MonoBehaviour
                 PlayerInteraction.instance.FinishView();
                 return;
             }
-            // Ñ¡ÔñÅëâ¿µÄÎ¢²¨Â¯
-            //Debug.Log("½øÈëÅëâ¿");
+            // é€‰æ‹©çƒ¹é¥ªçš„å¾®æ³¢ç‚‰
+            //Debug.Log("è¿›å…¥çƒ¹é¥ª");
             HandleCookingSelection(buttonIndex);
         }
         else
         {
-            // Ñ¡ÔñÌí¼ÓÎäÆ÷µÄÎ¢²¨Â¯
-            Debug.Log("Ìí¼ÓÎäÆ÷");
+            // é€‰æ‹©æ·»åŠ æ­¦å™¨çš„å¾®æ³¢ç‚‰
+            Debug.Log("æ·»åŠ æ­¦å™¨");
             HandleWeaponAddition(targetMicrowave);
         }
     }
@@ -113,7 +113,7 @@ public class MainCookingSystem : MonoBehaviour
     {
         MicrowaveSystem targetMicrowave = microwave[buttonIndex];
         Debug.Log(targetMicrowave.currentState);
-        // ¼ì²éÎ¢²¨Â¯ÊÇ·ñ¿ÕÏĞ
+        // æ£€æŸ¥å¾®æ³¢ç‚‰æ˜¯å¦ç©ºé—²
         if (targetMicrowave.currentState != MicrowaveState.Idle)
         {
             return;
@@ -126,7 +126,7 @@ public class MainCookingSystem : MonoBehaviour
         {
             if (kvp.Value > 0)
             {
-                // ¸ù¾İÊıÁ¿Ìí¼Ó¶ÔÓ¦´ÎÊıµÄÊ³²Ä
+                // æ ¹æ®æ•°é‡æ·»åŠ å¯¹åº”æ¬¡æ•°çš„é£Ÿæ
                 for (int i = 0; i < kvp.Value; i++)
                 {
                     count++;
@@ -134,7 +134,7 @@ public class MainCookingSystem : MonoBehaviour
                 }
             }
         }
-        //½áËãÊ³²Ä
+        //ç»“ç®—é£Ÿæ
         SelectionSystem.Instance.Cost();
 
         if(count == 0)
@@ -145,7 +145,7 @@ public class MainCookingSystem : MonoBehaviour
 
         if (RecipeMatcher.instance.CanCook())
         {
-            // ³¢ÊÔÅëâ¿
+            // å°è¯•çƒ¹é¥ª
             PlayerInteraction.instance.SwitchToInteractable(interactables[buttonIndex], () => {
                 RecipeMatcher.instance.TryToCook(targetMicrowave);
                 //Debug.Log(buttonIndex);
@@ -155,53 +155,53 @@ public class MainCookingSystem : MonoBehaviour
         {
             RecipeMatcher.instance.TryToCook(targetMicrowave);
         }
-            // ÖØÖÃÑ¡Ôñ
+            // é‡ç½®é€‰æ‹©
             beforeInteraction = null;
-        Debug.Log($"¿ªÊ¼ÔÚÎ¢²¨Â¯ {System.Array.IndexOf(microwave, targetMicrowave)} ½øĞĞÅëâ¿");
+        Debug.Log($"å¼€å§‹åœ¨å¾®æ³¢ç‚‰ {System.Array.IndexOf(microwave, targetMicrowave)} è¿›è¡Œçƒ¹é¥ª");
     }
 
     private void HandleWeaponAddition(MicrowaveSystem targetMicrowave)
     {
         if (equipment == null)
         {
-            Debug.LogError("beforeInteraction²»ÊÇÓĞĞ§µÄ×°±¸£¡");
+            Debug.LogError("beforeInteractionä¸æ˜¯æœ‰æ•ˆçš„è£…å¤‡ï¼");
             return;
         }
 
-        // ¼ì²éÎ¢²¨Â¯ÊÇ·ñ¿ÉÒÔÌí¼Ó×°±¸
+        // æ£€æŸ¥å¾®æ³¢ç‚‰æ˜¯å¦å¯ä»¥æ·»åŠ è£…å¤‡
         if (targetMicrowave.currentState != MicrowaveState.unlock)
         {
             return;
         }
 
-        // Ìí¼Ó×°±¸µ½Î¢²¨Â¯
+        // æ·»åŠ è£…å¤‡åˆ°å¾®æ³¢ç‚‰
         targetMicrowave.installedEquipments.Add(equipment);
 
-        // ÖØĞÂ¼ÆËãÎ¢²¨Â¯ÊôĞÔ
+        // é‡æ–°è®¡ç®—å¾®æ³¢ç‚‰å±æ€§
         targetMicrowave.CalculateMicrowaveStats();
 
-        Debug.Log($"ÒÑ½«×°±¸ {equipment.equipmentName} Ìí¼Óµ½Î¢²¨Â¯ {System.Array.IndexOf(microwave, targetMicrowave)}");
+        Debug.Log($"å·²å°†è£…å¤‡ {equipment.equipmentName} æ·»åŠ åˆ°å¾®æ³¢ç‚‰ {System.Array.IndexOf(microwave, targetMicrowave)}");
         equipment = null;
-        // ¸üĞÂUIÏÔÊ¾
+        // æ›´æ–°UIæ˜¾ç¤º
         UpdateMicrowaveUI(targetMicrowave);
-        // ÖØÖÃÑ¡Ôñ
+        // é‡ç½®é€‰æ‹©
         beforeInteraction = null;
     }
 
     private void UpdateMicrowaveUI(MicrowaveSystem microwave)
     {
-        // ¸üĞÂÎ¢²¨Â¯UIÏÔÊ¾£¬±ÈÈç×°±¸Í¼±ê¡¢×´Ì¬µÈ
-        // ÕâÀïĞèÒª¸ù¾İÄãµÄ¾ßÌåUIÊµÏÖÀ´ÍêÉÆ
-        Debug.Log($"¸üĞÂÎ¢²¨Â¯UI£¬µ±Ç°×°±¸ÊıÁ¿: {microwave.installedEquipments.Count}");
+        // æ›´æ–°å¾®æ³¢ç‚‰UIæ˜¾ç¤ºï¼Œæ¯”å¦‚è£…å¤‡å›¾æ ‡ã€çŠ¶æ€ç­‰
+        // è¿™é‡Œéœ€è¦æ ¹æ®ä½ çš„å…·ä½“UIå®ç°æ¥å®Œå–„
+        Debug.Log($"æ›´æ–°å¾®æ³¢ç‚‰UIï¼Œå½“å‰è£…å¤‡æ•°é‡: {microwave.installedEquipments.Count}");
     }
 
-    // ¹«¹²·½·¨£¬ÓÃÓÚÉèÖÃbeforeInteraction²¢´ò¿ªÑ¡Ôñ½çÃæ
+    // å…¬å…±æ–¹æ³•ï¼Œç”¨äºè®¾ç½®beforeInteractionå¹¶æ‰“å¼€é€‰æ‹©ç•Œé¢
     public void OpenForCookingSelection(Item item = null)
     {
         beforeInteraction = item;
         gameObject.SetActive(true);
 
-        // ¸üĞÂ°´Å¥×´Ì¬
+        // æ›´æ–°æŒ‰é’®çŠ¶æ€
         UpdateSelectionButtons();
     }
 
@@ -211,18 +211,18 @@ public class MainCookingSystem : MonoBehaviour
         {
             if (microwave[i] != null)
             {
-                // ¸ù¾İÎ¢²¨Â¯×´Ì¬¸üĞÂ°´Å¥½»»¥ĞÔ
+                // æ ¹æ®å¾®æ³¢ç‚‰çŠ¶æ€æ›´æ–°æŒ‰é’®äº¤äº’æ€§
                 bool isInteractable = microwave[i].currentState == MicrowaveState.Idle ||
                                      microwave[i].currentState == MicrowaveState.unlock;
 
                 selectionButtons[i].interactable = isInteractable;
 
-                // ¸üĞÂ°´Å¥ÎÄ±¾ÏÔÊ¾Î¢²¨Â¯×´Ì¬
+                // æ›´æ–°æŒ‰é’®æ–‡æœ¬æ˜¾ç¤ºå¾®æ³¢ç‚‰çŠ¶æ€
                 Text buttonText = selectionButtons[i].GetComponentInChildren<Text>();
                 if (buttonText != null)
                 {
-                    string statusText = isInteractable ? "¿ÉÓÃ" : "Ã¦Âµ";
-                    buttonText.text = $"Î¢²¨Â¯  ({statusText})";
+                    string statusText = isInteractable ? "å¯ç”¨" : "å¿™ç¢Œ";
+                    buttonText.text = $"å¾®æ³¢ç‚‰  ({statusText})";
                 }
             }
         }
@@ -230,8 +230,8 @@ public class MainCookingSystem : MonoBehaviour
 
 
     /// <summary>
-    /// Çå¿ÕËùÓĞ×´Ì¬²»ÎªÎ´½âËøµÄÎ¢²¨Â¯
-    /// Èç¹ûÎ¢²¨Â¯ÕıÔÚÅëâ¿»òÅëâ¿Íê³É£¬Á¢¼´Í£Ö¹Åëâ¿²¢Çå¿Õ²ËÆ·£¬»Øµ½´ı»ú×´Ì¬
+    /// æ¸…ç©ºæ‰€æœ‰çŠ¶æ€ä¸ä¸ºæœªè§£é”çš„å¾®æ³¢ç‚‰
+    /// å¦‚æœå¾®æ³¢ç‚‰æ­£åœ¨çƒ¹é¥ªæˆ–çƒ¹é¥ªå®Œæˆï¼Œç«‹å³åœæ­¢çƒ¹é¥ªå¹¶æ¸…ç©ºèœå“ï¼Œå›åˆ°å¾…æœºçŠ¶æ€
     /// </summary>
     public void ClearAllActiveMicrowaves()
     {
@@ -239,7 +239,7 @@ public class MainCookingSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Ğ­³Ì·½Ê½Çå¿ÕËùÓĞ»îÔ¾Î¢²¨Â¯
+    /// åç¨‹æ–¹å¼æ¸…ç©ºæ‰€æœ‰æ´»è·ƒå¾®æ³¢ç‚‰
     /// </summary>
     private IEnumerator ClearAllActiveMicrowavesCoroutine()
     {
@@ -253,37 +253,37 @@ public class MainCookingSystem : MonoBehaviour
                 ClearSingleMicrowave(microwave[i]);
                 clearedCount++;
 
-                // Ã¿Çå¿ÕÒ»¸öÎ¢²¨Â¯µÈ´ıÒ»Ö¡
+                // æ¯æ¸…ç©ºä¸€ä¸ªå¾®æ³¢ç‚‰ç­‰å¾…ä¸€å¸§
                 yield return null;
             }
         }
 
-        Debug.Log($"Çå¿ÕÎ¢²¨Â¯Íê³É£¬¹²´¦ÀíÁË {clearedCount} ¸öÎ¢²¨Â¯");
+        Debug.Log($"æ¸…ç©ºå¾®æ³¢ç‚‰å®Œæˆï¼Œå…±å¤„ç†äº† {clearedCount} ä¸ªå¾®æ³¢ç‚‰");
 
-        // ¸üĞÂUIÏÔÊ¾
+        // æ›´æ–°UIæ˜¾ç¤º
         UpdateSelectionButtons();
     }
 
     /// <summary>
-    /// Çå¿Õµ¥¸öÎ¢²¨Â¯
+    /// æ¸…ç©ºå•ä¸ªå¾®æ³¢ç‚‰
     /// </summary>
-    /// <param name="microwave">ÒªÇå¿ÕµÄÎ¢²¨Â¯</param>
+    /// <param name="microwave">è¦æ¸…ç©ºçš„å¾®æ³¢ç‚‰</param>
     private void ClearSingleMicrowave(MicrowaveSystem microwave)
     {
         if (microwave == null) return;
 
-        Debug.Log($"Çå¿ÕÎ¢²¨Â¯ {System.Array.IndexOf(this.microwave, microwave)}£¬Ô­×´Ì¬: {microwave.currentState}");
+        Debug.Log($"æ¸…ç©ºå¾®æ³¢ç‚‰ {System.Array.IndexOf(this.microwave, microwave)}ï¼ŒåŸçŠ¶æ€: {microwave.currentState}");
 
-        // Í£Ö¹ËùÓĞÕıÔÚÔËĞĞµÄĞ­³Ì
+        // åœæ­¢æ‰€æœ‰æ­£åœ¨è¿è¡Œçš„åç¨‹
         if (microwave.IsHeatingCoroutineRunning())
         {
             microwave.StopAllCoroutines();
             microwave.CollectDish();
             microwave.anim.SetTrigger("Open");
-            Debug.Log($"Í£Ö¹Î¢²¨Â¯ {System.Array.IndexOf(this.microwave, microwave)} µÄ¼ÓÈÈĞ­³Ì");
+            Debug.Log($"åœæ­¢å¾®æ³¢ç‚‰ {System.Array.IndexOf(this.microwave, microwave)} çš„åŠ çƒ­åç¨‹");
         }
 
-        // ÖØÖÃÎ¢²¨Â¯×´Ì¬
+        // é‡ç½®å¾®æ³¢ç‚‰çŠ¶æ€
         microwave.ResetToIdle();
     }
 

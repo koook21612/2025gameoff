@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -9,30 +9,30 @@ using System.Collections;
 [System.Serializable]
 public class OrderItem
 {
-    public DishScriptObjs DishName;//²ËÆ·Ãû³Æ
-    public int DishQuantity;//²ËÆ·ÊıÁ¿
+    public DishScriptObjs DishName;//èœå“åç§°
+    public int DishQuantity;//èœå“æ•°é‡
 }
 
 [System.Serializable]
 public class Order
 {
-    public int OrderNumber;//¶©µ¥ºÅ
-    public List<OrderItem> Dishes;//ËùĞè²ËÆ·
-    public float PendingPatienceMax;//ÖÍÁô¶©µ¥µÄ×î´óÄÍĞÄÖµ
-    public float ReceivedPatienceMax;//ÒÑ½ÓÊÕ¶©µ¥µÄ×î´óÄÍĞÄÖµ
-    public float PatiencePoints;//Ê£ÓàÄÍĞÄÖµ
-    public int TotalPrice; // ¶©µ¥×Ü¼Û - ĞŞ¸Äµã5£ºÌí¼Ó×Ü¼Û×Ö¶Î
+    public int OrderNumber;//è®¢å•å·
+    public List<OrderItem> Dishes;//æ‰€éœ€èœå“
+    public float PendingPatienceMax;//æ»ç•™è®¢å•çš„æœ€å¤§è€å¿ƒå€¼
+    public float ReceivedPatienceMax;//å·²æ¥æ”¶è®¢å•çš„æœ€å¤§è€å¿ƒå€¼
+    public float PatiencePoints;//å‰©ä½™è€å¿ƒå€¼
+    public int TotalPrice; // è®¢å•æ€»ä»· - ä¿®æ”¹ç‚¹5ï¼šæ·»åŠ æ€»ä»·å­—æ®µ
 }
 
-// ĞŞ¸Äµã3£ºÉ¾³ıDishUISlotÀà£¬ĞŞ¸ÄReceivedOrderUISlot½á¹¹
+// ä¿®æ”¹ç‚¹3ï¼šåˆ é™¤DishUISlotç±»ï¼Œä¿®æ”¹ReceivedOrderUISlotç»“æ„
 [System.Serializable]
 public class ReceivedOrderUISlot
 {
-    public GameObject VisualRoot;//ÕûĞĞ¸¸ÎïÌå
-    public TextMeshProUGUI OrderID;//¶©µ¥ºÅ
-    public Image PatienceBackground; // ĞŞ¸Äµã4£º½«Slider¸ÄÎªImage
+    public GameObject VisualRoot;//æ•´è¡Œçˆ¶ç‰©ä½“
+    public TextMeshProUGUI OrderID;//è®¢å•å·
+    public Image PatienceBackground; // ä¿®æ”¹ç‚¹4ï¼šå°†Slideræ”¹ä¸ºImage
 
-    public TextMeshProUGUI DishSlot1;//ĞèÇóÎÄ±¾
+    public TextMeshProUGUI DishSlot1;//éœ€æ±‚æ–‡æœ¬
     public TextMeshProUGUI DishSlot2;
     public TextMeshProUGUI DishSlot3;
 }
@@ -40,54 +40,52 @@ public class ReceivedOrderUISlot
 [System.Serializable]
 public class PendingOrderUISlot
 {
-    public GameObject VisualRoot;//ÕûĞĞ¸¸ÎïÌå
+    public GameObject VisualRoot;//æ•´è¡Œçˆ¶ç‰©ä½“
     public TextMeshProUGUI waiting;
     public TextMeshProUGUI PendingCountText;
-    //public Image PatienceBackground; // ĞŞ¸Äµã4£º½«Slider¸ÄÎªImage
+    //public Image PatienceBackground; // ä¿®æ”¹ç‚¹4ï¼šå°†Slideræ”¹ä¸ºImage
 }
 
 public class CustomerManager : MonoBehaviour
 {
-    [Header("ÄÍĞÄÖµ¼õÂıÉèÖÃ")]
     public bool isSlowPatienceEnabled = false;
 
-    [Header("²ËÆ·³Ø")]
-    public List<DishScriptObjs> AllDishes = new List<DishScriptObjs>();//ËùÓĞ¿Éµã²ËÆ·
+    [Header("èœå“æ± ")]
+    public List<DishScriptObjs> AllDishes = new List<DishScriptObjs>();//æ‰€æœ‰å¯ç‚¹èœå“
+    private Order[] _receivedOrders = new Order[3];//å·²æ¥æ”¶è®¢å•
+    private List<Order> _pendingOrders = new List<Order>();//æ»ç•™è®¢å•
+    private int _orderNumber = 0;//è®¢å•è®¡æ•°
 
-    private Order[] _receivedOrders = new Order[5];//ÒÑ½ÓÊÕ¶©µ¥
-    private List<Order> _pendingOrders = new List<Order>();//ÖÍÁô¶©µ¥
-    private int _orderNumber = 0;//¶©µ¥¼ÆÊı
+    [Header("è®¢å•UI")]
+    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//å·²æ¥æ”¶è®¢å•UI(3ä¸ª
+    public PendingOrderUISlot[] PendingOrderUISlots;//æ»ç•™è®¢å•UI(20ä¸ª
 
-    [Header("¶©µ¥UI")]
-    public ReceivedOrderUISlot[] ReceivedOrderUISlots;//ÒÑ½ÓÊÕ¶©µ¥UI
-    public PendingOrderUISlot[] PendingOrderUISlots;//ÖÍÁô¶©µ¥UI(20¸ö
+    public int StartOrderCount = 1;//å¼€å±€ç”Ÿæˆæ•°é‡
+    public float OrderGenerationInterval = 20f;//ç”Ÿæˆé—´éš”ï¼ˆç§’ï¼‰
+    public int OrdersPerBatch = 1;//æ¯æ¬¡ç”Ÿæˆæ•°é‡
+    public int PenaltyThreshold;//æ¯æ»¡å‡ ä¸ªè®¢å•åŠ å¿«æ¶ˆè€—è€å¿ƒ
+    public float PenaltyRate;//åŠ å¿«ç™¾åˆ†ä¹‹å‡ 
 
-    public int StartOrderCount = 1;//¿ª¾ÖÉú³ÉÊıÁ¿
-    public float OrderGenerationInterval = 20f;//Éú³É¼ä¸ô£¨Ãë£©
-    public int OrdersPerBatch = 1;//Ã¿´ÎÉú³ÉÊıÁ¿
-    public int PenaltyThreshold;//Ã¿Âú¼¸¸ö¶©µ¥¼Ó¿ìÏûºÄÄÍĞÄ
-    public float PenaltyRate;//¼Ó¿ì°Ù·ÖÖ®¼¸
-
-    private float _timer;//µ±Ç°ÀÛ»ıÊ±¼ä
+    private float _timer;//å½“å‰ç´¯ç§¯æ—¶é—´
     public TextMeshProUGUI time;
 
-    // ĞŞ¸Äµã1£ºÌí¼Ó²¨´Î¹ÜÀíÏà¹Ø×Ö¶Î
-    private List<Order> _dailyCustomers = new List<Order>(); // µ±ÌìËùÓĞ¹Ë¿Í
-    private int _currentCustomerIndex = 0; // µ±Ç°¹Ë¿ÍË÷Òı
-    private int _currentWave = 0; // µ±Ç°²¨´Î (0,1,2)
+    // ä¿®æ”¹ç‚¹1ï¼šæ·»åŠ æ³¢æ¬¡ç®¡ç†ç›¸å…³å­—æ®µ
+    private List<Order> _dailyCustomers = new List<Order>(); // å½“å¤©æ‰€æœ‰é¡¾å®¢
+    private int _currentCustomerIndex = 0; // å½“å‰é¡¾å®¢ç´¢å¼•
+    private int _currentWave = 0; // å½“å‰æ³¢æ¬¡ (0,1,2)
 
     public Dictionary<DishScriptObjs, int> _dailyDishesRequirement = new Dictionary<DishScriptObjs, int>();
 
-    private int _dailyIncome = 0; // µ±Ìì×ÜÊÕÈë
-    private int _dailyServedOrders = 0; // µ±Ìì³ö²Í×ÜÊı
+    private int _dailyIncome = 0; // å½“å¤©æ€»æ”¶å…¥
+    private int _dailyServedOrders = 0; // å½“å¤©å‡ºé¤æ€»æ•°
 
-    // ÓÎÏ·Ê±¼äÏà¹Ø±äÁ¿
-    private bool _isGameRunning = false; // ÓÎÏ·ÊÇ·ñÕıÔÚ½øĞĞ
+    // æ¸¸æˆæ—¶é—´ç›¸å…³å˜é‡
+    private bool _isGameRunning = false; // æ¸¸æˆæ˜¯å¦æ­£åœ¨è¿›è¡Œ
 
-    // ĞÂÔö£ºÌì½áÊø¼ì²âÏà¹Ø±äÁ¿
-    private bool _isDayEnding = false; // ÊÇ·ñÕıÔÚ½áÊøµ±Ìì
-    private int _totalCustomersToday = 0; // µ±Ìì×Ü¹Ë¿ÍÊı
-    private int _processedCustomers = 0; // ÒÑ´¦Àí¹Ë¿ÍÊı£¨°üÀ¨³É¹¦ºÍÊ§°Ü£©
+    // æ–°å¢ï¼šå¤©ç»“æŸæ£€æµ‹ç›¸å…³å˜é‡
+    private bool _isDayEnding = false; // æ˜¯å¦æ­£åœ¨ç»“æŸå½“å¤©
+    private int _totalCustomersToday = 0; // å½“å¤©æ€»é¡¾å®¢æ•°
+    private int _processedCustomers = 0; // å·²å¤„ç†é¡¾å®¢æ•°ï¼ˆåŒ…æ‹¬æˆåŠŸå’Œå¤±è´¥ï¼‰
 
     public int _maxOrderSlots = 3;
 
@@ -106,12 +104,30 @@ public class CustomerManager : MonoBehaviour
         DisableAllUIPanels();
     }
 
+    void Start()
+    {
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+        }
+    }
+
     public void StartGame()
     {
         _isGameRunning = true;
         _isDayEnding = false;
-        _processedCustomers = 0; // ÖØÖÃÒÑ´¦Àí¹Ë¿ÍÊı
+
         //_maxOrderSlots = 3;
+        _processedCustomers = 0; // é‡ç½®å·²å¤„ç†é¡¾å®¢æ•°
+
         PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
         for (int i = 0; i < StartOrderCount; i++)
         {
@@ -119,7 +135,7 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    // ĞŞ¸Äµã1£º³õÊ¼»¯µ±Ìì¹Ë¿ÍÁĞ±í
+    // ä¿®æ”¹ç‚¹1ï¼šåˆå§‹åŒ–å½“å¤©é¡¾å®¢åˆ—è¡¨
     public void InitializeDailyCustomers()
     {
         _dailyCustomers.Clear();
@@ -131,23 +147,23 @@ public class CustomerManager : MonoBehaviour
         _isDayEnding = false;
         AllDishes = InnerGameManager.Instance.dishPool;
         int day = InnerGameManager.Instance.days;
-        // ¼ÆËãµ±Ìì×Ü¹Ë¿ÍÊı y = n + ln(n) + e^(n-7) + 10
+        // è®¡ç®—å½“å¤©æ€»é¡¾å®¢æ•° y = n + ln(n) + e^(n-7) + 10
         int totalCustomers = CalculateDailyCustomerCount(day);
-        _totalCustomersToday = totalCustomers; // ¼ÇÂ¼µ±Ìì×Ü¹Ë¿ÍÊı
+        _totalCustomersToday = totalCustomers; // è®°å½•å½“å¤©æ€»é¡¾å®¢æ•°
 
-        // ·Ö²¨´Î¼ÆËã¹Ë¿ÍÊı
+        // åˆ†æ³¢æ¬¡è®¡ç®—é¡¾å®¢æ•°
         int wave1Count = Mathf.FloorToInt(totalCustomers * 0.3f);
         int wave2Count = Mathf.CeilToInt(totalCustomers * 0.5f);
         int wave3Count = totalCustomers - wave1Count - wave2Count;
 
-        // Éú³ÉËùÓĞ¹Ë¿Í
+        // ç”Ÿæˆæ‰€æœ‰é¡¾å®¢
         for (int wave = 0; wave < 3; wave++)
         {
             int waveCustomerCount = (wave == 0) ? wave1Count : (wave == 1) ? wave2Count : wave3Count;
 
             for (int i = 0; i < waveCustomerCount; i++)
             {
-                // ¼ÆËãµ±Ç°²¨´ÎµÄ¸ÅÂÊ
+                // è®¡ç®—å½“å‰æ³¢æ¬¡çš„æ¦‚ç‡
                 float p3 = CalculateP3(day, wave + 1);
                 float p2 = CalculateP2(day, wave + 1, p3);
                 float p1 = 1 - p2 - p3;
@@ -158,10 +174,10 @@ public class CustomerManager : MonoBehaviour
                 CountDishesRequirement(customer);
             }
         }
-        Debug.Log($"³É¹¦Éú³ÉËùÓĞ¹Ë¿Í£¬×ÜÊı: {_totalCustomersToday}");
+        Debug.Log($"æˆåŠŸç”Ÿæˆæ‰€æœ‰é¡¾å®¢ï¼Œæ€»æ•°: {_totalCustomersToday}");
     }
 
-    //¼ÆËã²ËÊı
+    //è®¡ç®—èœæ•°
     private void CountDishesRequirement(Order order)
     {
         foreach (OrderItem item in order.Dishes)
@@ -177,25 +193,25 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    // ĞŞ¸Äµã1£º¼ÆËãµ±Ìì¹Ë¿Í×ÜÊı
+    // ä¿®æ”¹ç‚¹1ï¼šè®¡ç®—å½“å¤©é¡¾å®¢æ€»æ•°
     private int CalculateDailyCustomerCount(int day)
     {
         return Mathf.RoundToInt(day + Mathf.Log(day) + Mathf.Exp(day - 7) + 10);
     }
 
-    // ĞŞ¸Äµã1£º¼ÆËãP3¸ÅÂÊ
+    // ä¿®æ”¹ç‚¹1ï¼šè®¡ç®—P3æ¦‚ç‡
     private float CalculateP3(int day, int wave)
     {
         return 0.2f * (day - 3) + 0.2f - 0.1f * (wave - 2) * (wave - 2);
     }
 
-    // ĞŞ¸Äµã1£º¼ÆËãP2¸ÅÂÊ
+    // ä¿®æ”¹ç‚¹1ï¼šè®¡ç®—P2æ¦‚ç‡
     private float CalculateP2(int day, int wave, float p3)
     {
         return (0.2f * (day - 2) + 0.2f - 0.1f * (wave - 2) * (wave - 2)) * (1 - p3);
     }
 
-    // ĞŞ¸Äµã1£º´ÓÃ¿ÈÕ¹Ë¿ÍÁĞ±íÖĞÉú³É¶©µ¥
+    // ä¿®æ”¹ç‚¹1ï¼šä»æ¯æ—¥é¡¾å®¢åˆ—è¡¨ä¸­ç”Ÿæˆè®¢å•
     private void GenerateNewOrderFromDailyList()
     {
         if (_currentCustomerIndex < _dailyCustomers.Count)
@@ -215,24 +231,24 @@ public class CustomerManager : MonoBehaviour
 
         if (progress < 0.3f)
         {
-            _currentWave = 0; // µÚÒ»²¨´Î (0-30%)
+            _currentWave = 0; // ç¬¬ä¸€æ³¢æ¬¡ (0-30%)
         }
         else if (progress < 0.8f)
         {
-            _currentWave = 1; // µÚ¶ş²¨´Î (30-80%)
+            _currentWave = 1; // ç¬¬äºŒæ³¢æ¬¡ (30-80%)
         }
         else
         {
-            _currentWave = 2; // µÚÈı²¨´Î (80-100%)
+            _currentWave = 2; // ç¬¬ä¸‰æ³¢æ¬¡ (80-100%)
         }
 
-        Debug.Log($"µ±Ç°²¨´Î: {_currentWave + 1}, ½ø¶È: {progress:P0}");
+        Debug.Log($"å½“å‰æ³¢æ¬¡: {_currentWave + 1}, è¿›åº¦: {progress:P0}");
     }
     private void DisableAllUIPanels()
     {
         _maxOrderSlots = 3;
         isSlowPatienceEnabled = false;
-        // ½ûÓÃÒÑ½ÓÊÕ¶©µ¥UI
+        // ç¦ç”¨å·²æ¥æ”¶è®¢å•UI
         if (ReceivedOrderUISlots != null)
         {
             foreach (var slot in ReceivedOrderUISlots)
@@ -248,7 +264,7 @@ public class CustomerManager : MonoBehaviour
             }
         }
 
-        // ½ûÓÃÖÍÁô¶©µ¥UI
+        // ç¦ç”¨æ»ç•™è®¢å•UI
         if (PendingOrderUISlots != null)
         {
             foreach (var slot in PendingOrderUISlots)
@@ -269,7 +285,7 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
-        // Èç¹ûÕıÔÚ½áÊøµ±Ìì£¬²»Ö´ĞĞÆäËûÂß¼­
+        // å¦‚æœæ­£åœ¨ç»“æŸå½“å¤©ï¼Œä¸æ‰§è¡Œå…¶ä»–é€»è¾‘
         if (_isDayEnding) return;
 
         //UpdateTimeDisplay();
@@ -279,7 +295,7 @@ public class CustomerManager : MonoBehaviour
             AcceptOrderFromPending();
         }
 
-        //Ã¿¹ıcountdownTimeÃëÉú³ÉgenerateQuantity¸ö¶©µ¥
+        //æ¯è¿‡countdownTimeç§’ç”ŸæˆgenerateQuantityä¸ªè®¢å•
         _timer += Time.deltaTime;
         if (_timer >= OrderGenerationInterval)
         {
@@ -291,31 +307,28 @@ public class CustomerManager : MonoBehaviour
         }
 
         CheckAndUpdateMusicState();
-
-        // ¼ÆËãÄÍĞÄÖµ¼õÉÙËÙ¶ÈÏµÊı
+        
+        //å·²æ¥æ”¶è®¢å•å€’è®¡æ—¶
         float patienceReductionMultiplier = 1f;
         if (isSlowPatienceEnabled)
         {
-            // Ã¿¸öÖÍÁô¶©µ¥¼õÂı1%£¬ËùÒÔ¼õÉÙËÙ¶ÈÎªÔ­±¾µÄ (1 - 0.01 * ÖÍÁô¶©µ¥Êı)
             patienceReductionMultiplier = Mathf.Max(0.01f, 1f - 0.01f * _pendingOrders.Count);
         }
-
-        //ÒÑ½ÓÊÕ¶©µ¥µ¹¼ÆÊ±
         for (int i = 0; i < _receivedOrders.Length; i++)
         {
             if (_receivedOrders[i] == null) continue;
             _receivedOrders[i].PatiencePoints -= Time.deltaTime * patienceReductionMultiplier;
             if (_receivedOrders[i].PatiencePoints <= 0)
             {
-                // ¶©µ¥³¬Ê±£¬¼ÆÈëÒÑ´¦Àí¹Ë¿Í
+                // è®¢å•è¶…æ—¶ï¼Œè®¡å…¥å·²å¤„ç†é¡¾å®¢
                 _processedCustomers++;
                 InnerGameManager.Instance.LoseReputation();
                 _receivedOrders[i] = null;
-                CheckDayCompletion(); // ¼ì²éÊÇ·ñÍê³Éµ±Ìì
+                CheckDayCompletion(); // æ£€æŸ¥æ˜¯å¦å®Œæˆå½“å¤©
             }
         }
 
-        //ÖÍÁô¶©µ¥µ¹¼ÆÊ±
+        //æ»ç•™è®¢å•å€’è®¡æ—¶
         float pendingDrainMultiplier = 1f + Mathf.FloorToInt(_pendingOrders.Count / 5) * 0.1f;
         float finalPendingMultiplier = pendingDrainMultiplier * patienceReductionMultiplier;
         for (int i = _pendingOrders.Count - 1; i >= 0; i--)
@@ -323,32 +336,32 @@ public class CustomerManager : MonoBehaviour
             _pendingOrders[i].PatiencePoints -= Time.deltaTime * finalPendingMultiplier;
             if (_pendingOrders[i].PatiencePoints <= 0)
             {
-                // ¶©µ¥³¬Ê±£¬¼ÆÈëÒÑ´¦Àí¹Ë¿Í
+                // è®¢å•è¶…æ—¶ï¼Œè®¡å…¥å·²å¤„ç†é¡¾å®¢
                 _processedCustomers++;
                 InnerGameManager.Instance.LoseReputation();
                 _pendingOrders.Remove(_pendingOrders[i]);
-                CheckDayCompletion(); // ¼ì²éÊÇ·ñÍê³Éµ±Ìì
+                CheckDayCompletion(); // æ£€æŸ¥æ˜¯å¦å®Œæˆå½“å¤©
             }
         }
 
-        //UI¸üĞÂÂß¼­
+        //UIæ›´æ–°é€»è¾‘
         UpdateReceivedOrdersUI();
         UpdatePendingOrdersUI();
 
-        // ¼ì²éÊÇ·ñËùÓĞ¹Ë¿Í¶¼ÒÑÉú³ÉÇÒ´¦ÀíÍê±Ï
+        // æ£€æŸ¥æ˜¯å¦æ‰€æœ‰é¡¾å®¢éƒ½å·²ç”Ÿæˆä¸”å¤„ç†å®Œæ¯•
         CheckDayCompletion();
     }
 
-    // ĞÂÔö£º¼ì²éµ±ÌìÊÇ·ñÍê³É
+    // æ–°å¢ï¼šæ£€æŸ¥å½“å¤©æ˜¯å¦å®Œæˆ
     private void CheckDayCompletion()
     {
-        // Èç¹ûËùÓĞ¹Ë¿Í¶¼ÒÑÉú³É£¨°üÀ¨ÒÑ´¦ÀíºÍÎ´´¦ÀíµÄ£©
-        // ²¢ÇÒÃ»ÓĞÎ´´¦ÀíµÄ¶©µ¥£¨ÒÑ½ÓÊÕºÍÖÍÁô¶©µ¥¶¼Îª¿Õ£©
+        // å¦‚æœæ‰€æœ‰é¡¾å®¢éƒ½å·²ç”Ÿæˆï¼ˆåŒ…æ‹¬å·²å¤„ç†å’Œæœªå¤„ç†çš„ï¼‰
+        // å¹¶ä¸”æ²¡æœ‰æœªå¤„ç†çš„è®¢å•ï¼ˆå·²æ¥æ”¶å’Œæ»ç•™è®¢å•éƒ½ä¸ºç©ºï¼‰
         if (_currentCustomerIndex >= _dailyCustomers.Count &&
             _pendingOrders.Count == 0 &&
             AreAllReceivedOrdersNull())
         {
-            // ÑÓ³Ù1Ãëºó½øÈëÏÂÒ»Ìì
+            // å»¶è¿Ÿ1ç§’åè¿›å…¥ä¸‹ä¸€å¤©
             if (!_isDayEnding)
             {
                 _isDayEnding = true;
@@ -357,7 +370,7 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    // ĞÂÔö£º¼ì²éËùÓĞÒÑ½ÓÊÕ¶©µ¥ÊÇ·ñ¶¼Îªnull
+    // æ–°å¢ï¼šæ£€æŸ¥æ‰€æœ‰å·²æ¥æ”¶è®¢å•æ˜¯å¦éƒ½ä¸ºnull
     private bool AreAllReceivedOrdersNull()
     {
         foreach (var order in _receivedOrders)
@@ -367,19 +380,19 @@ public class CustomerManager : MonoBehaviour
         return true;
     }
 
-    // ĞÂÔö£ºÑÓ³Ù½áÊøµ±Ìì
+    // æ–°å¢ï¼šå»¶è¿Ÿç»“æŸå½“å¤©
     private System.Collections.IEnumerator EndDayAfterDelay(float delay)
     {
-        Debug.Log("µ±ÌìËùÓĞ¹Ë¿ÍÒÑ´¦ÀíÍê±Ï£¬×¼±¸½øÈëÏÂÒ»Ìì");
+        Debug.Log("å½“å¤©æ‰€æœ‰é¡¾å®¢å·²å¤„ç†å®Œæ¯•ï¼Œå‡†å¤‡è¿›å…¥ä¸‹ä¸€å¤©");
         yield return new WaitForSeconds(delay);
 
-        // ½øÈëÉÌµê¿ªÊ¼ĞÂµÄÒ»Ìì
+        // è¿›å…¥å•†åº—å¼€å§‹æ–°çš„ä¸€å¤©
         ResetForNewDay();
         InnerGameManager.Instance.EnterStore();
     }
 
 
-    // ÊÖ¶¯³¶µ¥·½·¨
+    // æ‰‹åŠ¨æ‰¯å•æ–¹æ³•
     public void AcceptOrderFromPending()
     {
         for (int i = 0; i < _maxOrderSlots; i++)
@@ -396,10 +409,10 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    //¶©µ¥Éú³É
+    //è®¢å•ç”Ÿæˆ
     public Order GenerateNewOrder(float p1, float p2, float p3)
     {
-        //¹Ë¿Íµã¼¸µÀ²Ë
+        //é¡¾å®¢ç‚¹å‡ é“èœ
         int dishesCount = 0;
         float randomValue = UnityEngine.Random.Range(0f, p1 + p2 + p3);
         if (randomValue <= p3)
@@ -419,13 +432,13 @@ public class CustomerManager : MonoBehaviour
             }
         }
 
-        //´´½¨¶©µ¥ºÍ²ËÆ·Ñ¡ÔñÂß¼­
+        //åˆ›å»ºè®¢å•å’Œèœå“é€‰æ‹©é€»è¾‘
         _orderNumber++;
         Order newOrder = new Order();
         newOrder.OrderNumber = _orderNumber;
         newOrder.Dishes = new List<OrderItem>();
 
-        int totalPrice = 0; // ĞŞ¸Äµã5£º¼ÆËã×Ü¼Û
+        int totalPrice = 0; // ä¿®æ”¹ç‚¹5ï¼šè®¡ç®—æ€»ä»·
 
         for (int i = 0; i < dishesCount; i++)
         {
@@ -449,25 +462,25 @@ public class CustomerManager : MonoBehaviour
                 newOrder.Dishes.Add(newOrderItem);
             }
 
-            totalPrice += chosenDish.DishPrice; // ĞŞ¸Äµã5£ºÀÛ¼Ó¼Û¸ñ
+            totalPrice += chosenDish.DishPrice; // ä¿®æ”¹ç‚¹5ï¼šç´¯åŠ ä»·æ ¼
         }
 
-        //¼ÆËãÄÍĞÄÖµ²¢¸³Öµ
+        //è®¡ç®—è€å¿ƒå€¼å¹¶èµ‹å€¼
         newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
-        newOrder.TotalPrice = totalPrice; // ĞŞ¸Äµã5£ºÉèÖÃ×Ü¼Û
+        newOrder.TotalPrice = totalPrice; // ä¿®æ”¹ç‚¹5ï¼šè®¾ç½®æ€»ä»·
 
         return newOrder;
     }
 
-    //³õÊ¼»¯ÒÑ½ÓÊÕÁĞ±í¾²Ì¬UI
+    //åˆå§‹åŒ–å·²æ¥æ”¶åˆ—è¡¨é™æ€UI
     private void InitializeReceivedOrderUI(int slotIndex, Order order)
     {
         ReceivedOrderUISlot slot = ReceivedOrderUISlots[slotIndex];
         slot.OrderID.text = order.OrderNumber.ToString("000");
 
-        // ĞŞ¸Äµã3£ºÉèÖÃÈı¸ö²ËÆ·²Û
+        // ä¿®æ”¹ç‚¹3ï¼šè®¾ç½®ä¸‰ä¸ªèœå“æ§½
         TextMeshProUGUI[] dishSlots = new TextMeshProUGUI[] { slot.DishSlot1, slot.DishSlot2, slot.DishSlot3 };
 
         for (int j = 0; j < dishSlots.Length; j++)
@@ -475,7 +488,7 @@ public class CustomerManager : MonoBehaviour
             if (j < order.Dishes.Count)
             {
                 dishSlots[j].gameObject.SetActive(true);
-                dishSlots[j].text = $"{order.Dishes[j].DishName.dishName} X {order.Dishes[j].DishQuantity}";
+                dishSlots[j].text = $"{order.Dishes[j].DishName.GetName()} X {order.Dishes[j].DishQuantity}";
             }
             else
             {
@@ -484,7 +497,7 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    //ÒÑ½ÓÊÕÁĞ±íUI¸üĞÂÂß¼­
+    //å·²æ¥æ”¶åˆ—è¡¨UIæ›´æ–°é€»è¾‘
     private void UpdateReceivedOrdersUI()
     {
         for (int i = 0; i < ReceivedOrderUISlots.Length; i++)
@@ -499,7 +512,7 @@ public class CustomerManager : MonoBehaviour
                 {
                     float patienceRatio = order.PatiencePoints / order.ReceivedPatienceMax;
 
-                    // Ö»¸Ä±äRGB£¬±£³Öalpha²»±ä
+                    // åªæ”¹å˜RGBï¼Œä¿æŒalphaä¸å˜
                     Color targetColor = Color.Lerp(Color.red, Color.white, patienceRatio);
                     slot.PatienceBackground.color = new Color(targetColor.r, targetColor.g, targetColor.b, slot.PatienceBackground.color.a);
                 }
@@ -508,7 +521,7 @@ public class CustomerManager : MonoBehaviour
             {
                 slot.VisualRoot.SetActive(false);
                 slot.OrderID.text = "";
-                // ĞŞ¸Äµã3£ºÒş²ØËùÓĞ²ËÆ·²Û
+                // ä¿®æ”¹ç‚¹3ï¼šéšè—æ‰€æœ‰èœå“æ§½
                 slot.DishSlot1.gameObject.SetActive(false);
                 slot.DishSlot2.gameObject.SetActive(false);
                 slot.DishSlot3.gameObject.SetActive(false);
@@ -516,7 +529,7 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    //ÖÍÁô¶©µ¥UI¸üĞÂÂß¼­
+    //æ»ç•™è®¢å•UIæ›´æ–°é€»è¾‘
     private void UpdatePendingOrdersUI()
     {
         if (PendingOrderUISlots.Length > 0 && PendingOrderUISlots[0] != null)
@@ -545,13 +558,14 @@ public class CustomerManager : MonoBehaviour
         _receivedOrders = new Order[5];
         _pendingOrders.Clear();
         _timer = 0f;
-        _isGameRunning = false; // Í£Ö¹¼ÆÊ±
-        _isDayEnding = false; // ÖØÖÃ½áÊø×´Ì¬
-        _processedCustomers = 0; // ÖØÖÃÒÑ´¦Àí¹Ë¿ÍÊı
+
+        _isGameRunning = false; // åœæ­¢è®¡æ—¶
+        _isDayEnding = false; // é‡ç½®ç»“æŸçŠ¶æ€
+        _processedCustomers = 0; // é‡ç½®å·²å¤„ç†é¡¾å®¢æ•°
         DisableAllUIPanels();
     }
 
-    //²ËÆ·½»¸¶
+    //èœå“äº¤ä»˜
     public void DeliverSingleDishToOrder(DishScriptObjs deliveredDish, CookingResult result, int orderSlotIndex)
     {
         if (orderSlotIndex < 0 || orderSlotIndex >= _receivedOrders.Length) return;
@@ -567,50 +581,50 @@ public class CustomerManager : MonoBehaviour
                 {
                     item.DishQuantity--;
 
-                    // ĞŞ¸Äµã5£ºÖ»ÔÚ¶©µ¥ÍêÈ«Íê³ÉÊ±½áËãÇ®
+                    // ä¿®æ”¹ç‚¹5ï¼šåªåœ¨è®¢å•å®Œå…¨å®Œæˆæ—¶ç»“ç®—é’±
                     if (item.DishQuantity > 0)
                     {
-                        // ¸üĞÂUIÏÔÊ¾
+                        // æ›´æ–°UIæ˜¾ç¤º
                         InitializeReceivedOrderUI(orderSlotIndex, currentOrder);
                     }
 
                     if (item.DishQuantity <= 0)
                     {
                         currentOrder.Dishes.Remove(item);
-                        i--;//±ÜÃâÁĞ±íÒÆ³ıµ¼ÖÂµÄË÷ÒıÎÊÌâ
+                        i--;//é¿å…åˆ—è¡¨ç§»é™¤å¯¼è‡´çš„ç´¢å¼•é—®é¢˜
 
                         InitializeReceivedOrderUI(orderSlotIndex, currentOrder);
 
                         if (currentOrder.Dishes.Count == 0)
                         {
-                            // ĞŞ¸Äµã5£º¶©µ¥ÍêÈ«Íê³É£¬½áËã×Ü¼Û
+                            // ä¿®æ”¹ç‚¹5ï¼šè®¢å•å®Œå…¨å®Œæˆï¼Œç»“ç®—æ€»ä»·
                             InnerGameManager.Instance.AddGold(currentOrder.TotalPrice);
                             InnerGameManager.Instance.CompleteCustomer();
                             _receivedOrders[orderSlotIndex] = null;
 
-                            // ¶©µ¥Íê³É£¬¼ÆÈëÒÑ´¦Àí¹Ë¿Í
+                            // è®¢å•å®Œæˆï¼Œè®¡å…¥å·²å¤„ç†é¡¾å®¢
                             _processedCustomers++;
-                            CheckDayCompletion(); // ¼ì²éÊÇ·ñÍê³Éµ±Ìì
+                            CheckDayCompletion(); // æ£€æŸ¥æ˜¯å¦å®Œæˆå½“å¤©
                         }
                     }
                 }
                 else
                 {
-                    Debug.Log("Ìá½»ÁËÊ§°ÜÁÏÀí£¬¿Û³ıÉùÍû");
+                    Debug.Log("æäº¤äº†å¤±è´¥æ–™ç†ï¼Œæ‰£é™¤å£°æœ›");
                     InnerGameManager.Instance.LoseReputation();
-                    // ¶©µ¥Ê§°Ü£¬Ò²¼ÆÈëÒÑ´¦Àí¹Ë¿Í
+                    // è®¢å•å¤±è´¥ï¼Œä¹Ÿè®¡å…¥å·²å¤„ç†é¡¾å®¢
                     _processedCustomers++;
-                    CheckDayCompletion(); // ¼ì²éÊÇ·ñÍê³Éµ±Ìì
+                    CheckDayCompletion(); // æ£€æŸ¥æ˜¯å¦å®Œæˆå½“å¤©
                 }
                 return;
             }
         }
 
-        Debug.Log("ÉÏ´í²Ë£¬¿Û³ıÉùÍû");
+        Debug.Log("ä¸Šé”™èœï¼Œæ‰£é™¤å£°æœ›");
         InnerGameManager.Instance.LoseReputation();
-        // ÉÏ´í²Ë£¬Ò²¼ÆÈëÒÑ´¦Àí¹Ë¿Í
+        // ä¸Šé”™èœï¼Œä¹Ÿè®¡å…¥å·²å¤„ç†é¡¾å®¢
         _processedCustomers++;
-        CheckDayCompletion(); // ¼ì²éÊÇ·ñÍê³Éµ±Ìì
+        CheckDayCompletion(); // æ£€æŸ¥æ˜¯å¦å®Œæˆå½“å¤©
     }
 
     private void CheckAndUpdateMusicState()
@@ -620,10 +634,10 @@ public class CustomerManager : MonoBehaviour
         int pendingOrdersCount = _pendingOrders.Count;
         int currentReputation = InnerGameManager.Instance.currentReputation;
 
-        // ¸ù¾İÌõ¼şÅĞ¶Ïµ±Ç°Ó¦¸Ã²¥·ÅµÄÒôÀÖ
+        // æ ¹æ®æ¡ä»¶åˆ¤æ–­å½“å‰åº”è¯¥æ’­æ”¾çš„éŸ³ä¹
         if (pendingOrdersCount > 15 || currentReputation == 1)
         {
-            // extreme Ìõ¼ş£ºÖÍÁô¶©µ¥¸ßÓÚ15 »ò ÉùÍûµÈÓÚ1
+            // extreme æ¡ä»¶ï¼šæ»ç•™è®¢å•é«˜äº15 æˆ– å£°æœ›ç­‰äº1
             AudioManager.Instance.SwitchToExtremeMusic();
         }
         else if (_currentWave == 1)
@@ -636,4 +650,18 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
+    // æ›´æ–°æ–‡æœ¬
+    void OnLanguageChanged()
+    {
+        if (PendingOrderUISlots.Length > 0 && PendingOrderUISlots[0] != null && PendingOrderUISlots[0].waiting != null)
+        {
+            PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
+        }
+
+        for (int i = 0; i < _receivedOrders.Length; i++)
+        {
+            if (_receivedOrders[i] != null)
+                InitializeReceivedOrderUI(i, _receivedOrders[i]);
+        }
+    }
 }
