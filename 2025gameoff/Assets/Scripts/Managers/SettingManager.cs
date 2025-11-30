@@ -58,18 +58,6 @@ public class SettingManager : MonoBehaviour
         Initialization();
     }
 
-    // 新增：OnEnable时添加监听器
-    void OnEnable()
-    {
-        AddListener();
-    }
-
-    // 新增：OnDisable时移除监听器
-    void OnDisable()
-    {
-        RemoveListener();
-    }
-
     // 新增：OnDestroy时移除监听器
     void OnDestroy()
     {
@@ -187,6 +175,7 @@ public class SettingManager : MonoBehaviour
     {
         currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
         currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
+        Debug.Log("开始更新语言" + currentLanguage);
         if (currentLanguage != LocalizationManager.Instance.currentLanguage)
         {
             LocalizationManager.Instance.LoadLanguage(currentLanguage);
