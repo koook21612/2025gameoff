@@ -591,11 +591,6 @@ public class CustomerManager : MonoBehaviour
 
     public void ResetForNewDay()
     {
-        if (InnerGameManager.Instance != null)
-        {
-            InnerGameManager.Instance.AddDailyIncome(_dailyIncome);
-            InnerGameManager.Instance.AddDailyServedOrders(_dailyServedOrders);
-        }
         _receivedOrders = new Order[5];
         _pendingOrders.Clear();
         _timer = 0f;
@@ -621,6 +616,8 @@ public class CustomerManager : MonoBehaviour
                 {
                     item.DishQuantity--;
 
+                    InnerGameManager.Instance.AddDailyServedOrders(1);
+
                     // 修改点5：只在订单完全完成时结算钱
                     if (item.DishQuantity > 0)
                     {
@@ -637,6 +634,7 @@ public class CustomerManager : MonoBehaviour
 
                         if (currentOrder.Dishes.Count == 0)
                         {
+                            InnerGameManager.Instance.AddDailyIncome(currentOrder.TotalPrice);
                             // 修改点5：订单完全完成，结算总价
                             InnerGameManager.Instance.AddGold(currentOrder.TotalPrice);
                             InnerGameManager.Instance.CompleteCustomer();
