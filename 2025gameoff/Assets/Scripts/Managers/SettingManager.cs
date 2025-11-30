@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,36 +8,37 @@ using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
 {
-    public Toggle fullscreenToggle;// È«ÆÁÇĞ»»¿ª¹Ø
-    public TextMeshProUGUI toggleLabel; // È«ÆÁÇĞ»»±êÇ©ÎÄ±¾
+    public Toggle fullscreenToggle;// å…¨å±åˆ‡æ¢å¼€å…³
+    public TextMeshProUGUI toggleLabel; // å…¨å±åˆ‡æ¢æ ‡ç­¾æ–‡æœ¬
 
-    public TMP_Dropdown resolutionDropdown; // ·Ö±æÂÊÏÂÀ­Ñ¡Ôñ¿ò
-    private Resolution[] availableResolutions;// ¿ÉÓÃµÄ·Ö±æÂÊÊı×é
-    private Resolution defaultResolution; // Ä¬ÈÏ·Ö±æÂÊ
+    public TMP_Dropdown resolutionDropdown; // åˆ†è¾¨ç‡ä¸‹æ‹‰é€‰æ‹©æ¡†
+    private Resolution[] availableResolutions;// å¯ç”¨çš„åˆ†è¾¨ç‡æ•°ç»„
+    private Resolution defaultResolution; // é»˜è®¤åˆ†è¾¨ç‡
 
-    public Button defaultButton; // »Ö¸´Ä¬ÈÏÉèÖÃ°´Å¥
-    public Button closeButton; // ¹Ø±ÕÉèÖÃ½çÃæ°´Å¥
-    public Button mainMenuButton; // ·µ»ØÖ÷²Ëµ¥°´Å¥
+    public Button defaultButton; // æ¢å¤é»˜è®¤è®¾ç½®æŒ‰é’®
+    public Button closeButton; // å…³é—­è®¾ç½®ç•Œé¢æŒ‰é’®
+    public Button mainMenuButton; // è¿”å›ä¸»èœå•æŒ‰é’®
 
-    public Slider masterVolumeSlider; // Ö÷ÒôÁ¿»¬¿é
-    public Slider musicVolumeSlider; // ±³¾°ÒôÀÖÒôÁ¿»¬¿é
-    public Slider effectVolumeSlider; // ÒôĞ§ÒôÁ¿»¬¿é
-    public AudioMixer audioMixer; // ÒôÆµ»ìºÏÆ÷ÒıÓÃ
+    public Slider masterVolumeSlider; // ä¸»éŸ³é‡æ»‘å—
+    public Slider musicVolumeSlider; // èƒŒæ™¯éŸ³ä¹éŸ³é‡æ»‘å—
+    public Slider effectVolumeSlider; // éŸ³æ•ˆéŸ³é‡æ»‘å—
+    public AudioMixer audioMixer; // éŸ³é¢‘æ··åˆå™¨å¼•ç”¨
 
-    public Button LanguageButton; // ÓïÑÔÇĞ»»°´Å¥
-    public TextMeshProUGUI languageButtonText; // ÓïÑÔ°´Å¥ÎÄ±¾ÏÔÊ¾
-    private int currentLanguageIndex = 0; // µ±Ç°ÓïÑÔË÷Òı
-    private string currentLanguage; // µ±Ç°ÓïÑÔ´úÂë
+    public Button LanguageButton; // è¯­è¨€åˆ‡æ¢æŒ‰é’®
+    public TextMeshProUGUI languageButtonText; // è¯­è¨€æŒ‰é’®æ–‡æœ¬æ˜¾ç¤º
+    private int currentLanguageIndex = 0; // å½“å‰è¯­è¨€ç´¢å¼•
+    private string currentLanguage; // å½“å‰è¯­è¨€ä»£ç 
 
-    public TextMeshProUGUI resolutionLabelText; // ·Ö±æÂÊÉèÖÃ±êÇ©
-    public TextMeshProUGUI fullscreenLabelText; // È«ÆÁÉèÖÃ±êÇ©  
-    public TextMeshProUGUI masterVolumeLabelText; // Ö÷ÒôÁ¿±êÇ©
-    public TextMeshProUGUI musicVolumeLabelText; // ±³¾°ÒôÀÖÒôÁ¿±êÇ©
-    public TextMeshProUGUI effectVolumeLabelText; // ÒôĞ§ÒôÁ¿±êÇ©
+    public TextMeshProUGUI resolutionLabelText; // åˆ†è¾¨ç‡è®¾ç½®æ ‡ç­¾
+    public TextMeshProUGUI fullscreenLabelText; // å…¨å±è®¾ç½®æ ‡ç­¾  
+    public TextMeshProUGUI masterVolumeLabelText; // ä¸»éŸ³é‡æ ‡ç­¾
+    public TextMeshProUGUI musicVolumeLabelText; // èƒŒæ™¯éŸ³ä¹éŸ³é‡æ ‡ç­¾
+    public TextMeshProUGUI effectVolumeLabelText; // éŸ³æ•ˆéŸ³é‡æ ‡ç­¾
     public TextMeshProUGUI languageText;
+    public TextMeshProUGUI settingsTitleText;
 
-    private string fullscreen = "È«ÆÁ";
-    private string windowed = "´°¿Ú";
+    private string fullscreen = "å…¨å±";
+    private string windowed = "çª—å£";
     public static SettingManager Instance { get; private set; }
 
     private void Awake()
@@ -57,7 +58,7 @@ public class SettingManager : MonoBehaviour
         Initialization();
     }
 
-    // ĞÂÔö£ºOnDestroyÊ±ÒÆ³ı¼àÌıÆ÷
+    // æ–°å¢ï¼šOnDestroyæ—¶ç§»é™¤ç›‘å¬å™¨
     void OnDestroy()
     {
         RemoveListener();
@@ -80,7 +81,7 @@ public class SettingManager : MonoBehaviour
         mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
 
-    // ĞÂÔö£ºÒÆ³ıËùÓĞ¼àÌıÆ÷
+    // æ–°å¢ï¼šç§»é™¤æ‰€æœ‰ç›‘å¬å™¨
     void RemoveListener()
     {
         fullscreenToggle.onValueChanged.RemoveListener(SetDisplayMode);
@@ -103,13 +104,13 @@ public class SettingManager : MonoBehaviour
         InitializeResolutions();
         InitializeVolume();
     }
-    //³õÊ¼»¯È«ÆÁ
+    //åˆå§‹åŒ–å…¨å±
     void InitializeDisplayMode()
     {
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
     }
-    //³õÊ¼»¯·Ö±æÂÊ
+    //åˆå§‹åŒ–åˆ†è¾¨ç‡
     void InitializeResolutions()
     {
         availableResolutions = Screen.resolutions;
@@ -122,12 +123,12 @@ public class SettingManager : MonoBehaviour
         {
             float ratio = (float)res.width / res.height;
 
-            // ÔÊĞíµÄ¿í¸ß±È£º16:9 (~1.777) »ò 16:10 (~1.6)
+            // å…è®¸çš„å®½é«˜æ¯”ï¼š16:9 (~1.777) æˆ– 16:10 (~1.6)
             const float ratio169 = 16f / 9f;
             const float ratio1610 = 16f / 10f;
             const float epsilon = 0.01f;
 
-            // Èç¹û¼È²»ÊÇ 16:9 Ò²²»ÊÇ 16:10£¬¾ÍÌø¹ı
+            // å¦‚æœæ—¢ä¸æ˜¯ 16:9 ä¹Ÿä¸æ˜¯ 16:10ï¼Œå°±è·³è¿‡
             if (Mathf.Abs(ratio - ratio169) > epsilon &&
                 Mathf.Abs(ratio - ratio1610) > epsilon)
             {
@@ -136,13 +137,13 @@ public class SettingManager : MonoBehaviour
 
             string option = res.width + "x" + res.height;
 
-            // ²»ÖØ¸´Ìí¼ÓÏàÍ¬µÄ·Ö±æÂÊ
+            // ä¸é‡å¤æ·»åŠ ç›¸åŒçš„åˆ†è¾¨ç‡
             if (!resolutionMap.ContainsKey(option))
             {
                 resolutionMap[option] = res;
                 resolutionDropdown.options.Add(new TMP_Dropdown.OptionData(option));
 
-                // ÉèÖÃµ±Ç°·Ö±æÂÊË÷Òı
+                // è®¾ç½®å½“å‰åˆ†è¾¨ç‡ç´¢å¼•
                 if (res.width == Screen.currentResolution.width &&
                     res.height == Screen.currentResolution.height)
                 {
@@ -157,7 +158,7 @@ public class SettingManager : MonoBehaviour
     }
 
 
-    //³õÊ¼»¯ÉùÒô
+    //åˆå§‹åŒ–å£°éŸ³
     void InitializeVolume()
     {
         masterVolumeSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
@@ -169,7 +170,7 @@ public class SettingManager : MonoBehaviour
         SetEffectVolume(effectVolumeSlider.value);
     }
 
-    //ÉèÖÃ»­ÃæÄ£Ê½
+    //è®¾ç½®ç”»é¢æ¨¡å¼
     void SetDisplayMode(bool isFullscreen)
     {
         Screen.fullScreenMode = isFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
@@ -180,7 +181,7 @@ public class SettingManager : MonoBehaviour
     {
         currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
         currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
-        Debug.Log("¿ªÊ¼¸üĞÂÓïÑÔ" + currentLanguage);
+        Debug.Log("å¼€å§‹æ›´æ–°è¯­è¨€" + currentLanguage);
         if (currentLanguage != LocalizationManager.Instance.currentLanguage)
         {
             LocalizationManager.Instance.LoadLanguage(currentLanguage);
@@ -226,7 +227,7 @@ public class SettingManager : MonoBehaviour
     public void CloseSetting()
     {
         SaveSetting();
-        //·µ»ØÖ÷²Ëµ¥»òÕßÓÎÏ·½çÃæ
+        //è¿”å›ä¸»èœå•æˆ–è€…æ¸¸æˆç•Œé¢
         //SceneManager.LoadScene(GameManager.Instance.currentScene);
         if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
@@ -273,11 +274,11 @@ public class SettingManager : MonoBehaviour
         if (fullscreenLabelText != null)
             fullscreenLabelText.text = LocalizationManager.Instance.GetText("display_mode");
 
-        // ·Ö±æÂÊ±êÇ©
+        // åˆ†è¾¨ç‡æ ‡ç­¾
         if (resolutionLabelText != null)
             resolutionLabelText.text = LocalizationManager.Instance.GetText("resolution");
 
-        // ÒôÁ¿Ïà¹Ø±êÇ©
+        // éŸ³é‡ç›¸å…³æ ‡ç­¾
         if (masterVolumeLabelText != null)
             masterVolumeLabelText.text = LocalizationManager.Instance.GetText("master_volume");
 
@@ -287,7 +288,7 @@ public class SettingManager : MonoBehaviour
         if (effectVolumeLabelText != null)
             effectVolumeLabelText.text = LocalizationManager.Instance.GetText("effect_volume");
 
-        // ÓïÑÔ±êÇ©
+        // è¯­è¨€æ ‡ç­¾
         if (LanguageButton != null)
         {
             TextMeshProUGUI closeBtnText = LanguageButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -295,7 +296,7 @@ public class SettingManager : MonoBehaviour
                 closeBtnText.text = LocalizationManager.Instance.GetText("language_name");
         }
 
-        // °´Å¥ÎÄ±¾
+        // æŒ‰é’®æ–‡æœ¬
         if (defaultButton != null)
         {
             TextMeshProUGUI defaultBtnText = defaultButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -316,5 +317,8 @@ public class SettingManager : MonoBehaviour
             if (menuBtnText != null)
                 menuBtnText.text = LocalizationManager.Instance.GetText("return_menu");
         }
+
+        if (settingsTitleText != null) 
+            settingsTitleText.text = LocalizationManager.Instance.GetText("settings");
     }
 }

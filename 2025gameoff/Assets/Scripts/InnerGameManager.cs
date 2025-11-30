@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,38 +10,38 @@ public class InnerGameManager : MonoBehaviour
 {
     public bool isPlaying = false;
 
-    public int days = 0;//ÌìÊı
-    public int currentGold = 50; // ³õÊ¼½ğ±Ò
-    public int currentReputation = 3; // ³õÊ¼ÉùÍû
-    public int maxReputation = 3; // ÉùÍûÉÏÏŞ
-    public int completedCustomers = 0; // Íê³ÉµÄ¹Ë¿ÍÊıÁ¿
+    public int days = 0;//å¤©æ•°
+    public int currentGold = 50; // åˆå§‹é‡‘å¸
+    public int currentReputation = 3; // åˆå§‹å£°æœ›
+    public int maxReputation = 3; // å£°æœ›ä¸Šé™
+    public int completedCustomers = 0; // å®Œæˆçš„é¡¾å®¢æ•°é‡
 
 
-    private object goldLock = new object();//Ïß³ÌËø£¬·ÀÖ¹²¢·¢³åÍ»
+    private object goldLock = new object();//çº¿ç¨‹é”ï¼Œé˜²æ­¢å¹¶å‘å†²çª
 
-    // Î¢²¨Â¯Éı¼¶Ïà¹Ø
-    [Header("Î¢²¨Â¯Éı¼¶")]
-    public int MicrowavesCount = 1; // Î¢²¨Â¯ÊıÁ¿
-    public int LatterMicrowavesCount = 0; // ÏÂÒ»¾Ö¼ÓµÄÎ¢²¨Â¯ÊıÁ¿
+    // å¾®æ³¢ç‚‰å‡çº§ç›¸å…³
+    [Header("å¾®æ³¢ç‚‰å‡çº§")]
+    public int MicrowavesCount = 1; // å¾®æ³¢ç‚‰æ•°é‡
+    public int LatterMicrowavesCount = 0; // ä¸‹ä¸€å±€åŠ çš„å¾®æ³¢ç‚‰æ•°é‡
     private float heatingTimeMultiplier = 1f;
     private float perfectZoneBonus = 0f;
 
-    [Header("Î¢²¨Â¯Ä£ĞÍ")]
+    [Header("å¾®æ³¢ç‚‰æ¨¡å‹")]
     public GameObject[] microwaveModels = new GameObject[5];
     private int currentActiveMicrowaves = 0;
 
 
-    [Header("ÉÌµêÉèÖÃ")]
-    public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // ²ËÆ·³Ø
+    [Header("å•†åº—è®¾ç½®")]
+    public List<IngredientScriptObjs> ingredientPool = new List<IngredientScriptObjs>(); // èœå“æ± 
     public List<DishScriptObjs> dishPool = new List<DishScriptObjs>();
-    [Header("Í³¼ÆĞÅÏ¢")]
-    public int totalIncome = 0; // ×ÜÊÕÈë
-    public int totalServedOrders = 0; // ×Ü³ö²ÍÊı
-    public float totalPlayTime = 0f; // ×ÜÓÎÏ·Ê±¼ä£¨Ãë£©
+    [Header("ç»Ÿè®¡ä¿¡æ¯")]
+    public int totalIncome = 0; // æ€»æ”¶å…¥
+    public int totalServedOrders = 0; // æ€»å‡ºé¤æ•°
+    public float totalPlayTime = 0f; // æ€»æ¸¸æˆæ—¶é—´ï¼ˆç§’ï¼‰
 
-    [Header("×Ü²ËÆ·³ØºÍÔ­ÁÏ³Ø")]
-    public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // ×Ü²ËÆ·³Ø£¨ËùÓĞ²ËÆ·£©
-    public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // ×ÜÔ­ÁÏ³Ø£¨ËùÓĞÔ­ÁÏ£©
+    [Header("æ€»èœå“æ± å’ŒåŸæ–™æ± ")]
+    public List<DishScriptObjs> totalDishPool = new List<DishScriptObjs>(); // æ€»èœå“æ± ï¼ˆæ‰€æœ‰èœå“ï¼‰
+    public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // æ€»åŸæ–™æ± ï¼ˆæ‰€æœ‰åŸæ–™ï¼‰
     public static InnerGameManager Instance;
     public Animator anim;
     public int count = 1;
@@ -70,7 +70,7 @@ public class InnerGameManager : MonoBehaviour
         totalPlayTime += Time.deltaTime;
     }
 
-    // ³õÊ¼»¯Î¢²¨Â¯ÏÔÊ¾
+    // åˆå§‹åŒ–å¾®æ³¢ç‚‰æ˜¾ç¤º
     private void InitializeMicrowaves()
     {
         foreach (var microwave in microwaveModels)
@@ -82,7 +82,7 @@ public class InnerGameManager : MonoBehaviour
         UpdateMicrowaveDisplay();
     }
 
-    //ÓÎÏ·¿ªÊ¼
+    //æ¸¸æˆå¼€å§‹
     public void GameStart()
     {
         totalIncome = 0;
@@ -106,7 +106,7 @@ public class InnerGameManager : MonoBehaviour
         EnterStore();
     }
 
-    // ÓÎÏ·½áÊø
+    // æ¸¸æˆç»“æŸ
     private void GameOver()
     {
         isPlaying = false;
@@ -131,29 +131,29 @@ public class InnerGameManager : MonoBehaviour
 
         if (fadeImage != null)
         {
-            // ¼¤»îÍ¼Ïñ
+            // æ¿€æ´»å›¾åƒ
             fadeImage.gameObject.SetActive(true);
 
-            // ÉèÖÃ³õÊ¼Í¸Ã÷¶ÈÎª0
+            // è®¾ç½®åˆå§‹é€æ˜åº¦ä¸º0
             fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0f);
 
-            // Ê¹ÓÃ DOTween ½øĞĞ½¥±ä
+            // ä½¿ç”¨ DOTween è¿›è¡Œæ¸å˜
             DG.Tweening.DOTween.To(
                 () => fadeImage.color.a,
                 alpha => fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, alpha),
-                1f, // Ä¿±êÍ¸Ã÷¶È
-                2f // ³ÖĞøÊ±¼ä
+                1f, // ç›®æ ‡é€æ˜åº¦
+                2f // æŒç»­æ—¶é—´
             );
 
-            // µÈ´ı½¥±äÍê³É
+            // ç­‰å¾…æ¸å˜å®Œæˆ
             yield return new WaitForSeconds(2.1f);
         }
 
-        // ÇĞ»»³¡¾°
+        // åˆ‡æ¢åœºæ™¯
         SceneManager.LoadScene(Constants.End_SCENE);
     }
 
-    // ½øÈëÉÌµê
+    // è¿›å…¥å•†åº—
     public void EnterStore()
     {
         AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
@@ -183,10 +183,10 @@ public class InnerGameManager : MonoBehaviour
         UpdateUI();
         isPlaying = false;
         CustomerManager.Instance.InitializeDailyCustomers();
-        InitializeStoreContent();//³õÊ¼»¯ÉÌµê
+        InitializeStoreContent();//åˆå§‹åŒ–å•†åº—
     }
 
-    // ĞÂµÄÒ»Ìì¿ªÊ¼
+    // æ–°çš„ä¸€å¤©å¼€å§‹
     public void StartNewDay()
     {
         if (AudioManager.Instance != null)
@@ -197,7 +197,7 @@ public class InnerGameManager : MonoBehaviour
         AudioManager.Instance.PlayFridgeClose();
         CustomerManager.Instance.StartGame();
         isPlaying = true;
-        StoreManager.Instance.DeliverPurchasedIngredients();//¹ºÂòÔ­ÁÏ
+        StoreManager.Instance.DeliverPurchasedIngredients();//è´­ä¹°åŸæ–™
         AudioManager.Instance.StopTelephoneRing();
     }
 
@@ -216,18 +216,18 @@ public class InnerGameManager : MonoBehaviour
         AudioManager.Instance.StartTelephoneRing();
     }
 
-    //¸üĞÂ½âËø
+    //æ›´æ–°è§£é”
     private void UnlockDishesAndIngredientsByDay()
     {
         if (days > 4)
         {
             return;
         }
-        // Çå¿Õµ±Ç°³Ø×Ó
+        // æ¸…ç©ºå½“å‰æ± å­
         dishPool.Clear();
         ingredientPool.Clear();
 
-        // ¸ù¾İÌìÊı½âËø²ËÆ·
+        // æ ¹æ®å¤©æ•°è§£é”èœå“
         int dishesToUnlock = 0;
         if (days == 1) dishesToUnlock = 3;
         else if (days == 2) dishesToUnlock = 5;
@@ -239,7 +239,7 @@ public class InnerGameManager : MonoBehaviour
             dishPool.Add(totalDishPool[i]);
         }
 
-        // ¸ù¾İÌìÊı½âËøÔ­ÁÏ
+        // æ ¹æ®å¤©æ•°è§£é”åŸæ–™
         int ingredientsToUnlock = 0;
         if (days == 1 || days == 2) ingredientsToUnlock = 3;
         else if (days == 3) ingredientsToUnlock = 4;
@@ -250,16 +250,16 @@ public class InnerGameManager : MonoBehaviour
             ingredientPool.Add(totalIngredientPool[i]);
         }
 
-        Debug.Log($"µÚ{days}Ìì½âËø: {dishesToUnlock}¸ö²ËÆ·, {ingredientsToUnlock}¸öÔ­ÁÏ");
+        Debug.Log($"ç¬¬{days}å¤©è§£é”: {dishesToUnlock}ä¸ªèœå“, {ingredientsToUnlock}ä¸ªåŸæ–™");
     }
 
-    // ¸üĞÂÎ¢²¨Â¯ÏÔÊ¾
+    // æ›´æ–°å¾®æ³¢ç‚‰æ˜¾ç¤º
     public void UpdateMicrowaveDisplay()
     {
         int targetCount = Mathf.Min(MicrowavesCount, microwaveModels.Length);
         if (currentActiveMicrowaves == targetCount) return;
 
-        // ¼¤»îĞèÒªµÄÎ¢²¨Â¯
+        // æ¿€æ´»éœ€è¦çš„å¾®æ³¢ç‚‰
         for (int i = 0; i < targetCount; i++)
         {
             if (microwaveModels[i] != null)
@@ -268,7 +268,7 @@ public class InnerGameManager : MonoBehaviour
                 MicrowaveSystem microwave = microwaveModels[i].GetComponent<MicrowaveSystem>();
                 if (microwave != null)
                 {
-                    //Debug.Log("×¼±¸½âËø");
+                    //Debug.Log("å‡†å¤‡è§£é”");
                     microwave.SetState(MicrowaveState.Idle);
                 }
             }
@@ -278,7 +278,7 @@ public class InnerGameManager : MonoBehaviour
             MicrowaveSystem microwave = microwaveModels[i].GetComponent<MicrowaveSystem>();
             if (microwave != null)
             {
-                //Debug.Log("¶ş´Î½âËø");
+                //Debug.Log("äºŒæ¬¡è§£é”");
                 microwave.SetState(MicrowaveState.Idle);
             }
         }
@@ -291,7 +291,7 @@ public class InnerGameManager : MonoBehaviour
         }
 
         currentActiveMicrowaves = targetCount;
-        //Debug.Log($"¸üĞÂÎ¢²¨Â¯ÏÔÊ¾: {currentActiveMicrowaves}/{MicrowavesCount}¸öÎ¢²¨Â¯¼¤»î");
+        //Debug.Log($"æ›´æ–°å¾®æ³¢ç‚‰æ˜¾ç¤º: {currentActiveMicrowaves}/{MicrowavesCount}ä¸ªå¾®æ³¢ç‚‰æ¿€æ´»");
     }
 
     public void AddDailyIncome(int income)
@@ -303,7 +303,7 @@ public class InnerGameManager : MonoBehaviour
         totalServedOrders += servedOrders;
     }
 
-    // === ½ğ±Ò²Ù×÷ ===
+    // === é‡‘å¸æ“ä½œ ===
     public void AddGold(int amount)
     {
         AudioManager.Instance.PlayGainCoins();
@@ -332,26 +332,26 @@ public class InnerGameManager : MonoBehaviour
         }
     }
 
-    // === ÉùÍû²Ù×÷ ===
-    //Ê§È¥ÉùÍû
+    // === å£°æœ›æ“ä½œ ===
+    //å¤±å»å£°æœ›
     public void LoseReputation()
     {
         AudioManager.Instance.PlayOrderOutOfTime();
         currentReputation = Mathf.Max(0, currentReputation - 1);
         UpdateUI();
-        // ¼ì²éÓÎÏ·½áÊø
+        // æ£€æŸ¥æ¸¸æˆç»“æŸ
         if (currentReputation <= 0)
         {
             GameOver();
         }
     }
 
-    //Íê³É¹Ë¿Í
+    //å®Œæˆé¡¾å®¢
     public void CompleteCustomer()
     {
         completedCustomers++;
 
-        // Ã¿Íê³É10¸ö¹Ë¿Í»Ö¸´1µãÉùÍû
+        // æ¯å®Œæˆ10ä¸ªé¡¾å®¢æ¢å¤1ç‚¹å£°æœ›
         if (completedCustomers % 10 == 0)
         {
             if (currentReputation < maxReputation)
@@ -364,7 +364,7 @@ public class InnerGameManager : MonoBehaviour
                 int tipReward = Mathf.RoundToInt(currentGold * 0.05f);
                 AddGold(tipReward);
                 GameManager.Instance.AddTalentPoint(1);
-                Debug.Log($"ÉùÍûÒÑÂú£¬»ñµÃĞ¡·Ñ: {tipReward}ºÍ1Ìì¸³µã");
+                Debug.Log($"å£°æœ›å·²æ»¡ï¼Œè·å¾—å°è´¹: {tipReward}å’Œ1å¤©èµ‹ç‚¹");
             }
             UpdateUI();
         }
@@ -378,7 +378,7 @@ public class InnerGameManager : MonoBehaviour
         }
     }
 
-    // === Î¢²¨Â¯Éı¼¶ ===
+    // === å¾®æ³¢ç‚‰å‡çº§ ===
     public void ApplyEffects(EquipmentDataSO talentData)
     {
         if (talentData.effects == null) return;
@@ -387,7 +387,7 @@ public class InnerGameManager : MonoBehaviour
         {
             switch (effect.effectType)
             {
-                //È«¾ÖĞ§¹û
+                //å…¨å±€æ•ˆæœ
                 case EffectType.AddMicrowave:
                     MicrowavesCount++;
                     UpdateMicrowaveDisplay();
@@ -395,14 +395,14 @@ public class InnerGameManager : MonoBehaviour
                 case EffectType.ThreeDPrinter:
                     LatterMicrowavesCount++;
                     break;
-                //TODO:ÆäËûÈ«¾ÖĞ§¹û
+                //TODO:å…¶ä»–å…¨å±€æ•ˆæœ
             }
         }
     }
 
-    // === ÉÌµê¹¦ÄÜ ===
+    // === å•†åº—åŠŸèƒ½ ===
 
-    // ³õÊ¼»¯ÉÌµêÄÚÈİ
+    // åˆå§‹åŒ–å•†åº—å†…å®¹
     public void InitializeStoreContent()
     {
         if (StoreManager.Instance == null)
