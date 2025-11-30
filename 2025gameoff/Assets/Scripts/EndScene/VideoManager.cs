@@ -131,23 +131,27 @@ public class VideoManager : MonoBehaviour
         GameManager gameManager = GameManager.Instance;
 
         // 总出餐数
-        totalOrdersText.text = $"总出餐数: {gameManager.totalServedOrders}";
+        string servedLabel = LocalizationManager.Instance.GetText("total_served");
+        totalOrdersText.text = $"{servedLabel}: {gameManager.totalServedOrders}";
 
         // 总收入
-        totalIncomeText.text = $"总收入: {gameManager.totalIncome}金币";
+        string incomeLabel = LocalizationManager.Instance.GetText("total_income");
+        string currency = LocalizationManager.Instance.GetText("currency_suffix");
+        totalIncomeText.text = $"{incomeLabel}: {gameManager.totalIncome}{currency}";
 
         // 游戏时间
-        playTimeText.text = $"游戏时间: {FormatPlayTime(gameManager.totalPlayTime)}";
+        string timeLabel = LocalizationManager.Instance.GetText("play_time");
+        playTimeText.text = $"{timeLabel}: {FormatPlayTime(gameManager.totalPlayTime)}";
 
         // 输赢状态
         if (gameManager.end == 0)
         {
-            winLoseText.text = "你输了";
+            winLoseText.text = LocalizationManager.Instance.GetText("you_lose");
             winLoseText.color = Color.red;
         }
         else if (gameManager.end == 1)
         {
-            winLoseText.text = "你赢了！";
+            winLoseText.text = LocalizationManager.Instance.GetText("you_win");
             winLoseText.color = Color.green;
         }
     }
@@ -158,15 +162,18 @@ public class VideoManager : MonoBehaviour
 
         if (timeSpan.TotalHours >= 1)
         {
-            return $"{(int)timeSpan.TotalHours}h {timeSpan.Minutes}min {timeSpan.Seconds}s";
+            string format = LocalizationManager.Instance.GetText("time_format");
+            return string.Format(format, (int)timeSpan.TotalHours, timeSpan.Minutes, timeSpan.Seconds);
         }
         else if (timeSpan.TotalMinutes >= 1)
         {
-            return $"{timeSpan.Minutes}min {timeSpan.Seconds}s";
+            string format = LocalizationManager.Instance.GetText("time_format_short");
+            return string.Format(format, timeSpan.Minutes, timeSpan.Seconds);
         }
         else
         {
-            return $"{timeSpan.Seconds}s";
+            string format = LocalizationManager.Instance.GetText("time_format_shortest");
+            return string.Format(format, timeSpan.Seconds);
         }
     }
 

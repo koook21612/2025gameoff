@@ -1,13 +1,13 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-// ÉÌµêÔ­ÁÏ²ÛÎ»
+// å•†åº—åŸæ–™æ§½ä½
 public class IngredientStoreSlot : MonoBehaviour
 {
     [Header("UI References")]
     //public Image ingredientIcon;
-    public TextMeshProUGUI ingredientNameText; // ÏÔÊ¾Ãû³ÆºÍ¼Û¸ñ
+    public TextMeshProUGUI ingredientNameText; // æ˜¾ç¤ºåç§°å’Œä»·æ ¼
     public TMP_InputField quantityInput;
     public Button increaseButton;
     public Button decreaseButton;
@@ -19,7 +19,7 @@ public class IngredientStoreSlot : MonoBehaviour
     private IngredientScriptObjs currentIngredient;
     private int currentQuantity = 0;
 
-    // ³õÊ¼»¯²ÛÎ»
+    // åˆå§‹åŒ–æ§½ä½
     public void Initialize(IngredientScriptObjs ingredient)
     {
         currentIngredient = ingredient;
@@ -27,7 +27,7 @@ public class IngredientStoreSlot : MonoBehaviour
 
         UpdateDisplay();
 
-        // Ìí¼Ó°´Å¥¼àÌı
+        // æ·»åŠ æŒ‰é’®ç›‘å¬
         increaseButton.onClick.RemoveAllListeners();
         decreaseButton.onClick.RemoveAllListeners();
         quantityInput.onValueChanged.RemoveAllListeners();
@@ -36,11 +36,11 @@ public class IngredientStoreSlot : MonoBehaviour
         decreaseButton.onClick.AddListener(DecreaseQuantity);
         quantityInput.onValueChanged.AddListener(OnQuantityInputChanged);
 
-        // ³õÊ¼Ë¢ĞÂUI
+        // åˆå§‹åˆ·æ–°UI
         RefreshUI();
     }
 
-    // Ôö¼ÓÊıÁ¿
+    // å¢åŠ æ•°é‡
     public void IncreaseQuantity()
     {
         if (currentQuantity >= maxQuantity) return;
@@ -49,7 +49,7 @@ public class IngredientStoreSlot : MonoBehaviour
         SetQuantity(newQuantity);
     }
 
-    // ¼õÉÙÊıÁ¿
+    // å‡å°‘æ•°é‡
     public void DecreaseQuantity()
     {
         if (currentQuantity <= minQuantity) return;
@@ -58,7 +58,7 @@ public class IngredientStoreSlot : MonoBehaviour
         SetQuantity(newQuantity);
     }
 
-    // ÉèÖÃÊıÁ¿
+    // è®¾ç½®æ•°é‡
     public void SetQuantity(int newQuantity)
     {
         newQuantity = Mathf.Clamp(newQuantity, minQuantity, maxQuantity);
@@ -69,40 +69,40 @@ public class IngredientStoreSlot : MonoBehaviour
 
         if (quantityDifference > 0)
         {
-            // Ôö¼ÓÊıÁ¿
+            // å¢åŠ æ•°é‡
             if (StoreManager.Instance.AddIngredientToCart(currentIngredient, quantityDifference))
             {
                 currentQuantity = newQuantity;
                 UpdateDisplay();
                 RefreshUI();
-                IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // ¸üĞÂËùÓĞ²ÛÎ»
+                IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // æ›´æ–°æ‰€æœ‰æ§½ä½
             }
             else
             {
-                // Èç¹û²»ÄÜÔö¼Ó£¬ÖØÖÃÎª0
+                // å¦‚æœä¸èƒ½å¢åŠ ï¼Œé‡ç½®ä¸º0
                 ResetToZero();
             }
         }
         else if (quantityDifference < 0)
         {
-            // ¼õÉÙÊıÁ¿
+            // å‡å°‘æ•°é‡
             int removeQuantity = Mathf.Abs(quantityDifference);
             if (StoreManager.Instance.RemoveIngredientFromCart(currentIngredient, removeQuantity))
             {
                 currentQuantity = newQuantity;
                 UpdateDisplay();
                 RefreshUI();
-                IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // ¸üĞÂËùÓĞ²ÛÎ»
+                IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // æ›´æ–°æ‰€æœ‰æ§½ä½
             }
             else
             {
-                // Èç¹û²»ÄÜ¼õÉÙ£¬ÖØÖÃÎª0
+                // å¦‚æœä¸èƒ½å‡å°‘ï¼Œé‡ç½®ä¸º0
                 ResetToZero();
             }
         }
     }
 
-    // ÊäÈë¿ò±ä»¯»Øµ÷
+    // è¾“å…¥æ¡†å˜åŒ–å›è°ƒ
     private void OnQuantityInputChanged(string value)
     {
         if (string.IsNullOrEmpty(value))
@@ -115,10 +115,10 @@ public class IngredientStoreSlot : MonoBehaviour
 
         if (int.TryParse(value, out int newQuantity))
         {
-            // ¼ì²éÊäÈëÖµÊÇ·ñ³¬³ö·¶Î§
+            // æ£€æŸ¥è¾“å…¥å€¼æ˜¯å¦è¶…å‡ºèŒƒå›´
             if (newQuantity < minQuantity || newQuantity > maxQuantity)
             {
-                // Èç¹û³¬³ö·¶Î§£¬ÉèÖÃÎª×î½Ó½üµÄÓĞĞ§Öµ
+                // å¦‚æœè¶…å‡ºèŒƒå›´ï¼Œè®¾ç½®ä¸ºæœ€æ¥è¿‘çš„æœ‰æ•ˆå€¼
                 newQuantity = Mathf.Clamp(newQuantity, minQuantity, maxQuantity);
                 quantityInput.text = newQuantity.ToString();
             }
@@ -127,12 +127,12 @@ public class IngredientStoreSlot : MonoBehaviour
         }
         else
         {
-            // ÊäÈëÎŞĞ§£¬ÖØÖÃÏÔÊ¾
+            // è¾“å…¥æ— æ•ˆï¼Œé‡ç½®æ˜¾ç¤º
             ResetToZero();
         }
     }
 
-    // ÖØÖÃÊıÁ¿Îª0
+    // é‡ç½®æ•°é‡ä¸º0
     private void ResetToZero()
     {
         if (currentQuantity > 0)
@@ -143,45 +143,60 @@ public class IngredientStoreSlot : MonoBehaviour
         currentQuantity = 0;
         UpdateDisplay();
         RefreshUI();
-        IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // ¸üĞÂËùÓĞ²ÛÎ»
+        IngredientStoreSlotManager.Instance.RefreshAllSlotsUI(); // æ›´æ–°æ‰€æœ‰æ§½ä½
     }
 
-    // ¸üĞÂÏÔÊ¾
+    // æ›´æ–°æ˜¾ç¤º
     private void UpdateDisplay()
     {
         if (currentIngredient == null) return;
 
-        // ¸üĞÂÃû³ÆºÍ¼Û¸ñĞÅÏ¢
+        // æ›´æ–°åç§°å’Œä»·æ ¼ä¿¡æ¯
         int price = StoreManager.Instance.GetIngredientPrice(currentIngredient);
         string currency = LocalizationManager.Instance.GetText("currency_suffix");
         string name = currentIngredient.GetName();
         ingredientNameText.text = $"{name} - {price}{currency}";
 
-        //// ¸üĞÂÍ¼±ê
+        //// æ›´æ–°å›¾æ ‡
         //if (ingredientIcon != null)
         //{
         //    ingredientIcon.sprite = currentIngredient.icon;
         //}
 
-        // ¸üĞÂÊıÁ¿ÏÔÊ¾
+        // æ›´æ–°æ•°é‡æ˜¾ç¤º
         quantityInput.text = currentQuantity.ToString();
 
     }
 
-    // Ë¢ĞÂUI×´Ì¬
+    // åˆ·æ–°UIçŠ¶æ€
     public void RefreshUI()
     {
         if (currentIngredient == null) return;
 
-        // ¸üĞÂ°´Å¥×´Ì¬
+        // æ›´æ–°æŒ‰é’®çŠ¶æ€
         decreaseButton.interactable = currentQuantity > minQuantity;
         increaseButton.interactable = currentQuantity < maxQuantity;
     }
 
 
-    // »ñÈ¡µ±Ç°Ô­ÁÏ
+    // è·å–å½“å‰åŸæ–™
     public IngredientScriptObjs GetIngredient()
     {
         return currentIngredient;
+    }
+
+    // ä¾›Managerè°ƒç”¨åˆ·æ–°è¯­è¨€
+    public void UpdateLocale()
+    {
+        UpdateDisplay();
+        Debug.LogError("Slotåˆ·æ–°äº†è¯­è¨€");
+    }
+
+    private void OnEnable()
+    {
+        if (currentIngredient != null)
+        {
+            UpdateLocale();
+        }
     }
 }

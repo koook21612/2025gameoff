@@ -1,20 +1,21 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using static LocalizationManager;
 
 public class SelectionSystem : MonoBehaviour
 {
     [Header("UI References")]
-    public Button[] selectionButtons = new Button[5]; // 5¸öÑ¡Ôñ°´Å¥
-    public TextMeshProUGUI[] buttonTexts = new TextMeshProUGUI[5]; // °´Å¥ÉÏµÄÎÄ×Ö
-    public Button closeButtons; //È·ÈÏÑ¡Ôñ°´Å¥
+    public Button[] selectionButtons = new Button[5]; // 5ä¸ªé€‰æ‹©æŒ‰é’®
+    public TextMeshProUGUI[] buttonTexts = new TextMeshProUGUI[5]; // æŒ‰é’®ä¸Šçš„æ–‡å­—
+    public Button closeButtons; //ç¡®è®¤é€‰æ‹©æŒ‰é’®
 
-    public TextMeshProUGUI confirmButtonText; // È·ÈÏ°´Å¥ÉÏµÄÎÄ×Ö
-    public TextMeshProUGUI instructionText;   //¡°ÇëÑ¡ÔñÎ¢²¨Â¯¡±µÄÎÄ×Ö
+    public TextMeshProUGUI confirmButtonText; // ç¡®è®¤æŒ‰é’®ä¸Šçš„æ–‡å­—
+    public TextMeshProUGUI instructionText;   //â€œè¯·é€‰æ‹©å¾®æ³¢ç‚‰â€çš„æ–‡å­—
     [Header("Model References")]
-    public GameObject[] ingredientModels = new GameObject[5]; // 5¸ö²ËÆ·½¨Ä£
+    public GameObject[] ingredientModels = new GameObject[5]; // 5ä¸ªèœå“å»ºæ¨¡
 
     public Dictionary<IngredientScriptObjs, int> currentSelections = new Dictionary<IngredientScriptObjs, int>();
 
@@ -39,6 +40,12 @@ public class SelectionSystem : MonoBehaviour
         SetupButtonEvents();
         UpdateUI();
 
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+            OnLanguageChanged();
+        }
+
         if (confirmButtonText != null)
         {
             confirmButtonText.text = LocalizationManager.Instance.GetText("confirm_selection");
@@ -53,6 +60,10 @@ public class SelectionSystem : MonoBehaviour
     void OnDestroy()
     {
         closeButtons.onClick.RemoveListener(Checkout);
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+        }
     }
 
     private void InitializeSelectionSystem()
@@ -154,24 +165,24 @@ public class SelectionSystem : MonoBehaviour
     {
         for (int i = 0; i < ingredientModels.Length; i++)
         {
-            // ¼ì²éË÷ÒıÊÇ·ñÔÚ×ÜÔ­ÁÏ³Ø·¶Î§ÄÚ
+            // æ£€æŸ¥ç´¢å¼•æ˜¯å¦åœ¨æ€»åŸæ–™æ± èŒƒå›´å†…
             if (i < InnerGameManager.Instance.totalIngredientPool.Count)
             {
                 var ingredient = InnerGameManager.Instance.totalIngredientPool[i];
                 int currentStock = InventorySystem.Instance.GetIngredientQuantity(ingredient);
 
-                // Ö»ÓĞÓĞ¿â´æµÄÔ­ÁÏ²ÅÏÔÊ¾½¨Ä£
+                // åªæœ‰æœ‰åº“å­˜çš„åŸæ–™æ‰æ˜¾ç¤ºå»ºæ¨¡
                 ingredientModels[i].SetActive(currentStock > 0);
             }
             else
             {
-                // Òş²Ø³¬³ö×ÜÔ­ÁÏ³ØÊıÁ¿µÄ½¨Ä£
+                // éšè—è¶…å‡ºæ€»åŸæ–™æ± æ•°é‡çš„å»ºæ¨¡
                 ingredientModels[i].SetActive(false);
             }
         }
     }
 
-    // ½áËã·½·¨ - ÔÚ½áËãÊ±µ÷ÓÃ
+    // ç»“ç®—æ–¹æ³• - åœ¨ç»“ç®—æ—¶è°ƒç”¨
     public void Checkout()
     {
         foreach (var kvp in currentSelections)
@@ -181,7 +192,7 @@ public class SelectionSystem : MonoBehaviour
                 bool success = InventorySystem.Instance.RemoveIngredient(kvp.Key, kvp.Value);
                 if (!success)
                 {
-                    Debug.LogError($"½áËãÊ§°Ü£ºÎŞ·¨´Ó¿â´æÖĞÒÆ³ı {kvp.Key.ingredientName} x{kvp.Value}");
+                    Debug.LogError($"ç»“ç®—å¤±è´¥ï¼šæ— æ³•ä»åº“å­˜ä¸­ç§»é™¤ {kvp.Key.ingredientName} x{kvp.Value}");
                 }
             }
         }
@@ -189,14 +200,14 @@ public class SelectionSystem : MonoBehaviour
         AudioManager.Instance.PlayUIEffect(clickSound);
         PlayerInteraction.instance.SwitchToInteractable(PlayerInteraction.instance.MainCooking);
 
-        // ÖØÖÃÑ¡Ôñ
+        // é‡ç½®é€‰æ‹©
 
-        Debug.Log("½áËãÍê³É");
+        Debug.Log("ç»“ç®—å®Œæˆ");
     }
 
     public void Cost()
     {
-        // ÖØÖÃÑ¡Ôñ
+        // é‡ç½®é€‰æ‹©
         InitializeSelectionSystem();
         UpdateUI();
     }
@@ -207,14 +218,14 @@ public class SelectionSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// ·µ»ØËùÓĞÒÑÑ¡ÔñµÄÊ³²Äµ½²Ö¿â
+    /// è¿”å›æ‰€æœ‰å·²é€‰æ‹©çš„é£Ÿæåˆ°ä»“åº“
     /// </summary>
     public void ReturnAllIngredients()
     {
         int totalReturned = 0;
         List<IngredientScriptObjs> ingredientsToReturn = new List<IngredientScriptObjs>();
 
-        // ÊÕ¼¯ËùÓĞĞèÒª·µ»ØµÄÊ³²Ä
+        // æ”¶é›†æ‰€æœ‰éœ€è¦è¿”å›çš„é£Ÿæ
         foreach (var kvp in currentSelections)
         {
             if (kvp.Value > 0)
@@ -224,23 +235,33 @@ public class SelectionSystem : MonoBehaviour
             }
         }
 
-        // ½«ËùÓĞÑ¡ÔñµÄÊ³²Ä·µ»Ø¸ø²Ö¿â
+        // å°†æ‰€æœ‰é€‰æ‹©çš„é£Ÿæè¿”å›ç»™ä»“åº“
         foreach (var ingredient in ingredientsToReturn)
         {
             int quantity = currentSelections[ingredient];
             if (quantity > 0)
             {
-                // ½«Ê³²ÄÌí¼Ó»Ø¿â´æ
+                // å°†é£Ÿææ·»åŠ å›åº“å­˜
                 InventorySystem.Instance.AddIngredient(ingredient, quantity);
 
-                Debug.Log($"·µ»ØÊ³²Ä: {ingredient.ingredientName} x{quantity}");
+                Debug.Log($"è¿”å›é£Ÿæ: {ingredient.ingredientName} x{quantity}");
             }
         }
 
-        // ÖØÖÃÑ¡Ôñ×´Ì¬
+        // é‡ç½®é€‰æ‹©çŠ¶æ€
         InitializeSelectionSystem();
         UpdateUI();
 
-        Debug.Log($"ÒÑ·µ»ØËùÓĞÊ³²Ä£¬¹² {totalReturned} ¸ö");
+        Debug.Log($"å·²è¿”å›æ‰€æœ‰é£Ÿæï¼Œå…± {totalReturned} ä¸ª");
+    }
+
+    // æ›´æ–°æ–‡æœ¬
+    private void OnLanguageChanged()
+    {
+        if (confirmButtonText != null)
+            confirmButtonText.text = LocalizationManager.Instance.GetText("confirm_selection");
+
+        if (instructionText != null)
+            instructionText.text = LocalizationManager.Instance.GetText("select_microwave_prompt");
     }
 }

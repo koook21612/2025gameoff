@@ -1,9 +1,10 @@
-using System.IO;
+ï»¿using System.IO;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem;
 
 public class MenuManager : MonoBehaviour
 {
@@ -31,6 +32,17 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.currentScene = Constants.MENU_SCENE;
         isStart = false;
         MenuButtonAddListener();
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.LanguageChanged += UpdateMenuLanguage;
+            UpdateMenuLanguage();
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (LocalizationManager.Instance != null)
+            LocalizationManager.Instance.LanguageChanged -= UpdateMenuLanguage;
     }
 
     private void Update()
@@ -52,12 +64,12 @@ public class MenuManager : MonoBehaviour
         talentButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.TALENT_SCENE));
         ProducterButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.PRODUCTER_SCENE));
         quitButton.onClick.AddListener(QuitGame);
-        Debug.Log("³É¹¦¼ÓÔØ¼àÌıÆ÷");
+        Debug.Log("æˆåŠŸåŠ è½½ç›‘å¬å™¨");
     }
 
     public void StartGame()
     {
-        //TODO:³õÊ¼»¯ÉèÖÃ
+        //TODO:åˆå§‹åŒ–è®¾ç½®
         SceneManager.LoadScene(Constants.GAME_SCENE);
     }
 
@@ -80,5 +92,27 @@ public class MenuManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    void UpdateMenuLanguage()
+    {
+
+        if (startButton != null)
+            startButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("start_game");
+
+        if (continueButton != null)
+            continueButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("continue_game");
+
+        if (settingButton != null)
+            settingButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("settings");
+
+        if (talentButton != null)
+            talentButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("talents");
+
+        if (ProducterButton != null)
+            ProducterButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("credits");
+
+        if (quitButton != null)
+            quitButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("exit");
     }
 }

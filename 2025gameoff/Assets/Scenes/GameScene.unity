@@ -10527,6 +10527,7 @@ MonoBehaviour:
   dishModelPosition: {fileID: 1262547392}
   dishNameText: {fileID: 36770123}
   cancelButton: {fileID: 1278874674}
+  discardButtonText: {fileID: 770269354}
   dishModelScale: {x: 2, y: 2, z: 2}
   flyDuration: 1
   flyHeight: 3
@@ -25991,6 +25992,7 @@ MonoBehaviour:
   musicVolumeLabelText: {fileID: 436709318}
   effectVolumeLabelText: {fileID: 1132948384}
   languageText: {fileID: 2065599111}
+  settingsTitleText: {fileID: 1529853386}
 --- !u!4 &2048397170
 Transform:
   m_ObjectHideFlags: 0
