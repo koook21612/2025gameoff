@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
+  m_Name: DishSO_ChickenLegRice
+  m_EditorClassIdentifier: 
+  dishName: dish_chicken_leg_rice
+  recipe:
+  - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
+  - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
+  - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
+  DishPrice: 32
+  perfectHeatRanges:
+  - {x: 0.4, y: 0.6}
+  sliderSpeed: 0.45
+  heatTime: 15
+  model: {fileID: 6607266335032020847, guid: f0127f39216cb1f4ab50579021907ca7, type: 3}

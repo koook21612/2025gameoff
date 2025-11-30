@@ -9,8 +9,10 @@ public class SelectionSystem : MonoBehaviour
     [Header("UI References")]
     public Button[] selectionButtons = new Button[5]; // 5个选择按钮
     public TextMeshProUGUI[] buttonTexts = new TextMeshProUGUI[5]; // 按钮上的文字
-    public Button closeButtons;
+    public Button closeButtons; //确认选择按钮
 
+    public TextMeshProUGUI confirmButtonText; // 确认按钮上的文字
+    public TextMeshProUGUI instructionText;   //“请选择微波炉”的文字
     [Header("Model References")]
     public GameObject[] ingredientModels = new GameObject[5]; // 5个菜品建模
 
@@ -36,6 +38,16 @@ public class SelectionSystem : MonoBehaviour
         InitializeSelectionSystem();
         SetupButtonEvents();
         UpdateUI();
+
+        if (confirmButtonText != null)
+        {
+            confirmButtonText.text = LocalizationManager.Instance.GetText("confirm_selection");
+        }
+
+        if (instructionText != null)
+        {
+            instructionText.text = LocalizationManager.Instance.GetText("select_microwave_prompt");
+        }
     }
 
     void OnDestroy()

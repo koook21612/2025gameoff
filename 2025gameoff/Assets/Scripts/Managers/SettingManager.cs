@@ -17,6 +17,7 @@ public class SettingManager : MonoBehaviour
 
     public Button defaultButton; // 恢复默认设置按钮
     public Button closeButton; // 关闭设置界面按钮
+    public Button mainMenuButton; // 返回主菜单按钮
 
     public Slider masterVolumeSlider; // 主音量滑块
     public Slider musicVolumeSlider; // 背景音乐音量滑块
@@ -57,18 +58,6 @@ public class SettingManager : MonoBehaviour
         Initialization();
     }
 
-    // 新增：OnEnable时添加监听器
-    void OnEnable()
-    {
-        AddListener();
-    }
-
-    // 新增：OnDisable时移除监听器
-    void OnDisable()
-    {
-        RemoveListener();
-    }
-
     // 新增：OnDestroy时移除监听器
     void OnDestroy()
     {
@@ -86,6 +75,7 @@ public class SettingManager : MonoBehaviour
         musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
         effectVolumeSlider.onValueChanged.AddListener(SetEffectVolume);
         LanguageButton.onClick.AddListener(UpdateLanguage);
+        mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(Constants.MENU_SCENE));
     }
 
     // 新增：移除所有监听器
@@ -185,6 +175,7 @@ public class SettingManager : MonoBehaviour
     {
         currentLanguageIndex = (currentLanguageIndex + 1) % LocalizationData.LANGUAGES.Length;
         currentLanguage = LocalizationData.LANGUAGES[currentLanguageIndex];
+        Debug.Log("开始更新语言" + currentLanguage);
         if (currentLanguage != LocalizationManager.Instance.currentLanguage)
         {
             LocalizationManager.Instance.LoadLanguage(currentLanguage);
@@ -311,7 +302,14 @@ public class SettingManager : MonoBehaviour
         {
             TextMeshProUGUI closeBtnText = closeButton.GetComponentInChildren<TextMeshProUGUI>();
             if (closeBtnText != null)
-                closeBtnText.text = LocalizationManager.Instance.GetText("exit");
+                closeBtnText.text = LocalizationManager.Instance.GetText("return_game");
+        }
+
+        if (mainMenuButton != null)
+        {
+            TextMeshProUGUI menuBtnText = mainMenuButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (menuBtnText != null)
+                menuBtnText.text = LocalizationManager.Instance.GetText("return_menu");
         }
     }
 }

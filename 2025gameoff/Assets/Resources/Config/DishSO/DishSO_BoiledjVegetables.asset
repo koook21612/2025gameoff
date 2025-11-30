@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
   m_Name: DishSO_BoiledjVegetables
   m_EditorClassIdentifier: 
-  dishName: "\u6C34\u716E\u83DC"
+  dishName: dish_boiled_veg
   recipe:
   - {fileID: 11400000, guid: 7c330b2a046e95b4fa85707f4b049238, type: 2}
   DishPrice: 10

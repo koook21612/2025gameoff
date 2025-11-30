@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
   m_Name: DishSO_Rice
   m_EditorClassIdentifier: 
-  dishName: "\u7C73\u996D"
+  dishName: dish_steamed_rice
   recipe:
   - {fileID: 11400000, guid: c9713bf1ed3461749a8d431f0ecccffa, type: 2}
   DishPrice: 6

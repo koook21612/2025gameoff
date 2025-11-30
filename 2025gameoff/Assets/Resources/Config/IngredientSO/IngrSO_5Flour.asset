@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd43bbe128b702f4eb8ab9d471c74690, type: 3}
   m_Name: IngrSO_5Flour
   m_EditorClassIdentifier: 
-  ingredientName: "\u9762\u7C89"
+  ingredientName: ing_flour
   ingredientModel: {fileID: 0}
   icon: {fileID: 0}
   ingredientPrice: 6

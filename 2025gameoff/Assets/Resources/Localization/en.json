@@ -2,6 +2,8 @@
   "items": [
     { "key": "language_name", "value": "English" },
     { "key": "start_game", "value": "Start Game" },
+    { "key": "return_game", "value": "Return to Game" },
+    { "key": "return_menu", "value": "Main Menu" },
     { "key": "exit", "value": "Exit" },
     { "key": "settings", "value": "Settings" },
     { "key": "confirm", "value": "Confirm" },
@@ -15,6 +17,20 @@
     { "key": "default", "value": "Default" },
     { "key": "display_mode", "value": "Display Mode" },
     { "key": "language", "value": "Language" },
+
+    { "key": "day_format", "value": "Day {0}" },
+    { "key": "currency_suffix", "value": " G" },
+    { "key": "order_prediction", "value": "Forecast" },
+    { "key": "none", "value": "None" },
+    { "key": "recipe_prefix", "value": "Recipe: " },
+    { "key": "unknown_dish", "value": "Unknown Dish" },
+    { "key": "waiting_text", "value": "Pending" },
+    { "key": "order_unit", "value": " Orders" },
+    { "key": "completed_prefix", "value": "Completed" },
+    { "key": "discard", "value": "Discard" },
+    { "key": "start_business", "value": "Open Business" },
+    { "key": "confirm_selection", "value": "Confirm Selection" },
+    { "key": "select_microwave_prompt", "value": "Select Microwave" },
 
     { "key": "ing_vegetable", "value": "Vegetable" },
     { "key": "ing_pork", "value": "Pork" },
@@ -31,6 +47,7 @@
     { "key": "dish_chicken_leg_rice", "value": "Chicken Leg Rice" },
     { "key": "dish_bread", "value": "Bread" },
     { "key": "dish_hamburger", "value": "Hamburger" },
+    { "key": "dish_wrong", "value": "What is this?" },
 
     { "key": "talent_efficient_microwave", "value": "Efficient Microwave" },
     { "key": "desc_talent_efficient_microwave", "value": "Increases heating speed by 2% and perfect zone size by 2%. Cost: 1 Talent Point" },
@@ -131,6 +148,8 @@
     { "key": "desc_equip_planetary_engine_e", "value": "???" },
 
     { "key": "refresh", "value": "Refresh" },
-    { "key": "newMicrowave", "value": "Buy Microwave" }
+    { "key": "desc_refresh", "value": "Refresh upgrade modules in the store." },
+    { "key": "newMicrowave", "value": "Buy Microwave" },
+    { "key": "desc_new_microwave", "value": "Buy a brand new microwave to increase capacity." }
   ]
 }

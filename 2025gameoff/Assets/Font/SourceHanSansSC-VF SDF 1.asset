@@ -556,6 +556,54 @@ MonoBehaviour:
       m_LigatureGlyphID: 2397
     - m_ComponentGlyphIDs: 0f37000064580000
       m_LigatureGlyphID: 2320
+    - m_ComponentGlyphIDs: 4c00000044000000420000004d000000
+      m_LigatureGlyphID: 2333
+    - m_ComponentGlyphIDs: 4c000000290000005b000000
+      m_LigatureGlyphID: 2341
+    - m_ComponentGlyphIDs: 4c0000003100000042000000
+      m_LigatureGlyphID: 2366
+    - m_ComponentGlyphIDs: 4c0000004e00000013000000
+      m_LigatureGlyphID: 2358
+    - m_ComponentGlyphIDs: 4c0000004e00000014000000
+      m_LigatureGlyphID: 2362
+    - m_ComponentGlyphIDs: 4c0000004e00000070000000
+      m_LigatureGlyphID: 2358
+    - m_ComponentGlyphIDs: 4c0000004e00000071000000
+      m_LigatureGlyphID: 2362
+    - m_ComponentGlyphIDs: 4c00000022000000
+      m_LigatureGlyphID: 2328
+    - m_ComponentGlyphIDs: 4c00000037000000
+      m_LigatureGlyphID: 2380
+    - m_ComponentGlyphIDs: 4c00000038000000
+      m_LigatureGlyphID: 2386
+    - m_ComponentGlyphIDs: 4c00000048000000
+      m_LigatureGlyphID: 2339
+    - m_ComponentGlyphIDs: 4c0000004e000000
+      m_LigatureGlyphID: 2354
+    - m_ComponentGlyphIDs: 4c00000055000000
+      m_LigatureGlyphID: 2403
+    - m_ComponentGlyphIDs: 4c00000018010000
+      m_LigatureGlyphID: 2388
+    - m_ComponentGlyphIDs: 4c000000f8020000
+      m_LigatureGlyphID: 2348
+    - m_ComponentGlyphIDs: 430000004200000053000000
+      m_LigatureGlyphID: 2311
+    - m_ComponentGlyphIDs: 3800000043000000
+      m_LigatureGlyphID: 2417
+    - m_ComponentGlyphIDs: 31000000310000002e000000
+      m_LigatureGlyphID: 2413
+    - m_ComponentGlyphIDs: 310000003500000026000000
+      m_LigatureGlyphID: 1991
+    - m_ComponentGlyphIDs: 3100000029000000
+      m_LigatureGlyphID: 2411
+    - m_ComponentGlyphIDs: 3100000033000000
+      m_LigatureGlyphID: 2414
+    - m_ComponentGlyphIDs: 3100000042000000
+      m_LigatureGlyphID: 2365
+    - m_ComponentGlyphIDs: d2020000d2020000d2020000
+      m_LigatureGlyphID: 1356
+    - m_ComponentGlyphIDs: d2020000d2020000
+      m_LigatureGlyphID: 1355
     m_GlyphPairAdjustmentRecords:
     - m_FirstAdjustmentRecord:
         m_GlyphIndex: 16

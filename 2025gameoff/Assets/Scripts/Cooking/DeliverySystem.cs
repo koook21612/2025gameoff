@@ -177,7 +177,8 @@ public class DeliverySystem : MonoBehaviour
         // 更新菜品名称
         if (dishNameText != null)
         {
-            dishNameText.text = $"已完成: {dish.dishName}";
+            string completedText = LocalizationManager.Instance.GetText("completed_prefix");
+            dishNameText.text = $"{completedText}: {dish.GetName()}";
         }
     }
 

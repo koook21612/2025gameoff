@@ -110,7 +110,7 @@ public class CustomerManager : MonoBehaviour
         _isDayEnding = false;
         _gameTime = 0f;
         _processedCustomers = 0; // 重置已处理顾客数
-        PendingOrderUISlots[0].waiting.text = "前方滞留";
+        PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
         for (int i = 0; i < StartOrderCount; i++)
         {
             GenerateNewOrderFromDailyList();
@@ -523,7 +523,8 @@ public class CustomerManager : MonoBehaviour
 
             if (slot.PendingCountText != null)
             {
-                slot.PendingCountText.text = $"{_pendingOrders.Count} 单";
+                string unit = LocalizationManager.Instance.GetText("order_unit");
+                slot.PendingCountText.text = $"{_pendingOrders.Count} {unit}";
             }
         }
     }

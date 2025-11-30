@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TalentSO_2
   m_EditorClassIdentifier: 
   talentId: 2
-  displayName: "\u5FEB\u901F\u52A0\u70ED"
-  description: "\u5FAE\u6CE2\u7089\u7684\u52A0\u70ED\u901F\u5EA6\u589E\u52A03%"
+  displayName: talent_fast_heating
+  description: desc_talent_fast_heating
   icon: {fileID: 794656928, guid: 774e0222b640e544ab3eb8887af4b094, type: 3}
   cost: 1
   isUnlocked: 0

@@ -17,6 +17,7 @@ public class IngredientStoreSlotManager : MonoBehaviour
     private List<IngredientScriptObjs> availableIngredients = new List<IngredientScriptObjs>();
 
     public TextMeshProUGUI predictionText;
+    public TextMeshProUGUI startBusinessText;
 
     public static IngredientStoreSlotManager Instance { get; private set; }
 
@@ -35,6 +36,10 @@ public class IngredientStoreSlotManager : MonoBehaviour
     private void Start()
     {
         InitializeStore();
+        if (startBusinessText != null)
+        {
+            startBusinessText.text = LocalizationManager.Instance.GetText("start_business");
+        }
     }
 
     // 初始化商店
@@ -68,10 +73,13 @@ public class IngredientStoreSlotManager : MonoBehaviour
     }
     private string ConvertRequirementsToString()
     {
+        string predictionLabel = LocalizationManager.Instance.GetText("order_prediction");
+        string noneLabel = LocalizationManager.Instance.GetText("none");
+
         Dictionary<DishScriptObjs, int> dailyDishesRequirement = CustomerManager.Instance._dailyDishesRequirement;
         if (dailyDishesRequirement == null || dailyDishesRequirement.Count == 0)
         {
-            return "订单预测：无";
+            return $"{predictionLabel}：{noneLabel}";
         }
 
         List<string> dishStrings = new List<string>();
@@ -83,11 +91,11 @@ public class IngredientStoreSlotManager : MonoBehaviour
 
             if (dish != null)
             {
-                dishStrings.Add($"{dish.dishName}x{quantity}");
+                dishStrings.Add($"{dish.GetName()}x{quantity}");
             }
         }
         string dishesList = string.Join(", ", dishStrings);
-        return $"订单预测：{dishesList}";
+        return $"{predictionLabel}：{dishesList}";
     }
 
     // 初始化所有槽位

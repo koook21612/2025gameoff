@@ -130,16 +130,16 @@ public class VideoManager : MonoBehaviour
     {
         GameManager gameManager = GameManager.Instance;
 
-        // 更新总出餐数
+        // 总出餐数
         totalOrdersText.text = $"总出餐数: {gameManager.totalServedOrders}";
 
-        // 更新总收入
+        // 总收入
         totalIncomeText.text = $"总收入: {gameManager.totalIncome}金币";
 
-        // 更新游戏时间
+        // 游戏时间
         playTimeText.text = $"游戏时间: {FormatPlayTime(gameManager.totalPlayTime)}";
 
-        // 更新输赢状态
+        // 输赢状态
         if (gameManager.end == 0)
         {
             winLoseText.text = "你输了";

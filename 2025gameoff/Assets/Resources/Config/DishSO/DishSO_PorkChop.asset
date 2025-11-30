@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
   m_Name: DishSO_PorkChop
   m_EditorClassIdentifier: 
-  dishName: "\u732A\u8089\u6392"
+  dishName: dish_pork_chop
   recipe:
   - {fileID: 11400000, guid: 432d35e1c1119fc4285dc54b4965eb4f, type: 2}
   DishPrice: 20

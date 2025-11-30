@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b093c97d5c43c246bd3232a86569b23, type: 3}
+  m_Name: DishSO_FriedChicken
+  m_EditorClassIdentifier: 
+  dishName: dish_fried_chicken
+  recipe:
+  - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
+  - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
+  DishPrice: 32
+  perfectHeatRanges:
+  - {x: 0.5, y: 0.7}
+  sliderSpeed: 0.45
+  heatTime: 9
+  model: {fileID: 5751121384372559815, guid: c3f87a1cd5694b24ab161a6e035f8f35, type: 3}

@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro; // æ·»åŠ è¿™ä¸ªå‘½åç©ºé—´
+using TMPro; // Ìí¼ÓÕâ¸öÃüÃû¿Õ¼ä
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -20,9 +20,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject SettingPanel;
 
     [Header("HUD Elements")]
-    [SerializeField] private TextMeshProUGUI dayText; // å¤©æ•°æ˜¾ç¤ºæ–‡æœ¬
-    [SerializeField] private Image[] reputationImages = new Image[3];  // å£°æœ›æ˜¾ç¤º
-    [SerializeField] private TextMeshProUGUI moneyText; // é‡‘é’±æ˜¾ç¤ºæ–‡æœ¬
+    [SerializeField] private TextMeshProUGUI dayText; // ÌìÊıÏÔÊ¾ÎÄ±¾
+    [SerializeField] private Image[] reputationImages = new Image[3];  // ÉùÍûÏÔÊ¾
+    [SerializeField] private TextMeshProUGUI moneyText; // ½ğÇ®ÏÔÊ¾ÎÄ±¾
 
     [Header("Menu")]
     [SerializeField] private TextMeshProUGUI[] Menu = new TextMeshProUGUI[6];
@@ -101,7 +101,8 @@ public class UIManager : MonoBehaviour
                     dialoguePanel.SetActive(state);
                 break;
             case "Maincooking":
-                if (maincookPanel != null) {
+                if (maincookPanel != null)
+                {
                     maincookPanel.SetActive(state);
                 }
                 break;
@@ -114,12 +115,12 @@ public class UIManager : MonoBehaviour
                 break;
 
             default:
-                Debug.LogWarning($"æœªçŸ¥çš„é¢æ¿åç§°: {panelName}");
+                Debug.LogWarning($"Î´ÖªµÄÃæ°åÃû³Æ: {panelName}");
                 break;
         }
     }
 
-    // æ›´æ–°å¤©æ•°å’Œå£°æœ›æ˜¾ç¤º
+    // ¸üĞÂÌìÊıºÍÉùÍûÏÔÊ¾
     public void UpdateDayAndReputationDisplay()
     {
         if (InnerGameManager.Instance != null)
@@ -130,16 +131,18 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("InnerGameManagerå®ä¾‹æœªæ‰¾åˆ°");
+            Debug.LogWarning("InnerGameManagerÊµÀıÎ´ÕÒµ½");
         }
     }
 
-    // æ›´æ–°å¤©æ•°æ–‡æœ¬
+    // ¸üĞÂÌìÊıÎÄ±¾
     public void UpdateDayText(int currentDay)
     {
         if (dayText != null)
         {
-            dayText.text = $"ç¬¬{currentDay}å¤©";
+            //dayText.text = $"µÚ{currentDay}Ìì";
+            string format = LocalizationManager.Instance.GetText("day_format");
+            dayText.text = string.Format(format, currentDay);
         }
     }
 
@@ -164,7 +167,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // æ›´æ–°å£°æœ›æ–‡æœ¬
+    // ¸üĞÂÉùÍûÎÄ±¾
     public void UpdateReputationText(int currentReputation, int maxReputation)
     {
         UpdateReputationImages(currentReputation);
@@ -175,22 +178,22 @@ public class UIManager : MonoBehaviour
     }
 
 
-    //é…æ–¹è®¾ç½®
+    //Åä·½ÉèÖÃ
     public void UpdateMenuDisplay()
     {
         if (InnerGameManager.Instance == null) return;
 
-        // è·å–å½“å‰è§£é”çš„èœå“
+        // »ñÈ¡µ±Ç°½âËøµÄ²ËÆ·
         currentDisplayedDishes = new List<DishScriptObjs>(InnerGameManager.Instance.dishPool);
 
-        // æ›´æ–°æ¯ä¸ªèœå•é¡¹çš„æ˜¾ç¤º
+        // ¸üĞÂÃ¿¸ö²Ëµ¥ÏîµÄÏÔÊ¾
         for (int i = 0; i < Menu.Length; i++)
         {
             if (Menu[i] != null)
             {
                 if (i < currentDisplayedDishes.Count)
                 {
-                    // æ˜¾ç¤ºèœå“ä¿¡æ¯
+                    // ÏÔÊ¾²ËÆ·ĞÅÏ¢
                     DishScriptObjs dish = currentDisplayedDishes[i];
                     string formattedText = FormatDishInfo(dish);
                     Menu[i].text = formattedText;
@@ -198,22 +201,23 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    // éšè—å¤šä½™çš„èœå•é¡¹
+                    // Òş²Ø¶àÓàµÄ²Ëµ¥Ïî
                     Menu[i].gameObject.SetActive(false);
                 }
             }
         }
     }
 
-    // æ ¼å¼åŒ–èœå“ä¿¡æ¯
+    // ¸ñÊ½»¯²ËÆ·ĞÅÏ¢
     private string FormatDishInfo(DishScriptObjs dish)
     {
-        if (dish == null) return "æœªçŸ¥èœå“";
+        //if (dish == null) return "Î´Öª²ËÆ·";
+        if (dish == null) return LocalizationManager.Instance.GetText("unknown_dish");
 
         string dishName = dish.GetName();
-        string recipeText = "é…æ–¹ï¼š";
+        string recipeText = LocalizationManager.Instance.GetText("recipe_prefix");
 
-        // ç»Ÿè®¡é…æ–™çš„æ•°é‡
+        // Í³¼ÆÅäÁÏµÄÊıÁ¿
         Dictionary<string, int> ingredientCounts = new Dictionary<string, int>();
         foreach (var ingredient in dish.recipe)
         {
@@ -231,7 +235,7 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // æ„å»ºé…æ–¹å­—ç¬¦ä¸²
+        // ¹¹½¨Åä·½×Ö·û´®
         bool firstIngredient = true;
         foreach (var kvp in ingredientCounts)
         {
