@@ -204,10 +204,7 @@ public class PlayerInteraction : MonoBehaviour
         }
         else
         {
-            if (!InnerGameManager.Instance.isPlaying)
-            {
                 StoreDisplayManager.Instance.HideItemInfo();
-            }
 
             UIManager.instance.SetHandCursor(false);
         }

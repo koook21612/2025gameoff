@@ -49,7 +49,6 @@ public class SettingManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
@@ -68,7 +67,10 @@ public class SettingManager : MonoBehaviour
     {
         fullscreenToggle.onValueChanged.AddListener(SetDisplayMode);
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
-        closeButton.onClick.AddListener(CloseSetting);
+        if(closeButton != null)
+        {
+            closeButton.onClick.AddListener(CloseSetting);
+        }
         defaultButton.onClick.AddListener(ResetSetting);
 
         masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
@@ -83,7 +85,10 @@ public class SettingManager : MonoBehaviour
     {
         fullscreenToggle.onValueChanged.RemoveListener(SetDisplayMode);
         resolutionDropdown.onValueChanged.RemoveListener(SetResolution);
-        closeButton.onClick.RemoveListener(CloseSetting);
+        if (closeButton != null)
+        {
+            closeButton.onClick.RemoveListener(CloseSetting);
+        }
         defaultButton.onClick.RemoveListener(ResetSetting);
 
         masterVolumeSlider.onValueChanged.RemoveListener(SetMasterVolume);

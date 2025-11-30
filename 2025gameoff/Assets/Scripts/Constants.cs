@@ -9,6 +9,7 @@ public class Constants
     public static string End_SCENE = "EndScene";
     public static string TALENT_SCENE = "TalentTree";
     public static string END_SCENE = "EndScene";
+    public static string PRODUCTER_SCENE = "ProducterScene";
 
     //音频内容常量
     public static string MUSIC_PATH = "audio/bgm/";
@@ -29,5 +30,7 @@ public class Constants
     //打字速度常量
     public static float DEFAULT_TYPING_SPEED = 0.5f;
     public static float PLAYING_TIME = 0.2f;
+
+    public static float CREDITS_SCROLL_END_Y = 1400f;
 
 }

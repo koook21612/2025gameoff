@@ -305,6 +305,11 @@ public class AudioManager : MonoBehaviour
 
     // ========== 交互音效 ==========
 
+    public void PlayStoreRefresh()
+    {
+        PlayEffect(Constants.OPERAT + "operating_store_refresh");
+    }
+
     /// <summary>
     /// 播放选中物体/拿起放下食材音效
     /// </summary>
@@ -501,9 +506,9 @@ public class AudioManager : MonoBehaviour
         {
             PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         }
-        else if (scene.name == Constants.GAME_SCENE)
+        else if (scene.name == Constants.PRODUCTER_SCENE)
         {
-
+            PlayWinCGBGM();
         }
     }
 

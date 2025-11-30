@@ -63,7 +63,9 @@ public class StoreDisplayManager : MonoBehaviour
     }
     public void ShowCantBuy()
     {
-        DescriptionText.text = "现在无法购买";
+        if (itemInfoPanel != null)
+            itemInfoPanel.SetActive(true);
+        DescriptionText.text = LocalizationManager.Instance.GetText("cant_buy");
     }
     public void ShowItemInfo(StoreShelf shelf)
     {
