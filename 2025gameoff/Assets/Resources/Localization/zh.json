@@ -164,7 +164,7 @@
     { "key": "total_income", "value": "总收入" },
     { "key": "play_time", "value": "游戏时间" },
     { "key": "you_lose", "value": "你输了" },
-    { "key": "you_win", "value": "你赢了！" },
+    { "key": "you_win", "value": "你赢了?" },
     { "key": "time_format", "value": "{0}小时 {1}分 {2}秒" },
     { "key": "time_format_short", "value": "{0}分 {1}秒" },
     { "key": "time_format_shortest", "value": "{0}秒" }

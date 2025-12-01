@@ -117,7 +117,7 @@ public class InnerGameManager : MonoBehaviour
             UpdateMicrowaveDisplay();
             UpdateUI();
             InitializeStoreContent();
-
+            AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
             isPlaying = false;
             anim.SetTrigger("Open");
             if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
@@ -192,6 +192,7 @@ public class InnerGameManager : MonoBehaviour
         GameManager.Instance.totalPlayTime = totalPlayTime;
         GameManager.Instance.totalIncome = totalIncome;
         GameManager.Instance.totalServedOrders = totalServedOrders;
+        FirstPersonController.Instance.DisableController();
         if (currentReputation <= 0)
         {
             GameManager.Instance.end = 0;
@@ -234,6 +235,7 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
+        Debug.Log("进入商店");
         AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         if (days == 7)
         {
