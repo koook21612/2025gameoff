@@ -104,8 +104,6 @@ public class InnerGameManager : MonoBehaviour
             if (StoreManager.Instance != null)
                 StoreManager.Instance.LoadCartSaveData(data.cartData);
 
-            UnlockDishesAndIngredientsByDay();
-
             if (CustomerManager.Instance != null)
             {
                 CustomerManager.Instance.InitializeDailyCustomers();
@@ -120,6 +118,9 @@ public class InnerGameManager : MonoBehaviour
             AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
             isPlaying = false;
             anim.SetTrigger("Open");
+            MainCookingSystem.instance.ClearAllActiveMicrowaves();
+            UnlockDishesAndIngredientsByDay();
+            UIManager.instance.UpdateMenuDisplay();
             if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
 
         }
@@ -128,7 +129,7 @@ public class InnerGameManager : MonoBehaviour
             // 新游戏
             currentGold = 150; // 初始值
             currentReputation = 3;
-            days = 0; // 第一天 (Day 0 -> EnterStore -> Day 1)
+            days = 0;
 
             MicrowavesCount = 1;
             LatterMicrowavesCount = 0;
@@ -252,7 +253,6 @@ public class InnerGameManager : MonoBehaviour
         if (days > 1)
         {
             StartCoroutine(AddBonusGoldAndSave(1f, 50));
-            //AudioManager.Instance.StartTelephoneRing();
             StartCoroutine(Phone(2f));
         }
         else
