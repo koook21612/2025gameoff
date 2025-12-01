@@ -11,7 +11,7 @@ public class InnerGameManager : MonoBehaviour
     public bool isPlaying = false;
 
     public int days = 0;//天数
-    public int currentGold = 50; // 初始金币
+    public int currentGold = 150; // 初始金币
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
     public int completedCustomers = 0; // 完成的顾客数量
@@ -126,7 +126,7 @@ public class InnerGameManager : MonoBehaviour
         else
         {
             // 新游戏
-            currentGold = 50; // 初始值
+            currentGold = 150; // 初始值
             currentReputation = 3;
             days = 0; // 第一天 (Day 0 -> EnterStore -> Day 1)
 

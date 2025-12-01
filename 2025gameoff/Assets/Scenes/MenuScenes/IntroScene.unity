@@ -647,6 +647,129 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 286260441}
   m_CullTransparentMesh: 1
+--- !u!1 &293884635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 293884637}
+  - component: {fileID: 293884636}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &293884636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293884635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60d301a8a8121594fb43bacdfd6ae5ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentScene: 
+  end: 0
+  currentGold: 150
+  currentReputation: 3
+  maxReputation: 3
+  hasStart: 1
+  totalPlayTime: 0
+  totalIncome: 0
+  totalServedOrders: 0
+  Settings:
+    resolutionIndex: 0
+    fullscreen: 1
+    masterVolume: 0.8
+    musicVolume: 0.8
+    effectVolume: 0.8
+    languageIndex: 1
+  pendingData:
+    unlockedTalents: []
+    talentPoints: 3
+    heatingTimeMultiplier: 1
+    perfectZoneBonus: 0
+    currentLanguage: 
+    hasRunData: 0
+    runGold: 0
+    runReputation: 0
+    runDay: 0
+    runMicrowavesCount: 0
+    inventoryData: []
+    cartData: []
+    runPlayTime: 0
+    runTotalIncome: 0
+    runTotalServed: 0
+--- !u!4 &293884637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293884635}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -9.608381, y: 5.6587553, z: 23.077517}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &294899762
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 294899764}
+  - component: {fileID: 294899763}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &294899763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294899762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996c67d1b54bb5c47be90851d37612cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 01960845f27b71444a2849008b99ddd3, type: 2}
+  musicGroup: {fileID: -6454223983470189572, guid: 01960845f27b71444a2849008b99ddd3, type: 2}
+  effectGroup: {fileID: 1052698907812974218, guid: 01960845f27b71444a2849008b99ddd3, type: 2}
+--- !u!4 &294899764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294899762}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 504, y: 315, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &328604151
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,7 +1284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1153134511
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2965,3 +3088,5 @@ SceneRoots:
   - {fileID: 1425920429}
   - {fileID: 1123939812}
   - {fileID: 1982609488}
+  - {fileID: 293884637}
+  - {fileID: 294899764}
