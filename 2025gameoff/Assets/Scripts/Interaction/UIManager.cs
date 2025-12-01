@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private GameObject maincookPanel;
     [SerializeField] private GameObject SettingPanel;
-
+    [SerializeField] private GameObject teachingPanel;
     [Header("HUD Elements")]
     [SerializeField] private TextMeshProUGUI dayText; // 天数显示文本
     [SerializeField] private Image[] reputationImages = new Image[3];  // 声望显示
@@ -94,6 +94,7 @@ public class UIManager : MonoBehaviour
             case "ingredient":
                 if (materialStorePanel != null)
                 {
+                    AudioManager.Instance.SetFridgeWorking(state);
                     materialStorePanel.SetActive(state);
                 }
                 break;
@@ -122,6 +123,17 @@ public class UIManager : MonoBehaviour
             case "setting":
                 if (SettingPanel != null)
                     SettingPanel.SetActive(state);
+                break;
+            case "teaching":
+                if(teachingPanel != null)
+                {
+                    teachingPanel.SetActive(state);
+                    if (state)
+                    {
+                        Teaching.instance.isActive = true;
+                        Teaching.instance.LoadCurrentImage();
+                    }
+                }
                 break;
             case "none":
             case "closeall":

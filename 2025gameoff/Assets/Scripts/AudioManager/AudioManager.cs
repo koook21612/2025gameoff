@@ -23,6 +23,9 @@ public class AudioManager : MonoBehaviour
     // 电话状态管理
     private bool isTelephoneRinging = false; // 电话是否正在响铃
 
+    private AudioSource fridgeWorkingSource; // 专门用于冰箱工作循环音效
+    private bool isFridgeWorkingPlaying = false; // 冰箱工作循环音效是否正在播放
+
     // 老板说话音效数组
     private AudioClip[] talkingClips;
 
@@ -73,6 +76,10 @@ public class AudioManager : MonoBehaviour
             telephoneRingSource = gameObject.AddComponent<AudioSource>();
             telephoneRingSource.outputAudioMixerGroup = effectGroup;
             telephoneRingSource.loop = true; // 电话铃声循环播放
+
+            fridgeWorkingSource = gameObject.AddComponent<AudioSource>();
+            fridgeWorkingSource.outputAudioMixerGroup = effectGroup;
+            fridgeWorkingSource.loop = true; // 冰箱工作循环音效循环播放
 
             // 预加载撕订单音效和说话音效
             LoadTearOrderClips();
@@ -185,6 +192,11 @@ public class AudioManager : MonoBehaviour
     public void PlayWinCGBGM()
     {
         PlayCGBGM("music_end_fly");
+    }
+
+    public void PlayWinTrueBGM()
+    {
+        PlayCGBGM("game_procedure_win_true_withmusic");
     }
 
     /// <summary>
@@ -498,6 +510,41 @@ public class AudioManager : MonoBehaviour
         voiceSource.PlayOneShot(clip);
     }
 
+    /// <summary>
+    /// 设置冰箱工作循环音效的播放状态
+    /// </summary>
+    /// <param name="isWorking">是否正在工作（true=开始播放，false=停止播放）</param>
+    public void SetFridgeWorking(bool isWorking)
+    {
+        // 状态没有变化，直接返回
+        if (isFridgeWorkingPlaying == isWorking) return;
+
+        if (isWorking)
+        {
+            // 开始播放冰箱工作循环音效
+            AudioClip clip = Resources.Load<AudioClip>(Constants.OPERAT + "operating_fridge_working_loop");
+            if (clip != null)
+            {
+                fridgeWorkingSource.clip = clip;
+                fridgeWorkingSource.Play();
+                isFridgeWorkingPlaying = true;
+                Debug.Log("开始播放冰箱工作循环音效");
+            }
+            else
+            {
+                Debug.LogError(Constants.AUDIO_LOAD_FAILED + "operating_fridge_working_loop");
+            }
+        }
+        else
+        {
+            // 停止播放冰箱工作循环音效
+            fridgeWorkingSource.Stop();
+            isFridgeWorkingPlaying = false;
+            Debug.Log("停止播放冰箱工作循环音效");
+        }
+    }
+
+
     // ========== 音乐控制方法 ==========
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -539,6 +586,12 @@ public class AudioManager : MonoBehaviour
         if (cgMusicSource != null && cgMusicSource.isPlaying)
         {
             cgMusicSource.Stop();
+        }
+
+        if (fridgeWorkingSource != null && fridgeWorkingSource.isPlaying)
+        {
+            fridgeWorkingSource.Stop();
+            isFridgeWorkingPlaying = false;
         }
 
         Debug.Log("已停止除背景音乐外的所有音效");
