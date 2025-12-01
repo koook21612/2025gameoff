@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &2116781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2116782}
+  - component: {fileID: 2116783}
+  m_Layer: 0
+  m_Name: Lical
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2116782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 526.5, y: 329, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2116783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ae15992fa64c1449e54a8c9c278ce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentLanguage: zh
 --- !u!1 &319816050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1682,7 +1727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentScene: 
-  end: 0
+  end: 1
   currentGold: 150
   currentReputation: 3
   maxReputation: 3
@@ -1703,6 +1748,16 @@ MonoBehaviour:
     heatingTimeMultiplier: 0
     perfectZoneBonus: 0
     currentLanguage: 
+    hasRunData: 0
+    runGold: 0
+    runReputation: 0
+    runDay: 0
+    runMicrowavesCount: 0
+    inventoryData: []
+    cartData: []
+    runPlayTime: 0
+    runTotalIncome: 0
+    runTotalServed: 0
 --- !u!1 &2018897411
 GameObject:
   m_ObjectHideFlags: 0
@@ -1783,3 +1838,4 @@ SceneRoots:
   - {fileID: 1271306128}
   - {fileID: 2014611904}
   - {fileID: 1612353045}
+  - {fileID: 2116782}

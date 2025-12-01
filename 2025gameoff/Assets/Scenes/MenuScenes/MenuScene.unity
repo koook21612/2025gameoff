@@ -2177,6 +2177,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778267876}
   m_CullTransparentMesh: 1
+--- !u!1 &1814423829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1814423831}
+  - component: {fileID: 1814423830}
+  m_Layer: 0
+  m_Name: LocalizationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1814423830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814423829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ae15992fa64c1449e54a8c9c278ce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentLanguage: en
+--- !u!4 &1814423831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814423829}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.608381, y: 5.6587553, z: 23.077517}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1894957803
 GameObject:
   m_ObjectHideFlags: 0
@@ -2472,6 +2517,13 @@ MonoBehaviour:
   totalPlayTime: 0
   totalIncome: 0
   totalServedOrders: 0
+  Settings:
+    resolutionIndex: 0
+    fullscreen: 1
+    masterVolume: 0.8
+    musicVolume: 0.8
+    effectVolume: 0.8
+    language: zh
   pendingData:
     unlockedTalents: []
     talentPoints: 3
@@ -2514,3 +2566,4 @@ SceneRoots:
   - {fileID: 388294405}
   - {fileID: 247382009}
   - {fileID: 2067930738}
+  - {fileID: 1814423831}

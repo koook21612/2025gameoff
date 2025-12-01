@@ -9606,7 +9606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21ae15992fa64c1449e54a8c9c278ce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLanguage: zh
+  currentLanguage: en
 --- !u!1 &736826004
 GameObject:
   m_ObjectHideFlags: 0
@@ -16792,6 +16792,16 @@ MonoBehaviour:
     heatingTimeMultiplier: 1
     perfectZoneBonus: 0
     currentLanguage: 
+    hasRunData: 0
+    runGold: 0
+    runReputation: 0
+    runDay: 0
+    runMicrowavesCount: 0
+    inventoryData: []
+    cartData: []
+    runPlayTime: 0
+    runTotalIncome: 0
+    runTotalServed: 0
 --- !u!1 &1299231941
 GameObject:
   m_ObjectHideFlags: 0

@@ -84,46 +84,37 @@ public class VideoManager : MonoBehaviour
 
     void StartFadeOut()
     {
-        videoPlayer.Play();
-
-        StartCoroutine(DelayedBGMCoroutine());
-
-        // 使用DOTween将透明度从1降到0，持续0.5秒
-        uiOverlay.DOFade(0f, 0.5f);
-    }
-
-    IEnumerator DelayedBGMCoroutine()
-    {
-
         // 根据结局播放对应的BGM
         if (GameManager.Instance.end == 0)
         {
-            yield return new WaitForSeconds(0.3f);
 
             AudioManager.Instance.PlayLoseCGBGM();
 
         }
         else if (GameManager.Instance.end == 1)
         {
-            yield return null;
-
-            AudioManager.Instance.PlayWinCGBGM();
+            AudioManager.Instance.PlayWinTrueBGM();
         }
+        videoPlayer.Play();
+        // 使用DOTween将透明度从1降到0，持续0.5秒
+        uiOverlay.DOFade(0f, 0.5f);
     }
 
     void OnVideoEnd(VideoPlayer vp)
     {
-        // 视频播放结束后，淡入黑色遮挡
         uiOverlay.DOFade(1f, 0.5f).OnComplete(ShowResultPanel);
     }
 
     void ShowResultPanel()
     {
+        Debug.Log("进入结算");
         // 更新结算界面数据
         UpdateResultUI();
 
         // 显示结算面板
         resultPanel.SetActive(true);
+        Debug.Log("进入结算！");
+
     }
 
     void UpdateResultUI()
@@ -179,7 +170,7 @@ public class VideoManager : MonoBehaviour
 
     void ReturnToMainMenu()
     {
-        // 重置游戏数据（可选）
+        // 重置游戏数据
         ResetGameData();
 
         // 返回主界面
@@ -199,7 +190,6 @@ public class VideoManager : MonoBehaviour
 
     void OnDestroy()
     {
-        // 清理事件监听
         if (videoPlayer != null)
         {
             videoPlayer.loopPointReached -= OnVideoEnd;

@@ -187,6 +187,11 @@ public class AudioManager : MonoBehaviour
         PlayCGBGM("music_end_fly");
     }
 
+    public void PlayWinTrueBGM()
+    {
+        PlayCGBGM("game_procedure_win_true_withmusic");
+    }
+
     /// <summary>
     /// ≤•∑≈ ß∞‹CG±≥æ∞“Ù¿÷
     /// </summary>

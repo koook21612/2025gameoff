@@ -102,7 +102,7 @@ public class SettingManager : MonoBehaviour
         if (effectVolumeSlider != null) effectVolumeSlider.value = s.effectVolume;
 
         // language
-        currentLanguage = s.language;
+        currentLanguageIndex = s.languageIndex;
 
         isInitializing = false;
     }
@@ -131,13 +131,15 @@ public class SettingManager : MonoBehaviour
         ApplyVolumeToMixer(s.masterVolume, s.musicVolume, s.effectVolume);
 
         // 语言
-        if (LocalizationManager.Instance != null && !string.IsNullOrEmpty(s.language))
+        if (LocalizationManager.Instance != null)
         {
-            if (LocalizationManager.Instance.currentLanguage != s.language)
+            if (LocalizationManager.Instance.currentLanguage != LocalizationData.LANGUAGES[s.languageIndex])
             {
-                LocalizationManager.Instance.LoadLanguage(s.language);
+                LocalizationManager.Instance.LoadLanguage(LocalizationData.LANGUAGES[s.languageIndex]);
             }
         }
+
+        UpdateButtonLanguage();
     }
 
     // OnDestroy时移除监听器
@@ -315,7 +317,7 @@ public class SettingManager : MonoBehaviour
         Debug.Log("开始更新语言" + currentLanguage);
 
         // 写入 Settings 并加载语言
-        GameManager.Instance.Settings.language = currentLanguage;
+        GameManager.Instance.Settings.languageIndex = currentLanguageIndex;
         if (LocalizationManager.Instance != null && currentLanguage != LocalizationManager.Instance.currentLanguage)
 
         {
@@ -438,7 +440,7 @@ public class SettingManager : MonoBehaviour
 
         // 语言（已经在 UpdateLanguage 中写入，但再保证一次）
         if (!string.IsNullOrEmpty(currentLanguage))
-            GameManager.Instance.Settings.language = currentLanguage;
+            GameManager.Instance.Settings.languageIndex = currentLanguageIndex;
 
 
         //GameManager.Instance.SaveSettings();

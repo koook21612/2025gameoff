@@ -19,7 +19,7 @@ public class LocalizationManager : MonoBehaviour
 {
     public Dictionary<string, string> localizedText = new Dictionary<string, string>();
 
-    public string currentLanguage = "zh";
+    public string currentLanguage = "en";
 
     public delegate void OnLanguageChanged();
     public event OnLanguageChanged LanguageChanged;
@@ -64,7 +64,11 @@ public class LocalizationManager : MonoBehaviour
             
             Debug.Log($"成功加载语言:{language},共{localizedText.Count}条数据");
             LanguageChanged?.Invoke();
-            DialogueManager.Instance.OnLanguageChanged();
+            if(DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.OnLanguageChanged();
+            }
+            
         }
         else
         {
