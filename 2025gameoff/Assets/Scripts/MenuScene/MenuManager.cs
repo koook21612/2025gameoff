@@ -78,7 +78,7 @@ public class MenuManager : MonoBehaviour
                 isStart = true;
             }
         }
-
+        Debug.Log(startButton.GetComponentInChildren<TextMeshProUGUI>().text);
         //// 测试用:按下 F12 删除存档
         //if (Input.GetKeyDown(KeyCode.F12))
         //{
@@ -143,7 +143,7 @@ public class MenuManager : MonoBehaviour
 
     void UpdateMenuLanguage()
     {
-
+        Debug.Log("更新封面语言" + LocalizationManager.Instance.currentLanguage);
         if (startButton != null)
             startButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetText("start_game");
 

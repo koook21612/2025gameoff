@@ -104,8 +104,6 @@ public class InnerGameManager : MonoBehaviour
             if (StoreManager.Instance != null)
                 StoreManager.Instance.LoadCartSaveData(data.cartData);
 
-            UnlockDishesAndIngredientsByDay();
-
             if (CustomerManager.Instance != null)
             {
                 CustomerManager.Instance.InitializeDailyCustomers();
@@ -117,9 +115,12 @@ public class InnerGameManager : MonoBehaviour
             UpdateMicrowaveDisplay();
             UpdateUI();
             InitializeStoreContent();
-
+            AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
             isPlaying = false;
             anim.SetTrigger("Open");
+            MainCookingSystem.instance.ClearAllActiveMicrowaves();
+            UnlockDishesAndIngredientsByDay();
+            UIManager.instance.UpdateMenuDisplay();
             if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
 
         }
@@ -128,7 +129,7 @@ public class InnerGameManager : MonoBehaviour
             // 新游戏
             currentGold = 150; // 初始值
             currentReputation = 3;
-            days = 0; // 第一天 (Day 0 -> EnterStore -> Day 1)
+            days = 0;
 
             MicrowavesCount = 1;
             LatterMicrowavesCount = 0;
@@ -192,6 +193,7 @@ public class InnerGameManager : MonoBehaviour
         GameManager.Instance.totalPlayTime = totalPlayTime;
         GameManager.Instance.totalIncome = totalIncome;
         GameManager.Instance.totalServedOrders = totalServedOrders;
+        FirstPersonController.Instance.DisableController();
         if (currentReputation <= 0)
         {
             GameManager.Instance.end = 0;
@@ -234,6 +236,7 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
+        Debug.Log("进入商店");
         AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         if (days == 7)
         {
@@ -250,7 +253,6 @@ public class InnerGameManager : MonoBehaviour
         if (days > 1)
         {
             StartCoroutine(AddBonusGoldAndSave(1f, 50));
-            //AudioManager.Instance.StartTelephoneRing();
             StartCoroutine(Phone(2f));
         }
         else

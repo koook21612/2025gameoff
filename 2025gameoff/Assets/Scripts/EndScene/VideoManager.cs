@@ -134,6 +134,13 @@ public class VideoManager : MonoBehaviour
         string timeLabel = LocalizationManager.Instance.GetText("play_time");
         playTimeText.text = $"{timeLabel}: {FormatPlayTime(gameManager.totalPlayTime)}";
 
+        if (returnButton != null)
+        {
+            TextMeshProUGUI langBtnText = returnButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (langBtnText != null)
+                langBtnText.text = LocalizationManager.Instance.GetText("return_menu");
+        }
+
         // ÊäÓ®×´Ì¬
         if (gameManager.end == 0)
         {

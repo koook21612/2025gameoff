@@ -25,6 +25,18 @@ public class FirstPersonController : MonoBehaviour
     private float m_StepCycle;
     private float m_NextStep;
 
+    public static FirstPersonController Instance;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        //DontDestroyOnLoad(gameObject);
+    }
 
     // ¿ØÖÆ×´Ì¬
     private bool m_IsEnabled = true;

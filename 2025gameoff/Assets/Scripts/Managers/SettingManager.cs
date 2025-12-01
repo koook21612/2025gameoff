@@ -108,7 +108,7 @@ public class SettingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 将 Settings 的值应用到实际系统（屏幕模式、分辨率、音量、语言）
+    /// 将 Settings 的值应用到实际系统
     /// 在 UI 填充完后调用
     /// </summary>
     void ApplySettingsToSystem()
@@ -333,7 +333,7 @@ public class SettingManager : MonoBehaviour
             toggleLabel.text = isFullscreen ? fullscreen : windowed;
     }
 
-    // index 来自下拉（响应用户操作）
+    // index 来自下拉
     void SetResolution(int index)
     {
         if (resolutionDropdown == null || resolutionDropdown.options.Count == 0) return;
@@ -409,7 +409,7 @@ public class SettingManager : MonoBehaviour
         SaveSetting();
         if (GameManager.Instance.currentScene == Constants.GAME_SCENE)
         {
-            // 假设 PlayerInteraction.instance 可能为空（防护）
+            // 假设 PlayerInteraction.instance 可能为空
             if (PlayerInteraction.instance != null)
                 PlayerInteraction.instance.FinishView();
         }
