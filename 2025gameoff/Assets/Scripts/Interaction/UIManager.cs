@@ -32,6 +32,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI hint;
 
+    [Header("Notification")]
+    [SerializeField] private TextMeshProUGUI waveNotificationText;
+
     private void Awake()
     {
         if (instance == null)
@@ -297,5 +300,25 @@ public class UIManager : MonoBehaviour
         UpdateMenuDisplay();
         Updatehint();
 
+    }
+
+    // 显示波次提示
+    public void ShowWaveNotification(string key)
+    {
+        if (waveNotificationText != null)
+        {
+            waveNotificationText.text = LocalizationManager.Instance.GetText(key);
+
+            waveNotificationText.gameObject.SetActive(true);
+
+            StartCoroutine(HideWaveNotificationAfterDelay(3f));
+        }
+    }
+
+    private System.Collections.IEnumerator HideWaveNotificationAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (waveNotificationText != null)
+            waveNotificationText.gameObject.SetActive(false);
     }
 }

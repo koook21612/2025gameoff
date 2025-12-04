@@ -166,6 +166,9 @@
     { "key": "you_win", "value": "You Win?" },
     { "key": "time_format", "value": "{0}h {1}m {2}s" },
     { "key": "time_format_short", "value": "{0}m {1}s" },
-    { "key": "time_format_shortest", "value": "{0}s" }
+    { "key": "time_format_shortest", "value": "{0}s" },
+
+    { "key": "order_peak_start", "value": "Order Peak!" },
+    { "key": "order_peak_end", "value": "Order Peak End!" }
   ]
 }

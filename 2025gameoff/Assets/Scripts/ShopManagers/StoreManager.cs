@@ -16,7 +16,7 @@ public class StoreManager : MonoBehaviour
     [Header("装备商店状态")]
     public List<EquipmentDataSO> currentShelfEquipments = new List<EquipmentDataSO>(); // 当前货架上的4个装备
     public int refreshCount = 0; // 刷新次数(k)
-    public int newMicrowavePrice = 200; // 微波炉价格
+    public int newMicrowavePrice = 100; // 微波炉价格
     public GameObject buyMicrowave;
 
     public static StoreManager Instance { get; private set; }
