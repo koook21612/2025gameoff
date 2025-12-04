@@ -252,7 +252,7 @@ public class InnerGameManager : MonoBehaviour
         }
         if (days > 1)
         {
-            StartCoroutine(AddBonusGoldAndSave(1f, 50));
+            StartCoroutine(AddBonusGoldAndSave(1f, 100));
             StartCoroutine(Phone(2f));
         }
         else

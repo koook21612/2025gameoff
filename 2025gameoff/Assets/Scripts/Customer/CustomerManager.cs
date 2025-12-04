@@ -250,6 +250,7 @@ public class CustomerManager : MonoBehaviour
         if (_dailyCustomers.Count == 0) return;
 
         float progress = (float)_currentCustomerIndex / _dailyCustomers.Count;
+        int previousWave = _currentWave;
 
         if (progress < 0.3f)
         {
@@ -262,6 +263,18 @@ public class CustomerManager : MonoBehaviour
         else
         {
             _currentWave = 2; // 第三波次 (80-100%)
+        }
+
+        if (_currentWave != previousWave)
+        {
+            if (_currentWave == 1) // 进入第二波
+            {
+                UIManager.instance.ShowWaveNotification("order_peak_start");
+            }
+            else if (_currentWave == 2) // 进入第三波
+            {
+                UIManager.instance.ShowWaveNotification("order_peak_end");
+            }
         }
 
         Debug.Log($"当前波次: {_currentWave + 1}, 进度: {progress:P0}");
@@ -520,6 +533,7 @@ public class CustomerManager : MonoBehaviour
     {
         ReceivedOrderUISlot slot = ReceivedOrderUISlots[slotIndex];
         slot.OrderID.text = order.OrderNumber.ToString("000");
+        slot.OrderID.text = $"{order.OrderNumber.ToString("000")}/{_totalCustomersToday.ToString("000")}";
 
         // 修改点3：设置三个菜品槽
         TextMeshProUGUI[] dishSlots = new TextMeshProUGUI[] { slot.DishSlot1, slot.DishSlot2, slot.DishSlot3 };
