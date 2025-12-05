@@ -15,6 +15,6 @@ MonoBehaviour:
   equipmentTexture: {fileID: 0}
   effects: []
   equipmentName: newMicrowave
-  equipmentPrice: 200
+  equipmentPrice: 100
   description: desc_new_microwave
   isGlobal: 1

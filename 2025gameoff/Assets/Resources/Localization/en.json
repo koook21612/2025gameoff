@@ -169,6 +169,7 @@
     { "key": "time_format_shortest", "value": "{0}s" },
 
     { "key": "order_peak_start", "value": "Order Peak!" },
-    { "key": "order_peak_end", "value": "Order Peak End!" }
+    { "key": "order_peak_end", "value": "Order Peak End!" },
+    { "key": "today_income", "value": "Today's Income: {0}" }
   ]
 }

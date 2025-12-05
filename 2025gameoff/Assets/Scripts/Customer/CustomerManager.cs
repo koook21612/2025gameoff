@@ -63,7 +63,7 @@ public class CustomerManager : MonoBehaviour
 
     public int StartOrderCount = 1;//开局生成数量
     public float OrderGenerationInterval = 20f;//生成间隔（秒）
-    public int OrdersPerBatch = 1;//每次生成数量
+    public int OrdersPerBatch = 3;//每次生成数量
     public int PenaltyThreshold;//每满几个订单加快消耗耐心
     public float PenaltyRate;//加快百分之几
 
@@ -134,7 +134,8 @@ public class CustomerManager : MonoBehaviour
         //_maxOrderSlots = 3;
         _processedCustomers = 0; // 重置已处理顾客数
 
-        PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
+        if (PendingOrderUISlots.Length > 0 && PendingOrderUISlots[0] != null)
+            PendingOrderUISlots[0].waiting.text = LocalizationManager.Instance.GetText("waiting_text");
         for (int i = 0; i < StartOrderCount; i++)
         {
             GenerateNewOrderFromDailyList();
@@ -326,12 +327,21 @@ public class CustomerManager : MonoBehaviour
 
         //UpdateTimeDisplay();
 
+        if (_currentWave == 1)
+        {
+            OrderGenerationInterval = 30f; // 高峰期30秒
+        }
+        else
+        {
+            OrderGenerationInterval = 45f; // 45秒
+        }
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             AcceptOrderFromPending();
         }
 
-        //每过countdownTime秒生成generateQuantity个订单
+        //每过generateQuantity秒生成订单
         _timer += Time.deltaTime;
         if (_timer >= OrderGenerationInterval)
         {
@@ -422,7 +432,19 @@ public class CustomerManager : MonoBehaviour
     private System.Collections.IEnumerator EndDayAfterDelay(float delay)
     {
         Debug.Log("当天所有顾客已处理完毕，准备进入下一天");
-        yield return new WaitForSeconds(delay);
+
+        // 显示今日收入
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.ShowDailyIncome(_dailyIncome);
+        }
+
+        yield return new WaitForSeconds(delay + 2f);
+
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.HideDailyIncome();
+        }
 
         // 进入商店开始新的一天
         ResetForNewDay();
@@ -493,6 +515,7 @@ public class CustomerManager : MonoBehaviour
         newOrder.Dishes = new List<OrderItem>();
 
         int totalPrice = 0; // 修改点5：计算总价
+        float totalHeatTime = 0f;
 
         for (int i = 0; i < dishesCount; i++)
         {
@@ -517,10 +540,13 @@ public class CustomerManager : MonoBehaviour
             }
 
             totalPrice += chosenDish.DishPrice; // 修改点5：累加价格
+            totalHeatTime += chosenDish.heatTime; // 累加加热时间
         }
 
         //计算耐心值并赋值
-        newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
+        //newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
+        newOrder.ReceivedPatienceMax = 30f + (totalHeatTime * 0.6f);
+
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
         newOrder.TotalPrice = totalPrice; // 修改点5：设置总价
@@ -650,6 +676,7 @@ public class CustomerManager : MonoBehaviour
                         {
                             InnerGameManager.Instance.AddDailyIncome(currentOrder.TotalPrice);
                             // 修改点5：订单完全完成，结算总价
+                            _dailyIncome += currentOrder.TotalPrice;
                             InnerGameManager.Instance.AddGold(currentOrder.TotalPrice);
                             InnerGameManager.Instance.CompleteCustomer();
                             _receivedOrders[orderSlotIndex] = null;
