@@ -146,14 +146,14 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     if (interactable.storeShelf != null)
                     {
-                        if (!InnerGameManager.Instance.isPlaying)
-                        {
+                        //if (!InnerGameManager.Instance.isPlaying)
+                        //{
                             StoreDisplayManager.Instance.ShowItemInfo(interactable.storeShelf);
-                        }
-                        else
-                        {
-                            StoreDisplayManager.Instance.ShowCantBuy();
-                        }
+                        //}
+                        //else
+                        //{
+                        //    StoreDisplayManager.Instance.ShowCantBuy();
+                        //}
                     }
                 }
 
@@ -186,12 +186,12 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     if (interactable.isInstantInteract)
                     {
-                        if (!InnerGameManager.Instance.isPlaying)
-                        {
+                        //if (!InnerGameManager.Instance.isPlaying)
+                        //{
                             // 如果是即时交互（买装备），直接触发事件
                             interactable.onInteract.Invoke();
                             interactable.TryBuyItem();
-                        }
+                        //}
                     }
                     else
                     {

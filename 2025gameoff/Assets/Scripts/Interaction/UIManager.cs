@@ -34,6 +34,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Notification")]
     [SerializeField] private TextMeshProUGUI waveNotificationText;
+    [Header("Daily Result")]
+    [SerializeField] private GameObject dailyResultObject;
+    [SerializeField] private TextMeshProUGUI dailyIncomeText;
 
     private void Awake()
     {
@@ -320,5 +323,28 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (waveNotificationText != null)
             waveNotificationText.gameObject.SetActive(false);
+    }
+
+    // 显示今日收入
+    public void ShowDailyIncome(int income)
+    {
+        if (dailyResultObject != null)
+        {
+            dailyResultObject.SetActive(true);
+
+            if (dailyIncomeText != null)
+            {
+                string format = LocalizationManager.Instance.GetText("today_income");
+
+                dailyIncomeText.text = string.Format(format, income);
+            }
+        }
+    }
+
+    // 隐藏今日收入
+    public void HideDailyIncome()
+    {
+        if (dailyResultObject != null)
+            dailyResultObject.SetActive(false);
     }
 }
