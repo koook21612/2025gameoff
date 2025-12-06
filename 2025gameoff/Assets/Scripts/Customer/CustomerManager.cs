@@ -63,7 +63,7 @@ public class CustomerManager : MonoBehaviour
 
     public int StartOrderCount = 1;//开局生成数量
     public float OrderGenerationInterval = 20f;//生成间隔（秒）
-    public int OrdersPerBatch = 3;//每次生成数量
+    public int OrdersPerBatch = 1;//每次生成数量
     public int PenaltyThreshold;//每满几个订单加快消耗耐心
     public float PenaltyRate;//加快百分之几
 
@@ -157,6 +157,7 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
+        _orderNumber = 0;
 
         _dailyCustomers.Clear();
         _currentCustomerIndex = 0;
@@ -329,11 +330,11 @@ public class CustomerManager : MonoBehaviour
 
         if (_currentWave == 1)
         {
-            OrderGenerationInterval = 30f; // 高峰期30秒
+            OrderGenerationInterval = 10f; // 高峰期10秒
         }
         else
         {
-            OrderGenerationInterval = 45f; // 45秒
+            OrderGenerationInterval = 15f; // 15秒
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -545,7 +546,7 @@ public class CustomerManager : MonoBehaviour
 
         //计算耐心值并赋值
         //newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
-        newOrder.ReceivedPatienceMax = 30f + (totalHeatTime * 0.6f);
+        newOrder.ReceivedPatienceMax = 45f + (totalHeatTime * 0.75f);
 
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
@@ -558,8 +559,8 @@ public class CustomerManager : MonoBehaviour
     private void InitializeReceivedOrderUI(int slotIndex, Order order)
     {
         ReceivedOrderUISlot slot = ReceivedOrderUISlots[slotIndex];
-        slot.OrderID.text = order.OrderNumber.ToString("000");
         slot.OrderID.text = $"{order.OrderNumber.ToString("000")}/{_totalCustomersToday.ToString("000")}";
+        Debug.Log($"订单{order.OrderNumber}耐心值为{order.ReceivedPatienceMax}");
 
         // 修改点3：设置三个菜品槽
         TextMeshProUGUI[] dishSlots = new TextMeshProUGUI[] { slot.DishSlot1, slot.DishSlot2, slot.DishSlot3 };

@@ -14720,7 +14720,7 @@ MonoBehaviour:
     PendingCountText: {fileID: 1360541306}
   StartOrderCount: 1
   OrderGenerationInterval: 20
-  OrdersPerBatch: 3
+  OrdersPerBatch: 1
   PenaltyThreshold: 0
   PenaltyRate: 0
   time: {fileID: 674174801}
