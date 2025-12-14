@@ -47,6 +47,8 @@ public class InnerGameManager : MonoBehaviour
 
     private int muiscEffect = 0;
     public bool Supplier = false;
+
+    public event Action minReputation;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -250,7 +252,12 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
-        if (days > 1)
+        if (days == 2 || days == 3)
+        {
+            StartCoroutine(AddBonusGoldAndSave(1f, 150));
+            StartCoroutine(Phone(2f));
+        }
+        else if (days > 3)
         {
             StartCoroutine(AddBonusGoldAndSave(1f, 100));
             StartCoroutine(Phone(2f));
@@ -433,6 +440,11 @@ public class InnerGameManager : MonoBehaviour
         AudioManager.Instance.PlayOrderOutOfTime();
         currentReputation = Mathf.Max(0, currentReputation - 1);
         UpdateUI();
+
+        if(currentReputation == 1)
+        {
+            minReputation.Invoke();
+        }
         // 检查游戏结束
         if (currentReputation <= 0)
         {
@@ -445,8 +457,8 @@ public class InnerGameManager : MonoBehaviour
     {
         completedCustomers++;
 
-        // 每完成10个顾客恢复1点声望
-        if (completedCustomers % 10 == 0)
+        // 每完成8个顾客恢复1点声望
+        if (completedCustomers % 8 == 0)
         {
             if (currentReputation < maxReputation)
             {

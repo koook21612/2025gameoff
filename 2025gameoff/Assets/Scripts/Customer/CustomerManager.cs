@@ -93,6 +93,8 @@ public class CustomerManager : MonoBehaviour
 
     public int _maxOrderSlots = 3;
 
+    private int _delayLevel = 0; // 延迟阶段
+    private bool _hasPaidDelayPenalty = false; // 是否已延迟生成
 
     public static CustomerManager Instance;
     private void Awake()
@@ -173,6 +175,11 @@ public class CustomerManager : MonoBehaviour
         // 计算当天总顾客数 y = n + ln(n) + e^(n-7) + 10
         int totalCustomers = CalculateDailyCustomerCount(day);
         _totalCustomersToday = totalCustomers; // 记录当天总顾客数
+        if (day == 2 || day == 3)
+        {
+            _totalCustomersToday -= 3;
+            totalCustomers -= 3;
+        }
 
         // 分波次计算顾客数
         int wave1Count = Mathf.FloorToInt(totalCustomers * 0.3f);
@@ -194,9 +201,48 @@ public class CustomerManager : MonoBehaviour
                 Order customer = GenerateNewOrder(p1, p2, p3);
                 _dailyCustomers.Add(customer);
 
+                if (day == 3)
+                {
+                    int hasTwoDishes = 0;
+                    List<int> unsatisfiedIndices = new List<int>();
+                    for (int j = 0; j < _dailyCustomers.Count; j++)
+                    {
+                        Order order = _dailyCustomers[j];
+                        int totalQuantity = 0;
+
+                        for (int k = 0; k < order.Dishes.Count; k++)
+                        {
+                            totalQuantity += order.Dishes[k].DishQuantity;
+                        }
+
+                        if (totalQuantity >= 2)
+                        {
+                            hasTwoDishes++;
+                        }
+                        else
+                        {
+                            unsatisfiedIndices.Add(j);
+                        }
+                    }
+
+                    while (hasTwoDishes < 3 && unsatisfiedIndices.Count > 0)
+                    {
+                        Debug.LogWarning("第二天不足三个或以上订单点两道菜，正在强制修改订单");
+                        int randomListIndex = UnityEngine.Random.Range(0, unsatisfiedIndices.Count);
+                        int targetRealIndex = unsatisfiedIndices[randomListIndex];
+
+                        _dailyCustomers[targetRealIndex] = GenerateNewOrder(2);
+
+                        unsatisfiedIndices.RemoveAt(randomListIndex);
+
+                        hasTwoDishes++;
+                    }
+                }
+
                 CountDishesRequirement(customer);
             }
         }
+
         Debug.Log($"成功生成所有顾客，总数: {_totalCustomersToday}");
     }
 
@@ -337,6 +383,9 @@ public class CustomerManager : MonoBehaviour
             OrderGenerationInterval = 15f; // 15秒
         }
 
+        int day = InnerGameManager.Instance.days;
+        if (day == 2 || day == 3)   OrderGenerationInterval -= 3;
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             AcceptOrderFromPending();
@@ -346,10 +395,30 @@ public class CustomerManager : MonoBehaviour
         _timer += Time.deltaTime;
         if (_timer >= OrderGenerationInterval)
         {
+            if (_delayLevel > 0 && !_hasPaidDelayPenalty)
+            {
+                float delayTime = 0;
+                if (_delayLevel == 1) delayTime = 15f;
+                else if (_delayLevel == 2) delayTime = 10f;
+
+                _timer -= delayTime;
+                _hasPaidDelayPenalty = true;
+                Debug.Log($"订单被推迟了{delayTime}秒");
+                return;
+            }
+
             _timer -= OrderGenerationInterval;
             for (int i = 0; i < OrdersPerBatch; i++)
             {
                 GenerateNewOrderFromDailyList();
+            }
+
+            if (_hasPaidDelayPenalty)
+            {
+                _hasPaidDelayPenalty = false;
+
+                if (_delayLevel == 1) _delayLevel = 2;
+                else if (_delayLevel == 2) _delayLevel = 0;
             }
         }
 
@@ -400,7 +469,7 @@ public class CustomerManager : MonoBehaviour
         // 检查是否所有顾客都已生成且处理完毕
         CheckDayCompletion();
     }
-
+    
     // 新增：检查当天是否完成
     private void CheckDayCompletion()
     {
@@ -546,7 +615,98 @@ public class CustomerManager : MonoBehaviour
 
         //计算耐心值并赋值
         //newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
-        newOrder.ReceivedPatienceMax = 45f + (totalHeatTime * 0.75f);
+        newOrder.ReceivedPatienceMax = 45f + (totalHeatTime * 0.75f) + dishesCount * 6;
+
+        newOrder.PendingPatienceMax = 90;
+        newOrder.PatiencePoints = 90;
+        newOrder.TotalPrice = totalPrice; // 修改点5：设置总价
+
+        return newOrder;
+    }
+
+    // 声望降至1，延迟生成订单
+    private void DelayGenerateNewOrder()
+    {
+        _delayLevel++;
+        Debug.Log($"声望降至1，触发订单延迟。当前等级: {_delayLevel}");
+        //恢复耐心值
+        RestoreThreeOrdersPatience(10, 5, 1);
+    }
+
+    // 为随机3个已撕下的订单分别恢复10秒、5秒、1秒耐心值
+    private void RestoreThreeOrdersPatience(int firstVal, int secondVal, int thirdVal)
+    {
+        List<int> validOrderIndices = new List<int>();
+        for (int i = 0; i < _receivedOrders.Length; i++)
+        {
+            if (_receivedOrders[i] != null)
+            {
+                validOrderIndices.Add(i);
+            }
+        }
+        if (validOrderIndices.Count == 0) return;
+
+        int[] restoreValues = new int[] { firstVal, secondVal, thirdVal };
+        int loopCount = Mathf.Min(3, validOrderIndices.Count);
+
+        for (int i = 0; i < loopCount; i++)
+        {
+            int luckyIndexInList = UnityEngine.Random.Range(0, validOrderIndices.Count);
+            int realOrderIndex = validOrderIndices[luckyIndexInList];
+
+            _receivedOrders[realOrderIndex].PatiencePoints += restoreValues[i];
+            _receivedOrders[realOrderIndex].ReceivedPatienceMax += restoreValues[i];
+
+            Debug.Log($"订单{_receivedOrders[realOrderIndex].OrderNumber}恢复了{restoreValues[i]}耐心");
+
+            validOrderIndices.RemoveAt(luckyIndexInList);
+        }
+    }
+
+    // 生成菜品数量非随机的订单
+    public Order GenerateNewOrder(int fixedDishCount)
+    {
+        //顾客点几道菜
+        int dishesCount = fixedDishCount;
+
+        //创建订单和菜品选择逻辑
+        _orderNumber++;
+        Order newOrder = new Order();
+        newOrder.OrderNumber = _orderNumber;
+        newOrder.Dishes = new List<OrderItem>();
+
+        int totalPrice = 0; // 修改点5：计算总价
+        float totalHeatTime = 0f;
+
+        for (int i = 0; i < dishesCount; i++)
+        {
+            bool dishFound = false;
+            int randomIndex = UnityEngine.Random.Range(0, AllDishes.Count);
+            DishScriptObjs chosenDish = AllDishes[randomIndex];
+            foreach (OrderItem item in newOrder.Dishes)
+            {
+                if (chosenDish == item.DishName)
+                {
+                    item.DishQuantity++;
+                    dishFound = true;
+                    break;
+                }
+            }
+            if (!dishFound)
+            {
+                OrderItem newOrderItem = new OrderItem();
+                newOrderItem.DishName = chosenDish;
+                newOrderItem.DishQuantity = 1;
+                newOrder.Dishes.Add(newOrderItem);
+            }
+
+            totalPrice += chosenDish.DishPrice; // 修改点5：累加价格
+            totalHeatTime += chosenDish.heatTime; // 累加加热时间
+        }
+
+        //计算耐心值并赋值
+        //newOrder.ReceivedPatienceMax = 60 + 20 * (dishesCount - 1);
+        newOrder.ReceivedPatienceMax = 45f + (totalHeatTime * 0.75f) + dishesCount * 6;
 
         newOrder.PendingPatienceMax = 90;
         newOrder.PatiencePoints = 90;
@@ -656,6 +816,10 @@ public class CustomerManager : MonoBehaviour
                 if (result == CookingResult.Perfect)
                 {
                     item.DishQuantity--;
+
+                    currentOrder.PatiencePoints += 15;
+                    currentOrder.ReceivedPatienceMax += 15;
+                    Debug.Log($"交付菜品，耐心值增加。当前剩余: {currentOrder.PatiencePoints}/{currentOrder.ReceivedPatienceMax}");
 
                     InnerGameManager.Instance.AddDailyServedOrders(1);
 
