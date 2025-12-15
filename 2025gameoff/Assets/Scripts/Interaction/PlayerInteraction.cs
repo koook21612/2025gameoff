@@ -146,14 +146,14 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     if (interactable.storeShelf != null)
                     {
-                        if (!InnerGameManager.Instance.isPlaying)
-                        {
+                        //if (!InnerGameManager.Instance.isPlaying)
+                        //{
                             StoreDisplayManager.Instance.ShowItemInfo(interactable.storeShelf);
-                        }
-                        else
-                        {
-                            StoreDisplayManager.Instance.ShowCantBuy();
-                        }
+                        //}
+                        //else
+                        //{
+                        //    StoreDisplayManager.Instance.ShowCantBuy();
+                        //}
                     }
                 }
 
@@ -165,10 +165,15 @@ public class PlayerInteraction : MonoBehaviour
                         OpenSetting();
                         return;
 
+                    }else if (interactable.item != null && interactable.item.Function == "teaching")
+                    {
+                        currentInteractable = interactable;
+                        OpenSetting();
+                        return;
                     }
                     else if (interactable.item != null && interactable.item.Function == "phone")
                     {
-                        if(InnerGameManager.Instance.count != 0)
+                        if (InnerGameManager.Instance.count != 0 && InnerGameManager.Instance.days != 1)
                         {
                             return;
                         }
@@ -181,12 +186,12 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     if (interactable.isInstantInteract)
                     {
-                        if (!InnerGameManager.Instance.isPlaying)
-                        {
+                        //if (!InnerGameManager.Instance.isPlaying)
+                        //{
                             // 如果是即时交互（买装备），直接触发事件
                             interactable.onInteract.Invoke();
                             interactable.TryBuyItem();
-                        }
+                        //}
                     }
                     else
                     {
@@ -243,7 +248,7 @@ public class PlayerInteraction : MonoBehaviour
         canFinish = true;
         isViewing = true;
         UIManager.instance.SetAim(false);
-        UIManager.instance.SetPanel("setting", true);
+        UIManager.instance.SetPanel(currentInteractable.item.Function, true);
         onView.Invoke();
     }
 
@@ -293,7 +298,7 @@ public class PlayerInteraction : MonoBehaviour
         canFinish = false;
         isViewing = false;
         UIManager.instance.SetPanel(currentInteractable.item.Function, false);
-        if (currentInteractable.item.Function == "setting")
+        if (currentInteractable.item.Function == "setting" || currentInteractable.item.Function == "teaching")
         {
             UIManager.instance.SetAim(true);
             onFinishView.Invoke();

@@ -17,6 +17,6 @@ MonoBehaviour:
   - effectType: 3
     value: 1
   equipmentName: equip_3d_printer
-  equipmentPrice: 120
+  equipmentPrice: 60
   description: desc_equip_3d_printer
   isGlobal: 1

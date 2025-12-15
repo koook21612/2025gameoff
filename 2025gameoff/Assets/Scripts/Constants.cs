@@ -27,6 +27,7 @@ public class Constants
     public static string CREDITS_MUSIC_FILE_NAME = "";
 
     public static string STORY_PATH = "dialogues/story";
+    public static string TEACHING_PATH = "teaching/";
     //打字速度常量
     public static float DEFAULT_TYPING_SPEED = 0.5f;
     public static float PLAYING_TIME = 0.2f;

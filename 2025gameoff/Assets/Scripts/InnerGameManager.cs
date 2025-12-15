@@ -11,7 +11,7 @@ public class InnerGameManager : MonoBehaviour
     public bool isPlaying = false;
 
     public int days = 0;//天数
-    public int currentGold = 50; // 初始金币
+    public int currentGold = 150; // 初始金币
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
     public int completedCustomers = 0; // 完成的顾客数量
@@ -47,6 +47,8 @@ public class InnerGameManager : MonoBehaviour
 
     private int muiscEffect = 0;
     public bool Supplier = false;
+
+    public event Action minReputation;
     private void Awake() {
         if (Instance != null && Instance != this)
         {
@@ -104,8 +106,6 @@ public class InnerGameManager : MonoBehaviour
             if (StoreManager.Instance != null)
                 StoreManager.Instance.LoadCartSaveData(data.cartData);
 
-            UnlockDishesAndIngredientsByDay();
-
             if (CustomerManager.Instance != null)
             {
                 CustomerManager.Instance.InitializeDailyCustomers();
@@ -117,18 +117,21 @@ public class InnerGameManager : MonoBehaviour
             UpdateMicrowaveDisplay();
             UpdateUI();
             InitializeStoreContent();
-
+            AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
             isPlaying = false;
             anim.SetTrigger("Open");
+            MainCookingSystem.instance.ClearAllActiveMicrowaves();
+            UnlockDishesAndIngredientsByDay();
+            UIManager.instance.UpdateMenuDisplay();
             if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
 
         }
         else
         {
             // 新游戏
-            currentGold = 50; // 初始值
+            currentGold = 150; // 初始值
             currentReputation = 3;
-            days = 0; // 第一天 (Day 0 -> EnterStore -> Day 1)
+            days = 0;
 
             MicrowavesCount = 1;
             LatterMicrowavesCount = 0;
@@ -192,6 +195,7 @@ public class InnerGameManager : MonoBehaviour
         GameManager.Instance.totalPlayTime = totalPlayTime;
         GameManager.Instance.totalIncome = totalIncome;
         GameManager.Instance.totalServedOrders = totalServedOrders;
+        FirstPersonController.Instance.DisableController();
         if (currentReputation <= 0)
         {
             GameManager.Instance.end = 0;
@@ -234,6 +238,7 @@ public class InnerGameManager : MonoBehaviour
     // 进入商店
     public void EnterStore()
     {
+        Debug.Log("进入商店");
         AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
         if (days == 7)
         {
@@ -247,10 +252,14 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
-        if (days > 1)
+        if (days == 2 || days == 3)
         {
-            StartCoroutine(AddBonusGoldAndSave(1f, 50));
-            //AudioManager.Instance.StartTelephoneRing();
+            StartCoroutine(AddBonusGoldAndSave(1f, 150));
+            StartCoroutine(Phone(2f));
+        }
+        else if (days > 3)
+        {
+            StartCoroutine(AddBonusGoldAndSave(1f, 100));
             StartCoroutine(Phone(2f));
         }
         else
@@ -431,6 +440,11 @@ public class InnerGameManager : MonoBehaviour
         AudioManager.Instance.PlayOrderOutOfTime();
         currentReputation = Mathf.Max(0, currentReputation - 1);
         UpdateUI();
+
+        if(currentReputation == 1)
+        {
+            minReputation.Invoke();
+        }
         // 检查游戏结束
         if (currentReputation <= 0)
         {
@@ -443,8 +457,8 @@ public class InnerGameManager : MonoBehaviour
     {
         completedCustomers++;
 
-        // 每完成10个顾客恢复1点声望
-        if (completedCustomers % 10 == 0)
+        // 每完成8个顾客恢复1点声望
+        if (completedCustomers % 8 == 0)
         {
             if (currentReputation < maxReputation)
             {

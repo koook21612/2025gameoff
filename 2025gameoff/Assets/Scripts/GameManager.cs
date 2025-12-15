@@ -10,7 +10,7 @@ public class SettingsData
     public float masterVolume = 0.8f;
     public float musicVolume = 0.8f;
     public float effectVolume = 0.8f;
-    public string language = "zh";
+    public int languageIndex = 1;
 }
 
 public class GameManager : MonoBehaviour
@@ -85,6 +85,15 @@ public class GameManager : MonoBehaviour
         pendingData = new SaveData();
 
         LoadGameData();
+
+        // ”Ô—‘
+        if (LocalizationManager.Instance != null)
+        {
+            if (LocalizationManager.Instance.currentLanguage != LocalizationData.LANGUAGES[Settings.languageIndex])
+            {
+                LocalizationManager.Instance.LoadLanguage(LocalizationData.LANGUAGES[Settings.languageIndex]);
+            }
+        }
     }
 
     //public void LoadSettings()

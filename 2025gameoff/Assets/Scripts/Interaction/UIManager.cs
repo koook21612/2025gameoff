@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private GameObject maincookPanel;
     [SerializeField] private GameObject SettingPanel;
-
+    [SerializeField] private GameObject teachingPanel;
     [Header("HUD Elements")]
     [SerializeField] private TextMeshProUGUI dayText; // 天数显示文本
     [SerializeField] private Image[] reputationImages = new Image[3];  // 声望显示
@@ -31,6 +31,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button ContinueGame;
 
     [SerializeField] private TextMeshProUGUI hint;
+
+    [Header("Notification")]
+    [SerializeField] private TextMeshProUGUI waveNotificationText;
+    [Header("Daily Result")]
+    [SerializeField] private GameObject dailyResultObject;
+    [SerializeField] private TextMeshProUGUI dailyIncomeText;
 
     private void Awake()
     {
@@ -94,6 +100,7 @@ public class UIManager : MonoBehaviour
             case "ingredient":
                 if (materialStorePanel != null)
                 {
+                    AudioManager.Instance.SetFridgeWorking(state);
                     materialStorePanel.SetActive(state);
                 }
                 break;
@@ -122,6 +129,17 @@ public class UIManager : MonoBehaviour
             case "setting":
                 if (SettingPanel != null)
                     SettingPanel.SetActive(state);
+                break;
+            case "teaching":
+                if(teachingPanel != null)
+                {
+                    teachingPanel.SetActive(state);
+                    if (state)
+                    {
+                        Teaching.instance.isActive = true;
+                        Teaching.instance.LoadCurrentImage();
+                    }
+                }
                 break;
             case "none":
             case "closeall":
@@ -285,5 +303,48 @@ public class UIManager : MonoBehaviour
         UpdateMenuDisplay();
         Updatehint();
 
+    }
+
+    // 显示波次提示
+    public void ShowWaveNotification(string key)
+    {
+        if (waveNotificationText != null)
+        {
+            waveNotificationText.text = LocalizationManager.Instance.GetText(key);
+
+            waveNotificationText.gameObject.SetActive(true);
+
+            StartCoroutine(HideWaveNotificationAfterDelay(3f));
+        }
+    }
+
+    private System.Collections.IEnumerator HideWaveNotificationAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (waveNotificationText != null)
+            waveNotificationText.gameObject.SetActive(false);
+    }
+
+    // 显示今日收入
+    public void ShowDailyIncome(int income)
+    {
+        if (dailyResultObject != null)
+        {
+            dailyResultObject.SetActive(true);
+
+            if (dailyIncomeText != null)
+            {
+                string format = LocalizationManager.Instance.GetText("today_income");
+
+                dailyIncomeText.text = string.Format(format, income);
+            }
+        }
+    }
+
+    // 隐藏今日收入
+    public void HideDailyIncome()
+    {
+        if (dailyResultObject != null)
+            dailyResultObject.SetActive(false);
     }
 }
