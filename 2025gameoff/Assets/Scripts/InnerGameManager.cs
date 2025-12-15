@@ -115,7 +115,6 @@ public class InnerGameManager : MonoBehaviour
             }
 
             UpdateMicrowaveDisplay();
-            UpdateUI();
             InitializeStoreContent();
             AudioManager.Instance.PlayBackground(Constants.MENU_MUSIC_FILE_NAME);
             isPlaying = false;
@@ -123,6 +122,7 @@ public class InnerGameManager : MonoBehaviour
             MainCookingSystem.instance.ClearAllActiveMicrowaves();
             UnlockDishesAndIngredientsByDay();
             UIManager.instance.UpdateMenuDisplay();
+            UpdateUI();
             if (SelectionSystem.Instance != null) SelectionSystem.Instance.RefreshUI();
 
         }

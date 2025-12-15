@@ -6605,8 +6605,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 30, y: 100}
-  m_SizeDelta: {x: 400, y: 50}
+  m_AnchoredPosition: {x: 30, y: 120}
+  m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &502955619
 MonoBehaviour:
@@ -6628,7 +6628,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Tab\u6495\u4E0B\u8BA2\u5355\nctrl\u67E5\u770B\u83DC\u8C31"
+  m_text: "Tab\u6495\u4E0B\u8BA2\u5355\nctrl\u67E5\u770B\u83DC\u8C31\n\u65E0\u8BBA\u4F55\u65F6\uFF0Cesc\u9000\u51FA"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 51910872d65e8d647b15ef8a05b30127, type: 2}
   m_sharedMaterial: {fileID: -5419192833530184688, guid: 51910872d65e8d647b15ef8a05b30127, type: 2}

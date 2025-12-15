@@ -31,7 +31,7 @@
     { "key": "start_business", "value": "Open Business" },
     { "key": "confirm_selection", "value": "Confirm Selection" },
     { "key": "select_microwave_prompt", "value": "Select Microwave" },
-    { "key": "hint", "value": "Tab — Tear Off Order\nCtrl — View Menu" },
+    { "key": "hint", "value": "Tab — Tear Off Order\nCtrl — View Menu\nPress ESC at any time to exit" },
 
     { "key": "ing_vegetable", "value": "Vegetable" },
     { "key": "ing_pork", "value": "Pork" },
