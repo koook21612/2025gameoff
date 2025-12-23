@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hint;
 
     [Header("Notification")]
-    [SerializeField] private TextMeshProUGUI waveNotificationText;
+    [SerializeField] private TextMeshProUGUI waveNotificationText;//波次状态文字
     [Header("Daily Result")]
     [SerializeField] private GameObject dailyResultObject;
     [SerializeField] private TextMeshProUGUI dailyIncomeText;
