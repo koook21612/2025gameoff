@@ -31,7 +31,7 @@
     { "key": "start_business", "value": "开始营业" },
     { "key": "confirm_selection", "value": "确认选择" },
     { "key": "select_microwave_prompt", "value": "请选择微波炉" },
-    { "key": "hint", "value": "Tab撕下订单\nCtrl查看菜谱" },
+    { "key": "hint", "value": "Tab撕下订单\nCtrl查看菜谱\n无论何时，esc退出" },
 
 
     { "key": "ing_vegetable", "value": "青菜" },

@@ -296,20 +296,24 @@ public class CookingSystem : MonoBehaviour
         foreach (var range in _currentPerfectRanges)
         {
             float rangeLength = range.y - range.x;
+            float start = range.x;
+            float end = range.y;
 
-            // 间隔为0.05
-            int markerCount = Mathf.RoundToInt(rangeLength / 0.05f);
+            // 确保至少生成起点和终点的标记
+            CreateMarkerAtPosition(start);
+            CreateMarkerAtPosition(end);
 
-            // 确保至少有一个标记
-            markerCount = Mathf.Max(1, markerCount);
+            float currentPos = Mathf.Ceil(start / 0.05f) * 0.05f;
 
-            for (int i = 0; i <= markerCount; i++)
+            while (currentPos <= end)
             {
-                float markerPosition = range.x + (rangeLength * i / markerCount);
-                CreateMarkerAtPosition(markerPosition);
+                // 避免重复生成起点和终点的标记
+                if (currentPos > start + 0.001f && currentPos < end - 0.001f)
+                {
+                    CreateMarkerAtPosition(currentPos);
+                }
+                currentPos += 0.05f;
             }
-
-            Debug.Log($"生成完美区间标记: {range.x:F2} - {range.y:F2}, 标记数量: {markerCount + 1}, 间隔: 0.05");
         }
     }
 
