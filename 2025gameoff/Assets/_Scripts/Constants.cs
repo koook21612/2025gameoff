@@ -29,7 +29,7 @@ public class Constants
     public static string STORY_PATH = "dialogues/story";
     public static string TEACHING_PATH = "teaching/";
     //打字速度常量
-    public static float DEFAULT_TYPING_SPEED = 0.5f;
+    public static float DEFAULT_TYPING_SPEED = 0.02f;
     public static float PLAYING_TIME = 0.2f;
 
     public static float CREDITS_SCROLL_END_Y = 2300f;

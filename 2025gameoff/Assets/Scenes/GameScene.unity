@@ -5915,6 +5915,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 440787308}
+  - component: {fileID: 440787309}
   m_Layer: 0
   m_Name: TeachingManager
   m_TagString: Untagged
@@ -5937,6 +5938,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 72285283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &440787309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440787307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b3eac2a575b164ba4fdd5a0fddd913, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &459463223
 GameObject:
   m_ObjectHideFlags: 0
@@ -8732,7 +8745,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1b321a04c21f0cd46b68b9f4f10c790f, type: 2}
   - {fileID: 11400000, guid: 4fb7a263287aa224a822dc52501f6317, type: 2}
   anim: {fileID: 7634318735686266115}
-  count: 0
+  ringing: 1
   fadeImage: {fileID: 754982089}
   Supplier: 0
 --- !u!1 &659646354

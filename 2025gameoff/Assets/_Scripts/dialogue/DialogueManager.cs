@@ -8,10 +8,16 @@ using System.IO;
 [Serializable]
 public class DialogueData
 {
-    public List<string> teaching;
+    public List<TeachingStep> teaching;
     public List<string> randomPool;
 }
 
+[Serializable]
+public class TeachingStep
+{
+    public string tag;
+    public List<string> line;
+}
 public class DialogueManager : MonoBehaviour
 {
     public TypewriterEffect typewriter;
@@ -19,10 +25,11 @@ public class DialogueManager : MonoBehaviour
 
     // 内部
     private DialogueData data;
-    private List<string> currentLines;
-    private Coroutine playCoroutine;
-    private bool userClickedThisFrame;
-    private bool isPlaying;
+    private List<TeachingStep> teachingSteps; // 存储所有教学步骤
+    private List<string> currentLines; // 当前播放的文本行
+    private int currentTeachingIndex = 0; // 当前教学步骤索引
+    private bool isPlaying = false;
+    private bool wait = false;
 
     // 用于调试/显示
     private int currentLineIndex;
@@ -33,11 +40,17 @@ public class DialogueManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         LoadJson();
+        isPlaying = false;
 
         // 确保开始时对话面板是隐藏的
         if (dialoguePanel != null)
         {
             dialoguePanel.SetActive(false);
+        }
+        // 初始化教学步骤
+        if (data != null && data.teaching != null)
+        {
+            teachingSteps = new List<TeachingStep>(data.teaching);
         }
     }
 
@@ -45,7 +58,12 @@ public class DialogueManager : MonoBehaviour
     {
         if (isPlaying && Input.GetMouseButtonDown(0))
         {
-            userClickedThisFrame = true;
+            if (wait)
+            {
+                wait = false;
+                return;
+            }
+            PlayLinesCoroutine();
         }
     }
 
@@ -91,7 +109,14 @@ public class DialogueManager : MonoBehaviour
         AudioManager.Instance.StopTelephoneRing();
         // 播放拿起电话音效
         AudioManager.Instance.PlayTelephonePickUp();
-        PlayRandomDialogue();
+        if (InnerGameManager.Instance.days == 1)
+        {
+            PlayTutorialDialogue();
+        }
+        else
+        {
+            PlayRandomDialogue();
+        }
     }
 
     // 播放新手教程对话
@@ -103,8 +128,27 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        currentLines = data.teaching;
-        StartDialogue();
+        // 检查是否还有更多的教学步骤
+        if (currentTeachingIndex < teachingSteps.Count)
+        {
+            // 获取当前教学步骤
+            TeachingStep currentStep = teachingSteps[currentTeachingIndex];
+
+            if (TeachingManager.Instance != null)
+            {
+                TeachingManager.Instance.UpdateCurrentTag(currentStep.tag);
+            }
+            currentLines = currentStep.line;
+            currentTeachingIndex++;
+
+            // 开始播放当前段落的对话
+            StartDialogue();
+        }
+        else
+        {
+            // 所有教学步骤已播放完毕
+            Debug.Log("所有新手教程已播放完毕。");
+        }
     }
 
     // 播放随机对话
@@ -137,68 +181,38 @@ public class DialogueManager : MonoBehaviour
         {
             dialoguePanel.SetActive(true);
         }
-
-        if (playCoroutine != null)
-        {
-            StopCoroutine(playCoroutine);
-            playCoroutine = null;
-        }
-
-        playCoroutine = StartCoroutine(PlayLinesCoroutine());
+        currentLineIndex = 0;
+        wait = true;
+        PlayLinesCoroutine();
     }
 
-    private IEnumerator PlayLinesCoroutine()
+    private void PlayLinesCoroutine()
     {
         isPlaying = true;
-        userClickedThisFrame = false;
-        currentLineIndex = 0;
-
-        while (currentLineIndex < currentLines.Count)
+        if (typewriter.IsTyping())
         {
-            string line = currentLines[currentLineIndex] ?? "";
-
-            userClickedThisFrame = false;
-
-            // 启动打字效果
-            typewriter.StartTyping(line);
-
-            while (typewriter.IsTyping() && !userClickedThisFrame)
-            {
-                yield return null;
-            }
-
-            if (userClickedThisFrame && typewriter.IsTyping())
-            {
-                // 用户在打字中点击 —— 立刻完成当前行
-                typewriter.CompleteLine();
-            }
-            userClickedThisFrame = false;
-
-            bool advanced = false;
-            while (!advanced)
-            {
-                if (userClickedThisFrame)
-                {
-                    advanced = true;
-                    break;
-                }
-
-                yield return null;
-            }
-            userClickedThisFrame = false;
-            currentLineIndex++;
-            yield return null;
+            // 用户在打字中点击 —— 立刻完成当前行
+            typewriter.CompleteLine();
+            return;
         }
-
-        // 对话全部结束
-        isPlaying = false;
-        playCoroutine = null;
-        AudioManager.Instance.PlayTelephoneDrop();
-        // 隐藏对话面板
-        if (dialoguePanel != null)
+        if(currentLineIndex >= currentLines.Count)
         {
-            dialoguePanel.SetActive(false);
+            // 对话全部结束
+            isPlaying = false;
+            AudioManager.Instance.PlayTelephoneDrop();
+            // 隐藏对话面板
+            if (dialoguePanel != null)
+            {
+                dialoguePanel.SetActive(false);
+            }
+            return;
         }
+        string line = currentLines[currentLineIndex] ?? "";
+
+        // 启动打字效果
+        typewriter.StartTyping(line);
+        currentLineIndex++;
+
     }
   
     public void OnLanguageChanged()

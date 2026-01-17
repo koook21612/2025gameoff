@@ -170,6 +170,12 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
+
+        if (voiceSource.isPlaying)
+        {
+            return;
+        }
+
         // 随机选择一个音效
         int randomIndex = Random.Range(0, talkingClips.Length);
         AudioClip clip = talkingClips[randomIndex];
@@ -528,7 +534,7 @@ public class AudioManager : MonoBehaviour
                 fridgeWorkingSource.clip = clip;
                 fridgeWorkingSource.Play();
                 isFridgeWorkingPlaying = true;
-                Debug.Log("开始播放冰箱工作循环音效");
+                //Debug.Log("开始播放冰箱工作循环音效");
             }
             else
             {

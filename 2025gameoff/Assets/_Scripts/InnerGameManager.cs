@@ -42,7 +42,7 @@ public class InnerGameManager : MonoBehaviour
     public List<IngredientScriptObjs> totalIngredientPool = new List<IngredientScriptObjs>(); // 总原料池（所有原料）
     public static InnerGameManager Instance;
     public Animator anim;
-    public int count = 1;
+    public bool ringing = false;
     public Image fadeImage;
 
     private int muiscEffect = 0;
@@ -67,6 +67,7 @@ public class InnerGameManager : MonoBehaviour
         GameStart();
         muiscEffect = 0;
         Supplier = false;
+        ringing = false;
     }
 
 
@@ -129,7 +130,8 @@ public class InnerGameManager : MonoBehaviour
         else
         {
             // 新游戏
-            currentGold = 150; // 初始值
+            //currentGold = 150; // 初始值
+            currentGold = 150;
             currentReputation = 3;
             days = 0;
 
@@ -252,7 +254,11 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
-        if (days == 2 || days == 3)
+        if(days == 1)
+        {
+            StartCoroutine(Phone(2f));
+        }
+        else if (days == 2 || days == 3)
         {
             StartCoroutine(AddBonusGoldAndSave(1f, 150));
             StartCoroutine(Phone(2f));
@@ -264,7 +270,7 @@ public class InnerGameManager : MonoBehaviour
         }
         else
         {
-            InitializeStoreContent();
+            //InitializeStoreContent();
             SaveCheckpoint();
         }
 
@@ -309,9 +315,10 @@ public class InnerGameManager : MonoBehaviour
 
     private IEnumerator Phone(float delay)
     {
+        Debug.Log("开始响铃");
         yield return new WaitForSeconds(delay);
 
-        count = 0;
+        ringing = true;
         AudioManager.Instance.StartTelephoneRing();
     }
 

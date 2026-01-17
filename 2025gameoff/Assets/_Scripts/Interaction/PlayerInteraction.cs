@@ -173,15 +173,14 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     else if (interactable.item != null && interactable.item.Function == "phone")
                     {
-                        if (InnerGameManager.Instance.count != 0 && InnerGameManager.Instance.days != 1)
+                        Debug.Log("进入电话 " + InnerGameManager.Instance.ringing);
+                        if (InnerGameManager.Instance.ringing == false || InnerGameManager.Instance.isPlaying)
                         {
                             return;
                         }
-                        if (!InnerGameManager.Instance.isPlaying)
-                        {
-                            DialogueManager.Instance.OnPickUpPhone();
-                            InnerGameManager.Instance.count++;
-                        }
+                        Debug.Log("进入电话后 " + InnerGameManager.Instance.ringing);
+                        DialogueManager.Instance.OnPickUpPhone();
+                        InnerGameManager.Instance.ringing = false;
                         return;
                     }
                     if (interactable.isInstantInteract)
