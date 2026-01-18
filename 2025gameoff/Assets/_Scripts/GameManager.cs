@@ -8,9 +8,9 @@ public class SettingsData
     public int resolutionIndex = 0;
     public bool fullscreen = true;
     public float masterVolume = 0.8f;
-    public float musicVolume = 0.8f;
+    public float musicVolume = 0.5f;
     public float effectVolume = 0.8f;
-    public int languageIndex = 1;
+    public int languageIndex = 0;
 }
 
 public class GameManager : MonoBehaviour
@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     public int totalServedOrders = 0; // ×Ü³ö²ÍÊý
 
     public SettingsData Settings = new SettingsData();
+    public bool hasTeacing = false;
 
     private const string SETTINGS_KEY = "GameSettings_v1";
 

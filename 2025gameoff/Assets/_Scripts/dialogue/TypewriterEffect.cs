@@ -27,7 +27,6 @@ public class TypewriterEffect : MonoBehaviour
         isTyping = true;
         textDisplay.text = text;
         textDisplay.maxVisibleCharacters = 0;
-
         for (int i = 0; i <= text.Length; i++)
         {
             AudioManager.Instance.PlayTalking();

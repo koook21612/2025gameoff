@@ -62,6 +62,11 @@ public class PlayerInteraction : MonoBehaviour
         CheckInteractables();
     }
 
+
+    public Interactable getInteractable()
+    {
+        return currentInteractable;
+    }
     // 使用射线检测检查可交互物体并处理交互逻辑
     void CheckInteractables()
     {
@@ -173,12 +178,10 @@ public class PlayerInteraction : MonoBehaviour
                     }
                     else if (interactable.item != null && interactable.item.Function == "phone")
                     {
-                        Debug.Log("进入电话 " + InnerGameManager.Instance.ringing);
                         if (InnerGameManager.Instance.ringing == false || InnerGameManager.Instance.isPlaying)
                         {
                             return;
                         }
-                        Debug.Log("进入电话后 " + InnerGameManager.Instance.ringing);
                         DialogueManager.Instance.OnPickUpPhone();
                         InnerGameManager.Instance.ringing = false;
                         return;

@@ -435,6 +435,7 @@ MonoBehaviour:
     musicVolume: 0.8
     effectVolume: 0.8
     languageIndex: 1
+  hasTeacing: 0
   pendingData:
     unlockedTalents: []
     talentPoints: 3
@@ -1435,7 +1436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21ae15992fa64c1449e54a8c9c278ce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLanguage: en
+  currentLanguage: zh
 --- !u!4 &1982609488
 Transform:
   m_ObjectHideFlags: 0

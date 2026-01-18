@@ -59,7 +59,6 @@ public class MovingObjectController : MonoBehaviour
     /// </summary>
     public void StartMovementCycle()
     {
-        Debug.Log("¿ªÊ¼ÒÆ¶¯");
         if (isMoving || targetObject == null) return;
 
         isMoving = true;

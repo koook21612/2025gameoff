@@ -28,8 +28,11 @@ public class DialogueManager : MonoBehaviour
     private List<TeachingStep> teachingSteps; // 存储所有教学步骤
     private List<string> currentLines; // 当前播放的文本行
     private int currentTeachingIndex = 0; // 当前教学步骤索引
-    private bool isPlaying = false;
+    public bool isPlaying = false;
     private bool wait = false;
+    private bool lightUp = false;
+    //public GameObject light;
+    //public GameObject beforeLight;
 
     // 用于调试/显示
     private int currentLineIndex;
@@ -109,9 +112,15 @@ public class DialogueManager : MonoBehaviour
         AudioManager.Instance.StopTelephoneRing();
         // 播放拿起电话音效
         AudioManager.Instance.PlayTelephonePickUp();
-        if (InnerGameManager.Instance.days == 1)
+        if (InnerGameManager.Instance.days == 0)
         {
             PlayTutorialDialogue();
+            //if (!lightUp)
+            //{
+            //    light.SetActive(true);
+            //    beforeLight.SetActive(false);
+            //    lightUp = true;
+            //}
         }
         else
         {
@@ -148,7 +157,16 @@ public class DialogueManager : MonoBehaviour
         {
             // 所有教学步骤已播放完毕
             Debug.Log("所有新手教程已播放完毕。");
+            GameManager.Instance.hasTeacing = true;
+            CustomerManager.Instance.ResetForNewDay();
+            InnerGameManager.Instance.GameStart();
+            TeachingManager.Instance.isTeachingActive = false;
+            StartCoroutine(CompleteTeachingStepWithDelay(2f));
         }
+    }
+    private IEnumerator CompleteTeachingStepWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
     }
 
     // 播放随机对话
@@ -200,6 +218,10 @@ public class DialogueManager : MonoBehaviour
             // 对话全部结束
             isPlaying = false;
             AudioManager.Instance.PlayTelephoneDrop();
+            if (TeachingManager.Instance.isTeachingActive)
+            {
+                TeachingManager.Instance.doBefore();
+            }
             // 隐藏对话面板
             if (dialoguePanel != null)
             {

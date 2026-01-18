@@ -10,7 +10,7 @@ public class InnerGameManager : MonoBehaviour
 {
     public bool isPlaying = false;
 
-    public int days = 0;//天数
+    public int days = -1;//天数
     public int currentGold = 150; // 初始金币
     public int currentReputation = 3; // 初始声望
     public int maxReputation = 3; // 声望上限
@@ -92,7 +92,6 @@ public class InnerGameManager : MonoBehaviour
     public void GameStart()
     {
         InitializeMicrowaves();
-
         if (GameManager.Instance.hasStart)
         {
             var data = GameManager.Instance.pendingData;
@@ -130,10 +129,16 @@ public class InnerGameManager : MonoBehaviour
         else
         {
             // 新游戏
-            //currentGold = 150; // 初始值
-            currentGold = 150;
+            if(!GameManager.Instance.hasTeacing)
+            {
+                days = -1;
+                currentGold = 0;
+            }
+            else
+            {
+                currentGold = 150;
+            }
             currentReputation = 3;
-            days = 0;
 
             MicrowavesCount = 1;
             LatterMicrowavesCount = 0;
@@ -254,11 +259,7 @@ public class InnerGameManager : MonoBehaviour
             LatterMicrowavesCount = 0;
             UpdateMicrowaveDisplay();
         }
-        if(days == 1)
-        {
-            StartCoroutine(Phone(2f));
-        }
-        else if (days == 2 || days == 3)
+        if (days == 2 || days == 3)
         {
             StartCoroutine(AddBonusGoldAndSave(1f, 150));
             StartCoroutine(Phone(2f));
@@ -274,8 +275,15 @@ public class InnerGameManager : MonoBehaviour
             SaveCheckpoint();
         }
 
-        anim.SetTrigger("Open");
-        AudioManager.Instance.PlayFridgeOpen();
+        if(days > 0)
+        {
+            anim.SetTrigger("Open");
+            AudioManager.Instance.PlayFridgeOpen();
+        }
+        else
+        {
+            StartCoroutine(Phone(2f));
+        }
         MainCookingSystem.instance.ClearAllActiveMicrowaves();
         UnlockDishesAndIngredientsByDay();
         UIManager.instance.UpdateMenuDisplay();
@@ -315,7 +323,6 @@ public class InnerGameManager : MonoBehaviour
 
     private IEnumerator Phone(float delay)
     {
-        Debug.Log("开始响铃");
         yield return new WaitForSeconds(delay);
 
         ringing = true;
