@@ -1,10 +1,65 @@
 {
   "teaching": [
-    "Test text test text test text test text",
-    "Still test text test text test text test text",
-    "Still test text test text test text test text test text",
-    "Yes",
-    "Test text test text test text test text end"
+    {
+      "line": [
+        "Oi！ You sure you wandered into the right hole?",
+        "200 measly bucks to start—try finding another benefactor this generous outside, I dare you.",
+        "【Movement: WASD】"
+      ]
+    },
+    {
+      "line": [
+        "Money’s for stocking the pantry, obviously!",
+        "......",
+        "You’re asking me what to buy?",
+        "Figure it out yourself—surprise me."
+      ]
+    },
+    {
+      "line": [
+        "【Click arrows to adjust order quantity】",
+        "【Purchase the ingredients listed on the preorder form】"
+      ]
+    },
+    {
+      "line": [
+        "What a flawless shopping list!",
+        "Pre-made? It’s the only way to turn a profit—deal with it.",
+        "......",
+        "【Click New Day to start business】"
+      ]
+    },
+    {
+      "line": [
+        "I suppose you can open shop.",
+        "Look at  today's orders—closely.",
+        "【Click the ingredients matching the order to heat them in the microwave】"
+      ]
+    },
+    {
+      "line": [
+        "Stop staring into space—one more second on that heat and it’s scorched!",
+        "【Click ON/OFF when the timer needle enters the highlighted zone to stop heating】"
+      ]
+    },
+    {
+      "line": [
+        "Guess that’s passable",
+        "Surplus, huh? Guess I should hand you the keys to the whole joint.",
+        "【Click arrows to adjust order quantity】"
+      ]
+    },
+    {
+      "line": [
+        "Right, one decent piece of kit... mm, make-or-break for cuisine.",
+        "【Purchase upgrade modules from the vending machine to enhance microwave performance】"
+      ]
+    },
+    {
+      "line": [
+        "Remember—you're lining your own pockets here."
+      ]
+    }
   ],
   "randomPool": [
     "The illusion of profit... feels good, doesn't it?",

@@ -59,17 +59,7 @@ public class SettingManager : MonoBehaviour
     void Start()
     {
         AddListener();
-    }
-    void OnEnable()
-    {
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("SettingManager: GameManager.Instance is null on OnEnable()");
-            return;
-        }
-
         ApplySettingsToUI();
-        ApplySettingsToSystem();
     }
 
     /// <summary>

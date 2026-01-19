@@ -19,7 +19,7 @@ public class LocalizationManager : MonoBehaviour
 {
     public Dictionary<string, string> localizedText = new Dictionary<string, string>();
 
-    public string currentLanguage = "en";
+    public string currentLanguage = "zh";
 
     public delegate void OnLanguageChanged();
     public event OnLanguageChanged LanguageChanged;
@@ -34,6 +34,7 @@ public class LocalizationManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(currentLanguage);
         LoadLanguage(currentLanguage);
     }
 

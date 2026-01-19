@@ -9,7 +9,7 @@ public class TypewriterEffect : MonoBehaviour
     private float typingSpeed = Constants.DEFAULT_TYPING_SPEED;
     private float PlayingTime = Constants.PLAYING_TIME;
 
-    private bool isTyping;
+    private bool isTyping = false;
     private Coroutine typingCoroutine;
 
     public void StartTyping(string text)
@@ -27,11 +27,10 @@ public class TypewriterEffect : MonoBehaviour
         isTyping = true;
         textDisplay.text = text;
         textDisplay.maxVisibleCharacters = 0;
-
         for (int i = 0; i <= text.Length; i++)
         {
-            textDisplay.maxVisibleCharacters = i;
             AudioManager.Instance.PlayTalking();
+            textDisplay.maxVisibleCharacters = i;
             yield return new WaitForSeconds(typingSpeed);
         }
         isTyping = false;

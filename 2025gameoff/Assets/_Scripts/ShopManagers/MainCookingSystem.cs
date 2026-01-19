@@ -195,16 +195,6 @@ public class MainCookingSystem : MonoBehaviour
         Debug.Log($"更新微波炉UI，当前装备数量: {microwave.installedEquipments.Count}");
     }
 
-    // 公共方法，用于设置beforeInteraction并打开选择界面
-    public void OpenForCookingSelection(Item item = null)
-    {
-        beforeInteraction = item;
-        gameObject.SetActive(true);
-
-        // 更新按钮状态
-        UpdateSelectionButtons();
-    }
-
     private void UpdateSelectionButtons()
     {
         for (int i = 0; i < selectionButtons.Length; i++)

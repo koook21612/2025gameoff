@@ -149,6 +149,14 @@ public class AudioManager : MonoBehaviour
     public void PlayTelephonePickUp()
     {
         PlayEffect(Constants.PROECDURE + "game_procedure_telephone_pick_up");
+
+        int randomIndex = Random.Range(0, talkingClips.Length);
+        AudioClip clip = talkingClips[randomIndex];
+        if (clip != null)
+        {
+            Debug.Log("播放音效1");
+            voiceSource.PlayOneShot(clip);
+        }
     }
 
     /// <summary>
@@ -170,12 +178,18 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
+        Debug.Log("进入音效");
+        if (voiceSource.isPlaying)
+        {
+            return;
+        }
         // 随机选择一个音效
         int randomIndex = Random.Range(0, talkingClips.Length);
         AudioClip clip = talkingClips[randomIndex];
 
         if (clip != null)
         {
+            Debug.Log("播放音效2");
             voiceSource.PlayOneShot(clip);
         }
         else
@@ -528,7 +542,7 @@ public class AudioManager : MonoBehaviour
                 fridgeWorkingSource.clip = clip;
                 fridgeWorkingSource.Play();
                 isFridgeWorkingPlaying = true;
-                Debug.Log("开始播放冰箱工作循环音效");
+                //Debug.Log("开始播放冰箱工作循环音效");
             }
             else
             {
@@ -680,7 +694,7 @@ public class AudioManager : MonoBehaviour
     private void LoadVolumeSettings()
     {
         float m = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
-        float mu = PlayerPrefs.GetFloat("BGMVolume", 0.8f);
+        float mu = PlayerPrefs.GetFloat("BGMVolume", 0.5f);
         float v = PlayerPrefs.GetFloat("EffectVolume", 0.8f);
 
         audioMixer.SetFloat("MasterVolume", SliderToDecibel(m));

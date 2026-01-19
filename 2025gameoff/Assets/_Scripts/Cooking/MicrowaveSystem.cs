@@ -194,15 +194,30 @@ public class MicrowaveSystem : MonoBehaviour
 
         // 应用装备倍率
         float localMultiplier = heatingTimeMultiplier;
-
-        // 应用全局天赋倍率
-        float globalMultiplier = 1f;
-        if (GameManager.Instance != null)
+        if (InnerGameManager.Instance.HighPower != 0)
         {
-            globalMultiplier = GameManager.Instance.pendingData.heatingTimeMultiplier;
+            localMultiplier -= 0.2f * InnerGameManager.Instance.HighPower;
+        }
+        if (InnerGameManager.Instance.Cluster)
+        {
+            localMultiplier -= InnerGameManager.Instance.MicrowavesCount * 0.05f;
+        }
+        if (InnerGameManager.Instance.Overload)
+        {
+            localMultiplier -= 0.5f;
+        }
+        if (InnerGameManager.Instance.Speed)
+        {
+            localMultiplier -= 0.25f;
         }
 
-        return baseTime * (localMultiplier + globalMultiplier);
+        if (localMultiplier <= 0)
+        {
+            return 1f;
+        }
+
+        return baseTime * localMultiplier;
+        //return baseTime * (localMultiplier + globalMultiplier);
     }
 
     // 计算微波炉属性

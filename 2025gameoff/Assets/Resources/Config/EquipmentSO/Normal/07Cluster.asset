@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12e38cfbf80d11148ae5d133712d901b, type: 3}
-  m_Name: EqSO_2highPower
+  m_Name: 07Cluster
   m_EditorClassIdentifier: 
-  equipmentTexture: {fileID: 2800000, guid: 7c9a9387071815b4ea62a620cd9f2e3d, type: 3}
+  equipmentTexture: {fileID: 2800000, guid: 4cc56ad0458bcce40942af405d1e3681, type: 3}
   effects:
-  - effectType: 4
-    value: 0.2
-  equipmentName: equip_high_power
-  equipmentPrice: 50
-  description: desc_equip_high_power
+  - effectType: 7
+    value: 1
+  equipmentName: equip_cluster
+  equipmentPrice: 100
+  description: desc_equip_cluster
   isGlobal: 1
