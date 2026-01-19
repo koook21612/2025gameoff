@@ -45,8 +45,14 @@ public class InnerGameManager : MonoBehaviour
     public bool ringing = false;
     public Image fadeImage;
 
+    [Header("拥有的武器")]
     private int muiscEffect = 0;
     public bool Supplier = false;
+    public int HighPower = 0;
+    public bool HeatDissipation = false;
+    public bool Cluster = false;
+    public bool Overload = false;
+    public bool Speed = false;
 
     public event Action minReputation;
     private void Awake() {
@@ -512,25 +518,58 @@ public class InnerGameManager : MonoBehaviour
             switch (effect.effectType)
             {
                 //全局效果
+                //添加微波炉
                 case EffectType.AddMicrowave:
                     MicrowavesCount++;
                     UpdateMicrowaveDisplay();
                     break;
+                //3D打印模块
                 case EffectType.ThreeDPrinter:
                     LatterMicrowavesCount++;
                     break;
+                //夹子模块
                 case EffectType.Clip:
                     CustomerManager.Instance._maxOrderSlots = 5;
                     break;
+                //音乐模块,得到声望奖励时，额外获得10金币。
                 case EffectType.Music:
                     muiscEffect++;
                     break;
+                //囤积模块,你的打单机上每有1个订单未被取下，顾客的耐心值减少慢1%。
                 case EffectType.Hoarding:
                     CustomerManager.Instance.isSlowPatienceEnabled = true;
                     break;
+                //供应商模块,商店升级模块的价格-10%。
                 case EffectType.Supplier:
                     Supplier = true;
                     break;
+                //大功率，微波炉所需加热时间-20%。
+                case EffectType.HighPower:
+                    HighPower++;
+                    break;
+                //散热模块：过热区-40%（匀给完美区）
+                case EffectType.HeatDissipation:
+                    HeatDissipation = true;
+                    StoreManager.Instance.commonEquipmentPool.Remove(talentData);
+                    break;
+                //集群模块：每有1个其他微波炉，加热时间-5%
+                case EffectType.Cluster:
+                    Cluster = true;
+                    StoreManager.Instance.commonEquipmentPool.Remove(talentData);
+                    break;
+                //过载模块（稀有）：加热时间-50%，完美加热区范围-50%，故障率+10%
+                case EffectType.Overload:
+                    Overload = true;
+                    StoreManager.Instance.commonEquipmentPool.Remove(talentData);
+                    break;
+                //25.	超速模块：该微波炉滑块速度+0.2，加热时间-25%
+                case EffectType.HeatingSpeed:
+                    Speed = true;
+                    StoreManager.Instance.commonEquipmentPool.Remove(talentData);
+                    break;
+                    ////垄断模块（稀有）：你每有1个空闲的已解锁的微波炉，此微波炉加热时间-12%
+                    //case EffectType.Monopoly:
+                    //    break;
             }
         }
     }

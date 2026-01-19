@@ -3693,6 +3693,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 53c4ad0cffd2b6343b105257d7c2f1c3, type: 2}
   - {fileID: 11400000, guid: 52e4da9018123604badc74bfedfc3918, type: 2}
   - {fileID: 11400000, guid: 2095d72873de0b948a7a046d463ccae0, type: 2}
+  - {fileID: 11400000, guid: d0dbc19013100414f83362962735847d, type: 2}
+  - {fileID: 11400000, guid: b74a29480a850e544b82e4fc79f03055, type: 2}
+  - {fileID: 11400000, guid: a9611b4242f1bf747ba1ed33ae0b6615, type: 2}
+  - {fileID: 11400000, guid: 18253db47415db04b90b7a964bef6fc5, type: 2}
+  - {fileID: 11400000, guid: 211ff061af3ba1149a3c4a917d0f35ca, type: 2}
   currentShelfEquipments: []
   refreshCount: 0
   newMicrowavePrice: 100
@@ -8870,6 +8875,11 @@ MonoBehaviour:
   ringing: 1
   fadeImage: {fileID: 754982089}
   Supplier: 0
+  HighPower: 0
+  HeatDissipation: 0
+  Cluster: 0
+  Overload: 0
+  Speed: 0
 --- !u!1 &659646354
 GameObject:
   m_ObjectHideFlags: 0
@@ -18987,8 +18997,6 @@ MonoBehaviour:
   typewriter: {fileID: 1378998220}
   dialoguePanel: {fileID: 1830387213}
   isPlaying: 0
-  light: {fileID: 1029033859}
-  beforeLight: {fileID: 411969546}
 --- !u!4 &1396957560
 Transform:
   m_ObjectHideFlags: 0

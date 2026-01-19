@@ -34,6 +34,7 @@ public class LocalizationManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(currentLanguage);
         LoadLanguage(currentLanguage);
     }
 

@@ -88,13 +88,13 @@ public class GameManager : MonoBehaviour
         LoadGameData();
 
         // ”Ô—‘
-        if (LocalizationManager.Instance != null)
-        {
-            if (LocalizationManager.Instance.currentLanguage != LocalizationData.LANGUAGES[Settings.languageIndex])
-            {
-                LocalizationManager.Instance.LoadLanguage(LocalizationData.LANGUAGES[Settings.languageIndex]);
-            }
-        }
+        //if (LocalizationManager.Instance != null)
+        //{
+        //    if (LocalizationManager.Instance.currentLanguage != LocalizationData.LANGUAGES[Settings.languageIndex])
+        //    {
+        //        LocalizationManager.Instance.LoadLanguage(LocalizationData.LANGUAGES[Settings.languageIndex]);
+        //    }
+        //}
     }
 
     //public void LoadSettings()

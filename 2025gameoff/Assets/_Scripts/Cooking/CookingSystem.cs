@@ -212,26 +212,39 @@ public class CookingSystem : MonoBehaviour
         perfectZoneMultiplier = 1f;
         overheatZoneMultiplier = 1f;
 
-        // 遍历装备应用效果
-        foreach (var equipment in installedEquipments)
+        if (InnerGameManager.Instance.HeatDissipation)
         {
-            if (equipment == null || equipment.effects == null) continue;
-            foreach (var effect in equipment.effects)
-            {
-                switch (effect.effectType)
-                {
-                    case EffectType.PerfectZoneBonus:
-                        perfectZoneMultiplier += effect.value;
-                        break;
-                    case EffectType.Precision:
-                        perfectZoneMultiplier += effect.value;
-                        break;
-                    case EffectType.HeatDissipation:
-                        overheatZoneMultiplier += effect.value;
-                        break;
-                }
-            }
+            overheatZoneMultiplier -= 0.4f;
         }
+        if (InnerGameManager.Instance.Overload)
+        {
+            perfectZoneMultiplier -= 0.5f;
+        }
+        if (InnerGameManager.Instance.Speed)
+        {
+            sliderSpeedMultiplier += 0.2f;
+        }
+
+        //// 遍历装备应用效果
+        //foreach (var equipment in installedEquipments)
+        //{
+        //    if (equipment == null || equipment.effects == null) continue;
+        //    foreach (var effect in equipment.effects)
+        //    {
+        //        switch (effect.effectType)
+        //        {
+        //            case EffectType.PerfectZoneBonus:
+        //                perfectZoneMultiplier += effect.value;
+        //                break;
+        //            case EffectType.Precision:
+        //                perfectZoneMultiplier += effect.value;
+        //                break;
+        //            case EffectType.HeatDissipation:
+        //                overheatZoneMultiplier += effect.value;
+        //                break;
+        //        }
+        //    }
+        //}
     }
 
     /// <summary>
@@ -243,15 +256,15 @@ public class CookingSystem : MonoBehaviour
 
         if (_currentDish == null || _currentDish.perfectHeatRanges == null) return;
 
-        // 获取全局天赋加成
-        float globalPerfectZonePercent = 0f;
-        if (GameManager.Instance != null)
-        {
-            globalPerfectZonePercent = GameManager.Instance.pendingData.perfectZoneBonus;
-        }
-        //Debug.Log(perfectZoneMultiplier + " " + globalPerfectZonePercent);
-        float totalPerfectZoneBonus = perfectZoneMultiplier + globalPerfectZonePercent;
-
+        //// 获取全局天赋加成
+        //float globalPerfectZonePercent = 0f;
+        //if (GameManager.Instance != null)
+        //{
+        //    globalPerfectZonePercent = GameManager.Instance.pendingData.perfectZoneBonus;
+        //}
+        ////Debug.Log(perfectZoneMultiplier + " " + globalPerfectZonePercent);
+        //float totalPerfectZoneBonus = perfectZoneMultiplier + globalPerfectZonePercent;
+        float totalPerfectZoneBonus = perfectZoneMultiplier;
 
         // 处理每个原始完美区间
         foreach (var originalRange in _currentDish.perfectHeatRanges)
@@ -273,7 +286,7 @@ public class CookingSystem : MonoBehaviour
 
             _currentPerfectRanges.Add(new Vector2(newMin, newMax));
         }
-
+        MergeOverlappingRanges();
         // 过热区间调整（向左扩展）
         AdjustOverheatZones();
     }
@@ -283,7 +296,82 @@ public class CookingSystem : MonoBehaviour
     /// </summary>
     private void AdjustOverheatZones()
     {
+        if (_currentPerfectRanges.Count == 0) return;
 
+        if(overheatZoneMultiplier == 1f)
+        {
+            return;
+        }
+
+        List<Vector2> adjustedRanges = new List<Vector2>();
+
+        for (int i = 0; i < _currentPerfectRanges.Count; i++)
+        {
+            Vector2 currentRange = _currentPerfectRanges[i];
+            float x = currentRange.x;
+            float y = currentRange.y;
+
+            // 计算当前完美区间右边的过热区间范围
+            float rightOverheatStart = y;  // 过热区间起点
+
+            // 确定过热区间的终点：
+            // 1. 如果有下一个完美区间，则是下一个完美区间的左边界
+            // 2. 否则是1（整个范围的右边界）
+            float rightOverheatEnd = (i < _currentPerfectRanges.Count - 1)
+                ? _currentPerfectRanges[i + 1].x
+                : 1f;
+
+            // 原始过热区间长度
+            float originalOverheatLength = Mathf.Max(0f, rightOverheatEnd - rightOverheatStart);
+            // 扩展后的过热区间长度
+            float expandedOverheatLength = originalOverheatLength * overheatZoneMultiplier;
+            // 计算完美区间需要向左压缩的距离
+            float compressionAmount = expandedOverheatLength - originalOverheatLength;
+            // 计算新的完美区间右边界
+            float newY = rightOverheatEnd - expandedOverheatLength;
+            // 确保新右边界不会小于左边界
+            if (newY > x)
+            {
+                // 完美区间被压缩但仍然存在
+                adjustedRanges.Add(new Vector2(x, newY));
+            }
+        }
+
+        // 更新完美区间列表
+        _currentPerfectRanges = adjustedRanges;
+        MergeOverlappingRanges();
+    }
+
+    /// <summary>
+    /// 合并重叠的完美区间
+    /// </summary>
+    private void MergeOverlappingRanges()
+    {
+        if (_currentPerfectRanges.Count <= 1) return;
+
+        _currentPerfectRanges.Sort((a, b) => a.x.CompareTo(b.x));
+        List<Vector2> mergedRanges = new List<Vector2>();
+
+        Vector2 currentRange = _currentPerfectRanges[0];
+
+        for (int i = 1; i < _currentPerfectRanges.Count; i++)
+        {
+            Vector2 nextRange = _currentPerfectRanges[i];
+
+            // 检查重叠
+            if (nextRange.x <= currentRange.y)
+            {
+                currentRange.y = Mathf.Max(currentRange.y, nextRange.y);
+            }
+            else
+            {
+                mergedRanges.Add(currentRange);
+                currentRange = nextRange;
+            }
+        }
+
+        mergedRanges.Add(currentRange);
+        _currentPerfectRanges = mergedRanges;
     }
 
     /// <summary>
